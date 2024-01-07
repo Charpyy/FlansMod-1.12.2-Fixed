@@ -1,10 +1,20 @@
-# Flan's Mod Ultimate 1.12.2
+# Flan's Mod Chapy Version
+
+Everything you see there is not from me, https://www.curseforge.com/minecraft/mc-mods/flans-mod-ultimate-1-12-2
+
+I have only fix a few bugs:
+- Explosion hit vehicle crash
+- Shoot at player on server crash
+for the moment, if you are victim of a bug do an issue
+the original creator doesnt seem to be alive so i just keep the projet up
+
+**Important, im not a java developper, im just a server creator, sorry if i cant fix everything you want**
 
 Unofficial attempt to update Flan's Mod Ultimate Stability Edition to 1.12.2.
 
 Project is still WIP so errors and bugs may be present.
 
-Please don't redistribute any code without permission.
+Please don't redistribute any code without permission. (sorry i guess)
 
 ## How to use 1.7.10 content packs
 
