@@ -1,0 +1,1 @@
+{ "parent": "block/cube", "textures": { "particle": "flansmod:blocks/44_CraftingBoxSide", "down": "flansmod:blocks/44_CraftingBoxBottom", "up": "flansmod:blocks/44_CraftingBoxTop", "north": "flansmod:blocks/44_CraftingBoxSide", "east": "flansmod:blocks/44_CraftingBoxSide", "south": "flansmod:blocks/44_CraftingBoxSide", "west": "flansmod:blocks/44_CraftingBoxSide" } } 

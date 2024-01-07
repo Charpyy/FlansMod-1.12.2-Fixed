@@ -1,0 +1,1 @@
+{ "parent": "block/cube", "textures": { "particle": "flansmod:blocks/44_BritishWeaponBox", "down": "flansmod:blocks/44_WeaponBoxBottom", "up": "flansmod:blocks/44_WeaponBoxTop", "north": "flansmod:blocks/44_BritishWeaponBox", "east": "flansmod:blocks/44_BritishWeaponBox", "south": "flansmod:blocks/44_BritishWeaponBox", "west": "flansmod:blocks/44_BritishWeaponBox" } } 

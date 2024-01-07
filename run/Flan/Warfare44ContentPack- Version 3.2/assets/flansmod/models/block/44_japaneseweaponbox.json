@@ -1,0 +1,1 @@
+{ "parent": "block/cube", "textures": { "particle": "flansmod:blocks/44_JapaneseWeaponBox", "down": "flansmod:blocks/44_WeaponBoxBottom", "up": "flansmod:blocks/44_WeaponBoxTop", "north": "flansmod:blocks/44_JapaneseWeaponBox", "east": "flansmod:blocks/44_JapaneseWeaponBox", "south": "flansmod:blocks/44_JapaneseWeaponBox", "west": "flansmod:blocks/44_JapaneseWeaponBox" } } 

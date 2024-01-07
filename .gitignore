@@ -1,0 +1,28 @@
+# Build and Bins
+.gradle/
+build/
+bin/
+out/
+run/*
+src/main/java/com/flansmod/leaderboards/*
+
+# IDEs
+.classpath
+.project
+.settings/
+eclipse/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# System
+Thumbs.db
+.DS_Store
+
+# Flan's Mod
+!run/Flan/
+
+# Flan's Scripts
+upload.bat
+*.launch
