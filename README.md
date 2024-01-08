@@ -12,7 +12,7 @@ the original creator doesnt seem to be alive so i just keep the projet up
 
 **Important, im not a java developper, im just a server creator, sorry if i cant fix everything you want**
 
-**==================================================ADVANCEMENT FROM OTHER DEVS=============================================================**
+**=================ADVANCEMENT FROM OTHER DEVS=======================**
 
 Unofficial attempt to update Flan's Mod Ultimate Stability Edition to 1.12.2.
 
