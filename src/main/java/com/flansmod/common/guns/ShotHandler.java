@@ -124,10 +124,12 @@ public class ShotHandler
 				if (hit instanceof BlockHit)
 				{
 					world.spawnEntity(new EntityDebugDot(world, hitPos, 1000, 1.0f, 0f, 1.0f));
+
 				}
 				else
 				{
 					world.spawnEntity(new EntityDebugDot(world, hitPos, 1000, 1.0f, 1.0f, 1.0f));
+
 				}
 				world.spawnEntity(new EntityDebugVector(world, previousHitPos, Vector3f.sub(hitPos, previousHitPos, null), 1000, 0.5f, 0.5f, ((float)i/hits.size())));
 			}
@@ -147,7 +149,12 @@ public class ShotHandler
 		}
 		//Animation
 		//TODO should this be send to all Players?
-		FlansMod.packetHandler.sendToAllAround(new PacketBulletTrail(rayTraceOrigin, finalhit, 0.05f, 10f, 10f, shot.getBulletType().trailTexture), rayTraceOrigin.x, rayTraceOrigin.y, rayTraceOrigin.z, 500f, world.provider.getDimension());
+		//FlansMod.packetHandler.sendToAllAround(new PacketBulletTrail(rayTraceOrigin, finalhit, 0.05f, 10f, 10f, shot.getBulletType().trailTexture), rayTraceOrigin.x, rayTraceOrigin.y, rayTraceOrigin.z, 500f, world.provider.getDimension());
+		for (EntityPlayer player : world.playerEntities)
+		{
+			FlansMod.getPacketHandler().sendTo(new PacketBulletTrail(rayTraceOrigin, finalhit, 0.05f, 10f, 10f, shot.getBulletType().trailTexture), (EntityPlayerMP) player);
+
+		}
 	}
 	
 	/**
@@ -299,6 +306,7 @@ public class ShotHandler
 			new FlansModExplosion(world, shot.getShooterOptional().orElse(null), shot.getPlayerOptional(), bulletType,
 					detonatePos.x, detonatePos.y, detonatePos.z, bulletType.explosionRadius, bulletType.fireRadius > 0, bulletType.flak > 0, bulletType.explosionBreaksBlocks);
 		}
+
 		if(bulletType.fireRadius > 0)
 		{
 			for(float i = -bulletType.fireRadius; i < bulletType.fireRadius; i++)
@@ -322,9 +330,11 @@ public class ShotHandler
 		}
 		// Drop item on hitting if bullet requires it
 		if(bulletType.dropItemOnHit != null)
+
 		{
 			//TODO save ItemStack on load into the bulletType
 			ItemStack dropStack = InfoType.getRecipeElement(bulletType.dropItemOnHit);
+
 			
 			if(dropStack != null && !dropStack.isEmpty())
 			{

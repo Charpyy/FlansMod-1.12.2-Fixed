@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.flansmod.client.particle.EntityFMTracer;
 import com.flansmod.common.FlansModExplosion;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.PlayerHandler;
@@ -907,36 +908,39 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 		double dZ = (posZ - prevPosZ) / 10;
 
 		float spread = 0.1F;
-		/*for(int i = 0; i < 10; i++)
+		for(int i = 0; i < 5000; i++)
 		{
 			Particle particle = FlansModClient.getParticle(shot.getBulletType().trailParticleType, world,
 					prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread,
-					prevPosZ + dZ * i + rand.nextGaussian() * spread);*/
+					prevPosZ + dZ * i + rand.nextGaussian() * spread);
 			// TODO: [1.12] once again, render distance
 
-			//if (particle != null && Minecraft.getMinecraft().gameSettings.fancyGraphics)
-			//	particle.renderDistanceWeight = 100D;
-			// world.spawnEntity(particle);
-		//}
+			World world = this.getEntityWorld();
+			Particle particle1 = FlansModClient.getParticle("flansmod.rocketexhaust", world, prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread);
+			if(particle1 != null && Minecraft.getMinecraft().gameSettings.fancyGraphics) {
+				Minecraft.getMinecraft().effectRenderer.addEffect(particle1);
+			}
+		}
 		if (VLSDelay > 0 && type.boostPhaseParticle != null) {
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 5000; i++) {
 				FlansMod.proxy.spawnParticle(type.boostPhaseParticle,
 						prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread,
 						0, 0, 0);
 			}
 		} else if (!type.VLS || (VLSDelay <= 0)) {
-			for (int i = 0; i < 10; i++) {
-				//EntityFX particle = FlansModClient.getParticle("flansmod.rocketexhaust", worldObj, prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread);
-				//if(particle != null && Minecraft.getMinecraft().gameSettings.fancyGraphics)
-				//particle.renderDistanceWeight = 100D;
-				//worldObj.spawnEntityInWorld(particle);
+			for (int i = 0; i < 5000; i++) {
+				World world = this.getEntityWorld();
+				Particle particle = FlansModClient.getParticle("flansmod.rocketexhaust", world, prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread);
+				if(particle != null && Minecraft.getMinecraft().gameSettings.fancyGraphics) {
+					Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+				}
 				FlansMod.proxy.spawnParticle(type.trailParticleType,
 						prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread,
 						0, 0, 0);
 			}
 
 		}
-		//FlansMod.proxy.spawnParticle("explode", prevPosX + dX, prevPosY + dY, prevPosZ + dZ, motionX + (float)Math.random()*1 - 0.5, motionY + (float)Math.random()*1 - 0.5, motionZ +(float)Math.random()*1 - 0.5);
+		FlansMod.proxy.spawnParticle("explode", prevPosX + dX, prevPosY + dY, prevPosZ + dZ, motionX + (float)Math.random()*1 - 0.5, motionY + (float)Math.random()*1 - 0.5, motionZ +(float)Math.random()*1 - 0.5);
 	}
 
 	@Override
@@ -1048,7 +1052,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 	public void writeEntityToNBT(NBTTagCompound tag)
 	{
 		if (type == null) {
-			FlansMod.log("EntityBullet.writeEntityToNBT() Error: BulletType is null (" + this + ")");
+			//FlansMod.log("EntityBullet.writeEntityToNBT() Error: BulletType is null (" + this + ")");
 			setDead();
 			return;
 		}
