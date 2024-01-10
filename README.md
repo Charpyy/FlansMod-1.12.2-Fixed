@@ -6,6 +6,7 @@ I have only fix a few bugs:
 - Explosion hit vehicle crash
 - Shoot at player on server crash
 - When a vehicle explode the player in it will explode too
+- When a player shoot with explosive bullet, they now see a hitmarker if they hit something
   
 for the moment, if you are victim of a bug do an issue
 the original creator doesnt seem to be alive so i just keep the projet up
