@@ -13,8 +13,8 @@ import com.flansmod.common.FlansMod;
 public class PacketHitMarker extends PacketBase
 {
 	public float penAmount = 1F;
-    public boolean headshot = false;
-    public boolean explosionHit = false;
+    public boolean headshot = true;
+    public boolean explosionHit = true;
 	
 	public PacketHitMarker()
 	{
