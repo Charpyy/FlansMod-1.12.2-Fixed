@@ -15,6 +15,7 @@ import com.flansmod.client.FlansModClient;
 import com.flansmod.client.model.GunAnimations;
 import com.flansmod.common.eventhandlers.PlayerLoginEventListener;
 import com.flansmod.common.eventhandlers.ServerTickEvent;
+import com.flansmod.common.guns.*;
 import com.flansmod.common.sync.SyncEventHandler;
 import com.flansmod.common.types.IGunboxDescriptionable;
 import net.minecraft.entity.EntityLivingBase;
@@ -88,17 +89,6 @@ import com.flansmod.common.driveables.mechas.ItemMecha;
 import com.flansmod.common.driveables.mechas.ItemMechaAddon;
 import com.flansmod.common.enchantments.EnchantmentModule;
 import com.flansmod.common.eventhandlers.PlayerDeathEventListener;
-import com.flansmod.common.guns.BulletType;
-import com.flansmod.common.guns.EntityAAGun;
-import com.flansmod.common.guns.EntityBullet;
-import com.flansmod.common.guns.EntityGrenade;
-import com.flansmod.common.guns.EntityMG;
-import com.flansmod.common.guns.GunType;
-import com.flansmod.common.guns.ItemAAGun;
-import com.flansmod.common.guns.ItemAttachment;
-import com.flansmod.common.guns.ItemBullet;
-import com.flansmod.common.guns.ItemGrenade;
-import com.flansmod.common.guns.ItemGun;
 import com.flansmod.common.guns.boxes.BlockGunBox;
 import com.flansmod.common.guns.boxes.GunBoxType;
 import com.flansmod.common.network.PacketHandler;
@@ -279,7 +269,6 @@ public class FlansMod
 		log.debug("Pre-initialising Flan's mod.");
 		
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
-		
 		proxy.preInit();
 		proxy.registerRenderers();
 		
@@ -469,7 +458,7 @@ public class FlansMod
 		//Initialising handlers
 		packetHandler.initialise();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new CommonGuiHandler());
-		
+		MinecraftForge.EVENT_BUS.register(new SprintShoot());
 		// Really randomise the rewards generator
 		rewardsRandom = new Random();
 		rewardsRandom.setSeed(System.currentTimeMillis() ^ 0x5AB49DE08DE3B1DFL);

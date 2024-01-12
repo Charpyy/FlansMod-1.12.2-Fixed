@@ -14,6 +14,7 @@ import com.flansmod.common.eventhandlers.BulletHitEvent;
 import com.flansmod.common.network.PacketHitMarker;
 import com.flansmod.common.network.PacketPlaySound;
 import com.flansmod.common.teams.TeamsManager;
+import javafx.scene.paint.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.particle.Particle;
@@ -52,8 +53,7 @@ import com.flansmod.common.vector.Vector3f;
 
 import io.netty.buffer.ByteBuf;
 
-public class EntityBullet extends EntityShootable implements IEntityAdditionalSpawnData
-{
+public class EntityBullet extends EntityShootable implements IEntityAdditionalSpawnData {
 	public Entity owner;
 	public int pingOfShooter = 0;
 	private static final DataParameter<String> BULLET_TYPE = EntityDataManager.createKey(EntityBullet.class, DataSerializers.STRING);
@@ -73,7 +73,10 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 
 	public InfoType firedFrom;
 
-	public ShootableType getType() { return type; }
+	public ShootableType getType() {
+		return type;
+	}
+
 	/**
 	 * What type of weapon did this come from? For death messages
 	 */
@@ -129,14 +132,12 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 	private UUID shooteruuid;
 	private boolean checkforuuids;
 
-	public EntityBullet(World world)
-	{
+	public EntityBullet(World world) {
 		super(world);
 		setSize(0.5F, 0.5F);
 	}
 
-	public EntityBullet(World world, FiredShot shot, Vec3d origin, Vec3d direction)
-	{
+	public EntityBullet(World world, FiredShot shot, Vec3d origin, Vec3d direction) {
 		this(world);
 		ticksInAir = 0;
 		this.shot = shot;
@@ -144,7 +145,6 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 			this.owner = shot.getShooterOptional().get();
 		this.dataManager.set(BULLET_TYPE, shot.getBulletType().shortName);
 		firedFrom = shot.getFireableGun().getInfoType();
-
 		setPosition(origin.x, origin.y, origin.z);
 		motionX = direction.x;
 		motionY = direction.y;
@@ -156,13 +156,11 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 	}
 
 	@Override
-	protected void entityInit()
-	{
+	protected void entityInit() {
 		this.dataManager.register(BULLET_TYPE, null);
 	}
 
-	public void setArrowHeading(double d, double d1, double d2, float spread, float speed)
-	{
+	public void setArrowHeading(double d, double d1, double d2, float spread, float speed) {
 		spread /= 5F;
 		float f2 = MathHelper.sqrt(d * d + d1 * d1 + d2 * d2);
 		d /= f2;
@@ -178,8 +176,8 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 		motionY = d1;
 		motionZ = d2;
 		float f3 = MathHelper.sqrt(d * d + d2 * d2);
-		prevRotationYaw = rotationYaw = (float)((Math.atan2(d, d2) * 180D) / 3.1415927410125732D);
-		prevRotationPitch = rotationPitch = (float)((Math.atan2(d1, f3) * 180D) / 3.1415927410125732D);
+		prevRotationYaw = rotationYaw = (float) ((Math.atan2(d, d2) * 180D) / 3.1415927410125732D);
+		prevRotationPitch = rotationPitch = (float) ((Math.atan2(d1, f3) * 180D) / 3.1415927410125732D);
 
 		getLockOnTarget();
 	}
@@ -187,174 +185,154 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 	/**
 	 * Find the entity nearest to the missile's trajectory, anglewise
 	 */
-	private void getLockOnTarget()
-	{
+	private void getLockOnTarget() {
 		BulletType type = shot.getBulletType();
 
-		if(type.lockOnToPlanes || type.lockOnToVehicles || type.lockOnToMechas || type.lockOnToLivings || type.lockOnToPlayers)
-		{
+		if (type.lockOnToPlanes || type.lockOnToVehicles || type.lockOnToMechas || type.lockOnToLivings || type.lockOnToPlayers) {
 			Vector3f motionVec = new Vector3f(motionX, motionY, motionZ);
 			Entity closestEntity = null;
 			float closestAngle = type.maxLockOnAngle * 3.14159265F / 180F;
 
-			for(Entity entity : world.loadedEntityList)
-			{
+			for (Entity entity : world.loadedEntityList) {
 				String etype = entity.getEntityData().getString("EntityType");
-				if((type.lockOnToMechas && entity instanceof EntityMecha)
+				if ((type.lockOnToMechas && entity instanceof EntityMecha)
 						|| (type.lockOnToVehicles && entity instanceof EntityVehicle)
 						|| (type.lockOnToVehicles && etype.equals("Vehicle")) // for vehicle of other Mod
 						|| (type.lockOnToPlanes && entity instanceof EntityPlane)
 						|| (type.lockOnToPlanes && etype.equals("Plane")) // for plane of other Mod
 						|| (type.lockOnToPlayers && entity instanceof EntityPlayer)
-						|| (type.lockOnToLivings && entity instanceof EntityLivingBase))
-				{
+						|| (type.lockOnToLivings && entity instanceof EntityLivingBase)) {
 					Vector3f relPosVec = new Vector3f(entity.posX - posX, entity.posY - posY, entity.posZ - posZ);
 					float angle = Math.abs(Vector3f.angle(motionVec, relPosVec));
-					if(angle < closestAngle)
-					{
+					if (angle < closestAngle) {
 						closestEntity = entity;
 						closestAngle = angle;
 					}
 				}
 			}
 
-			if(closestEntity != null)
+			if (closestEntity != null)
 				lockedOnTo = closestEntity;
 		}
 	}
 
 	@Override
-	public void setVelocity(double d, double d1, double d2)
-	{
+	public void setVelocity(double d, double d1, double d2) {
 		motionX = d;
 		motionY = d1;
 		motionZ = d2;
-		if(prevRotationPitch == 0.0F && prevRotationYaw == 0.0F)
-		{
+		if (prevRotationPitch == 0.0F && prevRotationYaw == 0.0F) {
 			float f = MathHelper.sqrt(d * d + d2 * d2);
-			prevRotationYaw = rotationYaw = (float)((Math.atan2(d, d2) * 180D) / 3.1415927410125732D);
-			prevRotationPitch = rotationPitch = (float)((Math.atan2(d1, f) * 180D) / 3.1415927410125732D);
+			prevRotationYaw = rotationYaw = (float) ((Math.atan2(d, d2) * 180D) / 3.1415927410125732D);
+			prevRotationPitch = rotationPitch = (float) ((Math.atan2(d1, f) * 180D) / 3.1415927410125732D);
 			setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
 		}
 	}
 
 	@Override
-	public void onUpdate()
-	{
+	public void onUpdate() {
 		super.onUpdate();
 
 		/**if (initialTick) {
-			initialSpeed = (float)Math.sqrt((motionX * motionX) + (motionY * motionY) + (motionZ * motionZ));
-			initialTick = false;
-		}
+		 initialSpeed = (float)Math.sqrt((motionX * motionX) + (motionY * motionY) + (motionZ * motionZ));
+		 initialTick = false;
+		 }
 
-		// Update the ping for hit detection
-		if (!world.isRemote && owner instanceof EntityPlayerMP) {
-			pingOfShooter = ((EntityPlayerMP)owner).ping;
-		}
+		 // Update the ping for hit detection
+		 if (!world.isRemote && owner instanceof EntityPlayerMP) {
+		 pingOfShooter = ((EntityPlayerMP)owner).ping;
+		 }
 
-		prevPosX = posX;
-		prevPosY = posY;
-		prevPosZ = posZ;
-		if (type == null) {
-			FlansMod.log("EntityBullet.onUpdate() Error: BulletType is null (" + this + ")");
-			setDead();
-			return;
-		}
-
-
-		if (type.despawnTime > 0 && ticksExisted > type.despawnTime) {
-			detonated = true;
-			setDead();
-			return;
-		}
-
-		if (!hasSetSubDelay && type.hasSubmunitions) {
-			setSubmunitionDelay();
-		} else if (type.hasSubmunitions) {
-			submunitionDelay--;
-		}
-
-		if (!hasSetVLSDelay && type.VLS) {
-			VLSDelay = type.VLSTime;
-			hasSetVLSDelay = true;
-		}
-
-		if (VLSDelay > 0)
-			VLSDelay--;
-
-		if (!hasSetLook && owner != null) {
-			lookVector = new Vector3f((float) owner.getLookVec().x, (float) owner.getLookVec().y, (float) owner.getLookVec().z);
-			initialPos = new Vector3f(owner.posX, owner.posY, owner.posZ);
-			hasSetLook = true;
-		}
+		 prevPosX = posX;
+		 prevPosY = posY;
+		 prevPosZ = posZ;
+		 if (type == null) {
+		 FlansMod.log("EntityBullet.onUpdate() Error: BulletType is null (" + this + ")");
+		 setDead();
+		 return;
+		 }
 
 
-		if (soundTime > 0)
-			soundTime--;
+		 if (type.despawnTime > 0 && ticksExisted > type.despawnTime) {
+		 detonated = true;
+		 setDead();
+		 return;
+		 }
 
-		if (owner != null) {
-			double rangeX = owner.posX - this.posX;
-			double rangeY = owner.posY - this.posY;
-			double rangeZ = owner.posZ - this.posZ;
-			double range = Math.sqrt((rangeX * rangeX) + (rangeY * rangeY) + (rangeZ * rangeZ));
+		 if (!hasSetSubDelay && type.hasSubmunitions) {
+		 setSubmunitionDelay();
+		 } else if (type.hasSubmunitions) {
+		 submunitionDelay--;
+		 }
 
-			if (type.maxRange != -1 && type.maxRange < range) {
-				if (ticksExisted > type.fuse && type.fuse > 0)
-					detonate();
-				setDead();
-			}
-		} else {
-			this.setDead();
-		}**/
+		 if (!hasSetVLSDelay && type.VLS) {
+		 VLSDelay = type.VLSTime;
+		 hasSetVLSDelay = true;
+		 }
 
-		try
-		{
+		 if (VLSDelay > 0)
+		 VLSDelay--;
+
+		 if (!hasSetLook && owner != null) {
+		 lookVector = new Vector3f((float) owner.getLookVec().x, (float) owner.getLookVec().y, (float) owner.getLookVec().z);
+		 initialPos = new Vector3f(owner.posX, owner.posY, owner.posZ);
+		 hasSetLook = true;
+		 }
+
+
+		 if (soundTime > 0)
+		 soundTime--;
+
+		 if (owner != null) {
+		 double rangeX = owner.posX - this.posX;
+		 double rangeY = owner.posY - this.posY;
+		 double rangeZ = owner.posZ - this.posZ;
+		 double range = Math.sqrt((rangeX * rangeX) + (rangeY * rangeY) + (rangeZ * rangeZ));
+
+		 if (type.maxRange != -1 && type.maxRange < range) {
+		 if (ticksExisted > type.fuse && type.fuse > 0)
+		 detonate();
+		 setDead();
+		 }
+		 } else {
+		 this.setDead();
+		 }**/
+
+		try {
 			//This checks if the shooter and/or player can be found. If they are loaded/online they will be included in the FiredShot data, if not this data will be deleted/ignored
-			if (checkforuuids)
-			{
+			if (checkforuuids) {
 				EntityPlayerMP player = null;
 				Entity shooter = null;
 
-				if (playeruuid != null)
-				{
-				for (Entity entity : world.loadedEntityList)
-				{
-					if (entity.getUniqueID().equals(playeruuid) && entity instanceof EntityPlayerMP)
-					{
-						player = (EntityPlayerMP)entity;
-						break;
-					}
-				}
-				playeruuid = null;
-			}
-
-			if (shooteruuid != null)
-			{
-				if (player != null && shooteruuid.equals(player.getUniqueID()))
-				{
-					shooter = player;
-				}
-				else
-				{
-					for (Entity entity : world.loadedEntityList)
-					{
-						if (entity.getUniqueID().equals(shooteruuid))
-						{
-							shooter = entity;
+				if (playeruuid != null) {
+					for (Entity entity : world.loadedEntityList) {
+						if (entity.getUniqueID().equals(playeruuid) && entity instanceof EntityPlayerMP) {
+							player = (EntityPlayerMP) entity;
 							break;
 						}
 					}
+					playeruuid = null;
 				}
-				shooteruuid = null;
-			}
 
-			if (shooter != null)
-			{
-				shot = new FiredShot(shot.getFireableGun(), shot.getBulletType(), shooter, player);
-			}
+				if (shooteruuid != null) {
+					if (player != null && shooteruuid.equals(player.getUniqueID())) {
+						shooter = player;
+					} else {
+						for (Entity entity : world.loadedEntityList) {
+							if (entity.getUniqueID().equals(shooteruuid)) {
+								shooter = entity;
+								break;
+							}
+						}
+					}
+					shooteruuid = null;
+				}
 
-			checkforuuids = false;
+				if (shooter != null) {
+					shot = new FiredShot(shot.getFireableGun(), shot.getBulletType(), shooter, player);
+				}
+
+				checkforuuids = false;
 			}
 
 			BulletType type = this.getFiredShot().getBulletType();
@@ -363,20 +341,18 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 			float drag = 0.99F;
 			float gravity = 0.02F;
 			// If the bullet is in water, spawn particles and increase the drag
-			if(isInWater())
-			{
-				if (world.isRemote)
-				{
-					for(int i = 0; i < 4; i++)
-					{
+			if (isInWater()) {
+				if (world.isRemote) {
+					for (int i = 0; i < 4; i++) {
 						float bubbleMotion = 0.25F;
-						world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX - motionX * bubbleMotion,
-							posY - motionY * bubbleMotion, posZ - motionZ * bubbleMotion, motionX, motionY, motionZ);
+						world.spawnParticle(EnumParticleTypes.WATER_BUBBLE,
+								posX - motionX * bubbleMotion,
+								posY - motionY * bubbleMotion,
+								posZ - motionZ * bubbleMotion, motionX, motionY, motionZ);
 					}
 				}
 				drag = type.dragInWater;
 			}
-
 			if (!type.torpedo) {
 				motionX *= drag;
 				motionY *= drag;
@@ -393,49 +369,43 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 
 			// Recalculate the angles from the new motion
 			float motionXZ = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);
-			rotationYaw = (float)((Math.atan2(motionX, motionZ) * 180D) / 3.1415927410125732D);
-			rotationPitch = (float)((Math.atan2(motionY, motionXZ) * 180D) / 3.1415927410125732D);
+			rotationYaw = (float) ((Math.atan2(motionX, motionZ) * 180D) / 3.1415927410125732D);
+			rotationPitch = (float) ((Math.atan2(motionY, motionXZ) * 180D) / 3.1415927410125732D);
 			// Reset the range of the angles
-			for(; rotationPitch - prevRotationPitch < -180F; prevRotationPitch -= 360F)
-			{
+			for (; rotationPitch - prevRotationPitch < -180F; prevRotationPitch -= 360F) {
 			}
-			for(; rotationPitch - prevRotationPitch >= 180F; prevRotationPitch += 360F)
-			{
+			for (; rotationPitch - prevRotationPitch >= 180F; prevRotationPitch += 360F) {
 			}
-			for(; rotationYaw - prevRotationYaw < -180F; prevRotationYaw -= 360F)
-			{
+			for (; rotationYaw - prevRotationYaw < -180F; prevRotationYaw -= 360F) {
 			}
-			for(; rotationYaw - prevRotationYaw >= 180F; prevRotationYaw += 360F)
-			{
+			for (; rotationYaw - prevRotationYaw >= 180F; prevRotationYaw += 360F) {
 			}
 			rotationPitch = prevRotationPitch + (rotationPitch - prevRotationPitch) * 0.2F;
 			rotationYaw = prevRotationYaw + (rotationYaw - prevRotationYaw) * 0.2F;
 
 
-			if(world.isRemote)
-			{
+			if (world.isRemote) {
 				onUpdateClient();
 				return;
 			}
 
-
-			if(FlansMod.DEBUG)
+			if (FlansMod.DEBUG) {
 				world.spawnEntity(new EntityDebugVector(world, new Vector3f(posX, posY, posZ),
-						new Vector3f(motionX, motionY, motionZ), 20));
+						new Vector3f(motionX, motionY, motionY), 1000));
+
+			}
 
 			// Check the fuse to see if the bullet should explode
 			ticksInAir++;
-			if(ticksInAir > type.fuse && type.fuse > 0 && !isDead)
-			{
+			if (ticksInAir > type.fuse && type.fuse > 0 && !isDead) {
 				setDead();
 			}
 
-			if(ticksExisted > bulletLife)
-			{
+			if (ticksExisted > bulletLife) {
 				setDead();
 			}
 
-			if(isDead)
+			if (isDead)
 				return;
 
 			//Detonation conditions
@@ -493,8 +463,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 				}
 			}
 
-			if(!world.isRemote)
-			{
+			if (!world.isRemote) {
 				Entity ignore = shot.getPlayerOptional().isPresent() ? shot.getPlayerOptional().get() : shot.getShooterOptional().orElse(null);
 				int ping = 0;
 				if (shot.getPlayerOptional().isPresent())
@@ -503,37 +472,33 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 				List<BulletHit> hits = FlansModRaytracer.Raytrace(world, ignore, ticksInAir > 20, this, origin, motion, ping, 0f);
 
 				// We hit something
-				if(!hits.isEmpty())
-				{
+				if (!hits.isEmpty()) {
 					boolean showCrosshair = false;
 
-					for(BulletHit bulletHit : hits)
-					{
+					for (BulletHit bulletHit : hits) {
 						BulletHitEvent bulletHitEvent = new BulletHitEvent(this, bulletHit);
 						MinecraftForge.EVENT_BUS.post(bulletHitEvent);
-						if(bulletHitEvent.isCanceled()) continue;
+						if (bulletHitEvent.isCanceled()) continue;
 
 						Vector3f hitPos = new Vector3f(origin.x + motion.x * bulletHit.intersectTime,
 								origin.y + motion.y * bulletHit.intersectTime,
 								origin.z + motion.z * bulletHit.intersectTime);
 
 						currentPenetratingPower = ShotHandler.OnHit(world, hitPos, motion, shot, bulletHit, currentPenetratingPower);
-						if (currentPenetratingPower <= 0f)
-						{
+						if (currentPenetratingPower <= 0f) {
 							ShotHandler.onDetonate(world, shot, hitPos);
 							setDead();
 							break;
 						}
 
-						if (bulletHit instanceof FlansModRaytracer.DriveableHit)
-						{
+						if (bulletHit instanceof FlansModRaytracer.DriveableHit) {
 							if (type.entityHitSoundEnable)
 								PacketPlaySound.sendSoundPacket(posX, posY, posZ, type.hitSoundRange, dimension, type.hitSound, true);
 
-							boolean isFriendly=false;
+							boolean isFriendly = false;
 							FlansModRaytracer.DriveableHit driveableHit = (FlansModRaytracer.DriveableHit) bulletHit;
 							driveableHit.driveable.lastAtkEntity = owner;
-							if(TeamsManager.getInstance().currentRound!=null) {
+							if (TeamsManager.getInstance().currentRound != null) {
 								for (EntitySeat seat : driveableHit.driveable.getSeats()) {
 									if (seat.getControllingPassenger() instanceof EntityPlayerMP) {
 										PlayerData dataDriver = PlayerHandler.getPlayerData((EntityPlayerMP) seat.getControllingPassenger());
@@ -544,7 +509,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 									}
 								}
 							}
-							if(isFriendly){
+							if (isFriendly) {
 								currentPenetratingPower = 0;
 							} else {
 								currentPenetratingPower = driveableHit.driveable.bulletHit(type, shot.getFireableGun().getDamageAgainstVehicles(), driveableHit, currentPenetratingPower);
@@ -558,9 +523,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 
 							if (type.canSpotEntityDriveable)
 								driveableHit.driveable.setEntityMarker(200);
-						}
-						else if (bulletHit instanceof FlansModRaytracer.PlayerBulletHit)
-						{
+						} else if (bulletHit instanceof FlansModRaytracer.PlayerBulletHit) {
 							if (type.entityHitSoundEnable)
 								PacketPlaySound.sendSoundPacket(posX, posY, posZ, type.hitSoundRange, dimension, type.hitSound, true);
 
@@ -569,8 +532,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 									showCrosshair = true;
 								}
 							}
-						}
-						else if (bulletHit instanceof FlansModRaytracer.EntityHit) {
+						} else if (bulletHit instanceof FlansModRaytracer.EntityHit) {
 							if (type.entityHitSoundEnable)
 								PacketPlaySound.sendSoundPacket(posX, posY, posZ, type.hitSoundRange, dimension, type.hitSound, true);
 
@@ -584,189 +546,189 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 					}
 
 					if (showCrosshair && owner instanceof EntityPlayerMP) {
-						FlansMod.getPacketHandler().sendTo(new PacketHitMarker(shot.lastHitHeadshot, shot.lastHitPenAmount, false), (EntityPlayerMP)owner);
+						FlansMod.getPacketHandler().sendTo(new PacketHitMarker(shot.lastHitHeadshot, shot.lastHitPenAmount, false), (EntityPlayerMP) owner);
 					}
 				}
 			}
 			//TODO Client homing fix
 			// Apply homing action
-			if(lockedOnTo != null)
-			{
-				double dX = lockedOnTo.posX - posX;
-				double dY = lockedOnTo.posY - posY;
-				double dZ = lockedOnTo.posZ - posZ;
-				double dXYZ = dX * dX + dY * dY + dZ * dZ;
-
-				Vector3f relPosVec = new Vector3f(dX, dY, dZ);
-				float angle = Math.abs(Vector3f.angle(motion, relPosVec));
-
-				double lockOnPull = (angle) * type.lockOnForce;
-
-				lockOnPull = lockOnPull * lockOnPull;
-
-				motionX *= 0.95f;
-				motionY *= 0.95f;
-				motionZ *= 0.95f;
-
-				motionX += lockOnPull * dX / dXYZ;
-				motionY += lockOnPull * dY / dXYZ;
-				motionZ += lockOnPull * dZ / dXYZ;
-			}
+			//if(lockedOnTo != null)
+			//{
+			//	double dX = lockedOnTo.posX - posX;
+			//	double dY = lockedOnTo.posY - posY;
+			//	double dZ = lockedOnTo.posZ - posZ;
+			//	double dXYZ = dX * dX + dY * dY + dZ * dZ;
+//
+			//	Vector3f relPosVec = new Vector3f(dX, dY, dZ);
+			//	float angle = Math.abs(Vector3f.angle(motion, relPosVec));
+//
+			//	double lockOnPull = (angle) * type.lockOnForce;
+//
+			//	lockOnPull = lockOnPull * lockOnPull;
+//
+			//	motionX *= 0.95f;
+			//	motionY *= 0.95f;
+			//	motionZ *= 0.95f;
+//
+			//	motionX += lockOnPull * dX / dXYZ;
+			//	motionY += lockOnPull * dY / dXYZ;
+			//	motionZ += lockOnPull * dZ / dXYZ;
+			//}
 			/***if (lockedOnTo != null) {
-				if (lockedOnTo instanceof EntityDriveable) {
-					EntityDriveable entDriveable = (EntityDriveable) lockedOnTo;
-					// entPlane.isLockedOn = true;
-					if (entDriveable.getDriveableType().lockedOnSound != null && soundTime <= 0 && !this.world.isRemote) {
-						PacketPlaySound.sendSoundPacket(lockedOnTo.posX, lockedOnTo.posY, lockedOnTo.posZ,
-								entDriveable.getDriveableType().lockedOnSoundRange, dimension, entDriveable.getDriveableType().lockedOnSound, false);
-						soundTime = entDriveable.getDriveableType().soundTime;
-					}
-				} else {
-					lockedOnTo.getEntityData().setBoolean("Tracking", true);
-				}
+			 if (lockedOnTo instanceof EntityDriveable) {
+			 EntityDriveable entDriveable = (EntityDriveable) lockedOnTo;
+			 // entPlane.isLockedOn = true;
+			 if (entDriveable.getDriveableType().lockedOnSound != null && soundTime <= 0 && !this.world.isRemote) {
+			 PacketPlaySound.sendSoundPacket(lockedOnTo.posX, lockedOnTo.posY, lockedOnTo.posZ,
+			 entDriveable.getDriveableType().lockedOnSoundRange, dimension, entDriveable.getDriveableType().lockedOnSound, false);
+			 soundTime = entDriveable.getDriveableType().soundTime;
+			 }
+			 } else {
+			 lockedOnTo.getEntityData().setBoolean("Tracking", true);
+			 }
 
-				if (this.ticksExisted > type.tickStartHoming) {
-					double dX = lockedOnTo.posX - posX;
-					double dY;
-					if (type.isDoTopAttack && Math.abs(lockedOnTo.posX - this.posX) > 2 && Math.abs(lockedOnTo.posZ - this.posZ) > 2)
-						dY = lockedOnTo.posY + 30 - posY;
-					else dY = lockedOnTo.posY - posY;
-					double dZ = lockedOnTo.posZ - posZ;
-					double dXYZ;
-					if (!type.isDoTopAttack)
-						dXYZ = getDistance(lockedOnTo);
-					else dXYZ = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
+			 if (this.ticksExisted > type.tickStartHoming) {
+			 double dX = lockedOnTo.posX - posX;
+			 double dY;
+			 if (type.isDoTopAttack && Math.abs(lockedOnTo.posX - this.posX) > 2 && Math.abs(lockedOnTo.posZ - this.posZ) > 2)
+			 dY = lockedOnTo.posY + 30 - posY;
+			 else dY = lockedOnTo.posY - posY;
+			 double dZ = lockedOnTo.posZ - posZ;
+			 double dXYZ;
+			 if (!type.isDoTopAttack)
+			 dXYZ = getDistance(lockedOnTo);
+			 else dXYZ = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
 
-					if (owner != null && type.enableSACLOS) {
-						double dXp = lockedOnTo.posX - owner.posX;
-						double dYp = lockedOnTo.posY - owner.posY;
-						double dZp = lockedOnTo.posZ - owner.posZ;
-						Vec3d playerVec = owner.getLookVec();
-						Vector3f playerVec3f = new Vector3f(playerVec.x, playerVec.y, playerVec.z);
-						double angles = Math.abs(Vector3f.angle(playerVec3f, new Vector3f(dXp, dYp, dZp)));
-						if (angles > Math.toRadians(type.maxDegreeOfSACLOS)) {
-							lockedOnTo = null;
-						}
-					}
+			 if (owner != null && type.enableSACLOS) {
+			 double dXp = lockedOnTo.posX - owner.posX;
+			 double dYp = lockedOnTo.posY - owner.posY;
+			 double dZp = lockedOnTo.posZ - owner.posZ;
+			 Vec3d playerVec = owner.getLookVec();
+			 Vector3f playerVec3f = new Vector3f(playerVec.x, playerVec.y, playerVec.z);
+			 double angles = Math.abs(Vector3f.angle(playerVec3f, new Vector3f(dXp, dYp, dZp)));
+			 if (angles > Math.toRadians(type.maxDegreeOfSACLOS)) {
+			 lockedOnTo = null;
+			 }
+			 }
 
-					if (this.toggleLock) {
-						//prevDistanceToEntity = dXYZ;
-						if (dXYZ > type.maxRangeOfMissile)
-							lockedOnTo = null;
-						toggleLock = false;
-					}
+			 if (this.toggleLock) {
+			 //prevDistanceToEntity = dXYZ;
+			 if (dXYZ > type.maxRangeOfMissile)
+			 lockedOnTo = null;
+			 toggleLock = false;
+			 }
 
-					// Vector3f lockedOnToVector = new Vector3f(dX,dY,dZ);
+			 // Vector3f lockedOnToVector = new Vector3f(dX,dY,dZ);
 
-					double dmotion = Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+			 double dmotion = Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
 
-					Vector3f motionVector = new Vector3f(dX * dmotion / dXYZ, dY * dmotion / dXYZ, dZ * dmotion / dXYZ);
+			 Vector3f motionVector = new Vector3f(dX * dmotion / dXYZ, dY * dmotion / dXYZ, dZ * dmotion / dXYZ);
 
-					double angle = Math.abs(Vector3f.angle(motion, motionVector));
+			 double angle = Math.abs(Vector3f.angle(motion, motionVector));
 
-					if (angle > Math.toRadians(type.maxDegreeOfMissile)) {
-						lockedOnTo = null;
-					} else {
-						motionX = motionVector.x;
-						motionY = motionVector.y;
-						motionZ = motionVector.z;
-					}
+			 if (angle > Math.toRadians(type.maxDegreeOfMissile)) {
+			 lockedOnTo = null;
+			 } else {
+			 motionX = motionVector.x;
+			 motionY = motionVector.y;
+			 motionZ = motionVector.z;
+			 }
 
-					if (this.ticksExisted > 4 && dXYZ > prevDistanceToEntity) {
-						closeCount++;
-						if (closeCount > 15) {
-							lockedOnTo = null;
-						}
-					} else {
-						if (closeCount > 0)
-							closeCount--;
-					}
-					prevDistanceToEntity = dXYZ;
-				}
+			 if (this.ticksExisted > 4 && dXYZ > prevDistanceToEntity) {
+			 closeCount++;
+			 if (closeCount > 15) {
+			 lockedOnTo = null;
+			 }
+			 } else {
+			 if (closeCount > 0)
+			 closeCount--;
+			 }
+			 prevDistanceToEntity = dXYZ;
+			 }
 
-				if (lockedOnTo instanceof EntityDriveable) {
-					EntityDriveable plane = (EntityDriveable) lockedOnTo;
+			 if (lockedOnTo instanceof EntityDriveable) {
+			 EntityDriveable plane = (EntityDriveable) lockedOnTo;
 
-					if (plane.varFlare || plane.ticksFlareUsing > 0)// && !type.enableSACLOS)
-					{
-						lockedOnTo = null;
-					}
-				} else if (lockedOnTo != null && lockedOnTo.getEntityData().getBoolean("FlareUsing")) {
-					lockedOnTo = null;
-				}
-			} else if (type.laserGuidance) {
-				RayTraceResult mop = getSpottedPoint((EntityLivingBase) owner, 1F, type.maxRangeOfMissile, false);
-				if (mop != null) {
-					applyLaserGuidance(new Vector3f(mop.getBlockPos().getX(), mop.getBlockPos().getY(), mop.getBlockPos().getZ()), motion);
-				}
-			}
+			 if (plane.varFlare || plane.ticksFlareUsing > 0)// && !type.enableSACLOS)
+			 {
+			 lockedOnTo = null;
+			 }
+			 } else if (lockedOnTo != null && lockedOnTo.getEntityData().getBoolean("FlareUsing")) {
+			 lockedOnTo = null;
+			 }
+			 } else if (type.laserGuidance) {
+			 RayTraceResult mop = getSpottedPoint((EntityLivingBase) owner, 1F, type.maxRangeOfMissile, false);
+			 if (mop != null) {
+			 applyLaserGuidance(new Vector3f(mop.getBlockPos().getX(), mop.getBlockPos().getY(), mop.getBlockPos().getZ()), motion);
+			 }
+			 }
 
-			//FlansMod.log((int)posX+","+(int)posY+","+(int)posZ);
+			 //FlansMod.log((int)posX+","+(int)posY+","+(int)posZ);
 
-			if (owner != null && type.shootForSettingPos && !this.isFirstPositionSetting) {
-				if (this.owner instanceof EntityPlayer) {
-					EntityPlayer entP = (EntityPlayer) this.owner;
-					if (entP.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun) {
-						ItemGun itemGun = (ItemGun) entP.getHeldItem(EnumHand.MAIN_HAND).getItem();
-						this.impactX = itemGun.impactX;
-						this.impactY = itemGun.impactY;
-						this.impactZ = itemGun.impactZ;
-					}
+			 if (owner != null && type.shootForSettingPos && !this.isFirstPositionSetting) {
+			 if (this.owner instanceof EntityPlayer) {
+			 EntityPlayer entP = (EntityPlayer) this.owner;
+			 if (entP.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun) {
+			 ItemGun itemGun = (ItemGun) entP.getHeldItem(EnumHand.MAIN_HAND).getItem();
+			 this.impactX = itemGun.impactX;
+			 this.impactY = itemGun.impactY;
+			 this.impactZ = itemGun.impactZ;
+			 }
 
-				}
-				this.isFirstPositionSetting = true;
-			}
+			 }
+			 this.isFirstPositionSetting = true;
+			 }
 
-			if (type.shootForSettingPos && this.isFirstPositionSetting && this.isPositionUpper) {
-				double motionXa = this.motionX;
-				double motionYa = this.motionY;
-				double motionZa = this.motionZ;
-				double motiona = Math.sqrt((motionXa * motionXa) + (motionYa * motionYa) + (motionZa * motionZa));
-				this.motionX = 0;
-				this.motionY = motiona;
-				this.motionZ = 0;
+			 if (type.shootForSettingPos && this.isFirstPositionSetting && this.isPositionUpper) {
+			 double motionXa = this.motionX;
+			 double motionYa = this.motionY;
+			 double motionZa = this.motionZ;
+			 double motiona = Math.sqrt((motionXa * motionXa) + (motionYa * motionYa) + (motionZa * motionZa));
+			 this.motionX = 0;
+			 this.motionY = motiona;
+			 this.motionZ = 0;
 
-				if (this.posY - type.shootForSettingPosHeight > owner.posY) {
-					this.isPositionUpper = false;
-				}
-			}
-			if (type.shootForSettingPos && this.isFirstPositionSetting && !this.isPositionUpper) {
-				double rootx = this.impactX - this.posX;
-				double rootz = this.impactZ - this.posZ;
-				double roota = Math.sqrt((rootx * rootx) + (rootz * rootz));
-				double motionXa = this.motionX;
-				double motionYa = this.motionY;
-				double motionZa = this.motionZ;
-				double motiona = Math.sqrt((motionXa * motionXa) + (motionYa * motionYa) + (motionZa * motionZa));
-				this.motionX = rootx * motiona / roota;
-				this.motionZ = rootz * motiona / roota;
-				if (Math.abs(this.impactX - this.posX) < 1 && Math.abs(this.impactZ - this.posZ) < 1) {
-					double motionXab = this.motionX;
-					double motionYab = this.motionY;
-					double motionZab = this.motionZ;
-					double motionab = Math.sqrt((motionXa * motionXa) + (motionYa * motionYa) + (motionZa * motionZa));
-					this.motionX = 0;
-					this.motionY = -motionab;
-					this.motionZ = 0;
-				}
-			}***/
+			 if (this.posY - type.shootForSettingPosHeight > owner.posY) {
+			 this.isPositionUpper = false;
+			 }
+			 }
+			 if (type.shootForSettingPos && this.isFirstPositionSetting && !this.isPositionUpper) {
+			 double rootx = this.impactX - this.posX;
+			 double rootz = this.impactZ - this.posZ;
+			 double roota = Math.sqrt((rootx * rootx) + (rootz * rootz));
+			 double motionXa = this.motionX;
+			 double motionYa = this.motionY;
+			 double motionZa = this.motionZ;
+			 double motiona = Math.sqrt((motionXa * motionXa) + (motionYa * motionYa) + (motionZa * motionZa));
+			 this.motionX = rootx * motiona / roota;
+			 this.motionZ = rootz * motiona / roota;
+			 if (Math.abs(this.impactX - this.posX) < 1 && Math.abs(this.impactZ - this.posZ) < 1) {
+			 double motionXab = this.motionX;
+			 double motionYab = this.motionY;
+			 double motionZab = this.motionZ;
+			 double motionab = Math.sqrt((motionXa * motionXa) + (motionYa * motionYa) + (motionZa * motionZa));
+			 this.motionX = 0;
+			 this.motionY = -motionab;
+			 this.motionZ = 0;
+			 }
+			 }***/
 			/*setRenderDistanceWeight(256D);
 			if (owner != null && type.manualGuidance && VLSDelay <= 0 && lockedOnTo == null) {
 
 				setRenderDistanceWeight(256D);*/
-				/**
-				 boolean beamRider = true;
-				 if(!beamRider)
-				 {
-				 this.rotationYaw = owner.rotationYaw;
-				 this.rotationPitch = owner.rotationPitch;
-				 double dist = MathHelper.sqrt_double( motionX*motionX + motionY*motionY + motionZ*motionZ );
-				 final float PI = (float) Math.PI;
-				 motionX = dist * -MathHelper.sin((rotationYaw   / 180F) * PI) * MathHelper.cos((rotationPitch / 180F) * PI)*1.02;
-				 motionZ = dist *  MathHelper.cos((rotationYaw   / 180F) * PI) * MathHelper.cos((rotationPitch / 180F) * PI)*1.02;
-				 motionY = dist * -MathHelper.sin((rotationPitch / 180F) * PI)*1.02;
-				 } else
-				 */
+			/**
+			 boolean beamRider = true;
+			 if(!beamRider)
+			 {
+			 this.rotationYaw = owner.rotationYaw;
+			 this.rotationPitch = owner.rotationPitch;
+			 double dist = MathHelper.sqrt_double( motionX*motionX + motionY*motionY + motionZ*motionZ );
+			 final float PI = (float) Math.PI;
+			 motionX = dist * -MathHelper.sin((rotationYaw   / 180F) * PI) * MathHelper.cos((rotationPitch / 180F) * PI)*1.02;
+			 motionZ = dist *  MathHelper.cos((rotationYaw   / 180F) * PI) * MathHelper.cos((rotationPitch / 180F) * PI)*1.02;
+			 motionY = dist * -MathHelper.sin((rotationPitch / 180F) * PI)*1.02;
+			 } else
+			 */
 
 				/*Vector3f lookVec;
 				Vector3f origin2;
@@ -822,9 +784,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 					motionY -= gravity * type.fallSpeed;
 				}
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			super.setDead();
 		}
@@ -837,20 +797,17 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void onUpdateClient()
-	{
+	private void onUpdateClient() {
 		// Particles
-		if(shot.getBulletType().trailParticles)
-		{
+		if (shot.getBulletType().trailParticles) {
 			spawnParticles();
 		}
 
-		if(getDistanceSq(Minecraft.getMinecraft().player) < 5 && !playedFlybySound)
-		{
+		if (getDistanceSq(Minecraft.getMinecraft().player) < 5 && !playedFlybySound) {
 			playedFlybySound = true;
 			FMLClientHandler.instance().getClient().getSoundHandler()
 					.playSound(new PositionedSoundRecord(FlansModResourceHandler.getSoundEvent("bulletFlyby"), SoundCategory.HOSTILE, 10F,
-							1.0F / (rand.nextFloat() * 0.4F + 0.8F), (float)posX, (float)posY, (float)posZ));
+							1.0F / (rand.nextFloat() * 0.4F + 0.8F), (float) posX, (float) posY, (float) posZ));
 		}
 	}
 
@@ -901,46 +858,73 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void spawnParticles()
-	{
+	private void spawnParticles() {
+		//pas de gravité c'est seulement pour les véhicules, et les retomber des bullets sont dynamique et propre à leur content pack
+
 		double dX = (posX - prevPosX) / 10;
 		double dY = (posY - prevPosY) / 10;
 		double dZ = (posZ - prevPosZ) / 10;
-
 		float spread = 0.1F;
-		for(int i = 0; i < 5000; i++)
-		{
-			Particle particle = FlansModClient.getParticle(shot.getBulletType().trailParticleType, world,
-					prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread,
-					prevPosZ + dZ * i + rand.nextGaussian() * spread);
-			// TODO: [1.12] once again, render distance
+		type = shot.getBulletType();
+		float fallSpeed = type.fallSpeed;
+
+		//float drag = 0.99F;
+		//float gravity = 0.02F;
+
+		String message = "debug message rocket " + getType();
+		Minecraft.getMinecraft().ingameGUI.setOverlayMessage(message, false);
+
+		for (int i = 0; i < 10; i++) {
+				Particle particle = FlansModClient.getParticle(shot.getBulletType().trailParticleType, world,
+						prevPosX + dX * i + rand.nextGaussian() * spread,
+						(prevPosY + dY * i + rand.nextGaussian() * spread) - fallSpeed,
+						prevPosZ + dZ * i + rand.nextGaussian() * spread);
 
 			World world = this.getEntityWorld();
-			Particle particle1 = FlansModClient.getParticle("flansmod.rocketexhaust", world, prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread);
-			if(particle1 != null && Minecraft.getMinecraft().gameSettings.fancyGraphics) {
+			Particle particle1 = FlansModClient.getParticle("flansmod.rocketexhaust", world,
+					prevPosX + dX * i + rand.nextGaussian() * spread,
+					(prevPosY + dY * i + rand.nextGaussian() * spread) - fallSpeed,
+					prevPosZ + dZ * i + rand.nextGaussian() * spread);
+			if (particle1 != null && Minecraft.getMinecraft().gameSettings.fancyGraphics) {
 				Minecraft.getMinecraft().effectRenderer.addEffect(particle1);
 			}
 		}
+
+
 		if (VLSDelay > 0 && type.boostPhaseParticle != null) {
-			for (int i = 0; i < 5000; i++) {
+			for (int i = 0; i < 10; i++) {
 				FlansMod.proxy.spawnParticle(type.boostPhaseParticle,
-						prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread,
+						prevPosX + dX * i + rand.nextGaussian() * spread,
+						(prevPosY + dY * i + rand.nextGaussian() * spread) - fallSpeed,
+						prevPosZ + dZ * i + rand.nextGaussian() * spread,
 						0, 0, 0);
 			}
 		} else if (!type.VLS || (VLSDelay <= 0)) {
-			for (int i = 0; i < 5000; i++) {
+			for (int i = 0; i < 10; i++) {
 				World world = this.getEntityWorld();
-				Particle particle = FlansModClient.getParticle("flansmod.rocketexhaust", world, prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread);
-				if(particle != null && Minecraft.getMinecraft().gameSettings.fancyGraphics) {
+				Particle particle = FlansModClient.getParticle("flansmod.rocketexhaust", world,
+						prevPosX + dX * i + rand.nextGaussian() * spread,
+						(prevPosY + dY * i + rand.nextGaussian() * spread) - fallSpeed,
+						prevPosZ + dZ * i + rand.nextGaussian() * spread);
+				if (particle != null && Minecraft.getMinecraft().gameSettings.fancyGraphics) {
 					Minecraft.getMinecraft().effectRenderer.addEffect(particle);
 				}
 				FlansMod.proxy.spawnParticle(type.trailParticleType,
-						prevPosX + dX * i + rand.nextGaussian() * spread, prevPosY + dY * i + rand.nextGaussian() * spread, prevPosZ + dZ * i + rand.nextGaussian() * spread,
+						prevPosX + dX * i + rand.nextGaussian() * spread,
+						(prevPosY + dY * i + rand.nextGaussian() * spread) - fallSpeed,
+						prevPosZ + dZ * i + rand.nextGaussian() * spread,
 						0, 0, 0);
 			}
 
 		}
-		FlansMod.proxy.spawnParticle("explode", prevPosX + dX, prevPosY + dY, prevPosZ + dZ, motionX + (float)Math.random()*1 - 0.5, motionY + (float)Math.random()*1 - 0.5, motionZ +(float)Math.random()*1 - 0.5);
+		FlansMod.proxy.spawnParticle("explode",
+				prevPosX + dX,
+				prevPosY + dY,
+				prevPosZ + dZ,
+				motionX + (float) Math.random() * 1 - 0.5,
+				motionY + (float) Math.random() * 1 - 0.5,
+				motionZ + (float) Math.random() * 1 - 0.5);
+
 	}
 
 	@Override
