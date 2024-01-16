@@ -21,6 +21,7 @@ import com.flansmod.common.types.IGunboxDescriptionable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -444,14 +445,15 @@ public class FlansMod
 	/**
 	 * The mod initialiser method
 	 */
+
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+
 		log.info("Initialising Flan's Mod.");
-		
+		SimpleNetworkWrapper networML = NetworkManager.getNetworkChannel();
 		//Do proxy loading
 		proxy.init();
-		
 		if(enchantmentModuleEnabled)
 			enchantmentModule.Init();
 		
@@ -469,7 +471,6 @@ public class FlansMod
 				rewardsRandom.nextGaussian();
 			}
 		}
-		
 		//Config
 		//Starting the EventListener
 		new PlayerDeathEventListener();
@@ -477,7 +478,7 @@ public class FlansMod
 		new ServerTickEvent();
 		log.info("Loading complete.");
 	}
-	
+
 	@SubscribeEvent
 	public void registerRecipes(RegistryEvent.Register<IRecipe> event)
 	{

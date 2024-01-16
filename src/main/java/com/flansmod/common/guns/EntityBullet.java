@@ -867,13 +867,10 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 		float spread = 0.1F;
 		type = shot.getBulletType();
 		float fallSpeed = type.fallSpeed;
-
 		//float drag = 0.99F;
 		//float gravity = 0.02F;
-
-		String message = "debug message rocket " + getType();
-		Minecraft.getMinecraft().ingameGUI.setOverlayMessage(message, false);
-
+		//String message = "debug message rocket " + getType();
+		//Minecraft.getMinecraft().ingameGUI.setOverlayMessage(message, false);
 		for (int i = 0; i < 10; i++) {
 				Particle particle = FlansModClient.getParticle(shot.getBulletType().trailParticleType, world,
 						prevPosX + dX * i + rand.nextGaussian() * spread,

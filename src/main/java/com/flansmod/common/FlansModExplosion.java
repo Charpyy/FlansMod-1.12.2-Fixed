@@ -6,9 +6,12 @@ import com.flansmod.common.network.PacketParticle;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +19,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
@@ -29,6 +34,11 @@ import net.minecraftforge.event.ForgeEventFactory;
 import com.flansmod.common.guns.EntityDamageSourceFlan;
 import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.types.InfoType;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+
+
 
 public class  FlansModExplosion extends Explosion
 {
@@ -48,7 +58,6 @@ public class  FlansModExplosion extends Explosion
 
 	private final static int boomRadius = 16;
 	private static final Random explosionRNG = new Random();
-
 	private float power;
 	private final float damageVsLiving;
 	private final float damageVsPlayer;
@@ -65,6 +74,8 @@ public class  FlansModExplosion extends Explosion
 		this.causesFire = causesFire;
 		this.breaksBlocks = breaksBlocks && TeamsManager.explosions;
 	}
+
+
 
 	public FlansModExplosion(World world, Entity entity, Optional<? extends EntityPlayer> player, InfoType type,
 		double x, double y, double z, float explosionRadius, float explosionPower, boolean breakBlocks,
@@ -84,6 +95,8 @@ public class  FlansModExplosion extends Explosion
 		this.breaksBlocks = TeamsManager.explosions;
 		this.position = new Vec3d(this.x, this.y, this.z);
 		this.type = type;
+		String message = type.toString();
+		NetworkManager.getNetworkChannel().sendToServer(new GenericMessage(message));
 		this.explosive = entity;
 		this.causesFire = false;
 		this.isSmoking = (smokeCount > 0);

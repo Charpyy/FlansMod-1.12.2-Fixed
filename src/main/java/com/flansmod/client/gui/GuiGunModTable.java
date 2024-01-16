@@ -328,8 +328,9 @@ public class GuiGunModTable extends GuiContainer
         for (int y = 0; y < 5; y++)
             drawTexturedModalRect(xOrigin + 239, yOrigin + 60 + (12 * y), 340, 80, 80, 10);
 
-        for (int k = 0; k < 5; k++) {
-            int difference = stats[k] - lastStats[k];
+        for (int k = 0; k < 4; k++) {
+            //int difference = stats[k] - lastStats[k];
+			int difference = stats[k];
             int finalWidth;
 
             // For damage only

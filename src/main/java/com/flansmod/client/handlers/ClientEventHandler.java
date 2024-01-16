@@ -11,6 +11,8 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -24,6 +26,7 @@ import com.flansmod.client.model.RenderFlag;
 import com.flansmod.client.model.RenderGun;
 import com.flansmod.common.FlansMod;
 import com.flansmod.common.guns.ItemGun;
+import org.lwjgl.input.Mouse;
 
 /**
  * All handled events for the client should go through here and be passed on, this makes it easier to see which events
@@ -55,7 +58,21 @@ public class ClientEventHandler
 			}
 		}
 	}
-	
+
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public static void onMouseClick(InputEvent.MouseInputEvent event) {
+		if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+			boolean sprinting = Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isSprinting();
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (sprinting) {
+				event.setCanceled(true);
+			}
+		}
+	}
+
+
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void clientTick(TickEvent.ClientTickEvent event)

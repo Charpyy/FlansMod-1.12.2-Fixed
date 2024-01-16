@@ -1,5 +1,6 @@
 package com.flansmod.client.particle;
 
+import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 
 import com.flansmod.client.FlansModClient;
@@ -11,6 +12,8 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
+import static net.minecraftforge.common.DimensionManager.getWorld;
 
 public class EntityFMTracer extends Particle
 {
@@ -32,7 +35,6 @@ public class EntityFMTracer extends Particle
 
 		icon = new ResourceLocation("flansmod", "particle/FMTracer.png");
 	}
-	
 	public int getFXLayer()
 	{
 			 return 3;
@@ -59,7 +61,7 @@ public class EntityFMTracer extends Particle
 		int srcBlend = GL11.glGetInteger(GL11.GL_BLEND_SRC);
 		int dstBlend = GL11.glGetInteger(GL11.GL_BLEND_DST);
 		//GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glDepthMask(false); 
+		GL11.glDepthMask(false);
     	FMLClientHandler.instance().getClient().renderEngine.bindTexture(new ResourceLocation("flansmod", "particle/FMTracer.png"));
 
         float scale = 0.6F - ((this.particleAge)*0.1F);
@@ -76,26 +78,25 @@ public class EntityFMTracer extends Particle
         worldrenderer.draw();
         //GL11.glBlendFunc(srcBlend, dstBlend);
 		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDepthMask(true); 
+		GL11.glDepthMask(true);
         GL11.glPopMatrix();
-
-    }
+	}
 
 	public void onUpdate()
-	{
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
-		//this.renderDistanceWeight = 2000.0D;
-		if(this.particleAge++ >= this.particleMaxAge)
 		{
-			this.setExpired();
-		}
-		
-		this.move(this.motionX, this.motionY, this.motionZ);
-		if(this.onGround)
-		{
-			setExpired();
+			this.prevPosX = this.posX;
+			this.prevPosY = this.posY;
+			this.prevPosZ = this.posZ;
+				//this.renderDistanceWeight = 2000.0D;
+			if (this.particleAge++ >= this.particleMaxAge) {
+				this.setExpired();
+			}
+
+			this.move(this.motionX, this.motionY, this.motionZ);
+			if (this.onGround) {
+				setExpired();
+			}
 		}
 	}
-}
+
+
