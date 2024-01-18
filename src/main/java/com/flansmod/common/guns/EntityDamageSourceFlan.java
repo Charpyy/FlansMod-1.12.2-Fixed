@@ -68,13 +68,15 @@ public class EntityDamageSourceFlan extends EntityDamageSourceIndirect{
 		Team killerTeam = PlayerHandler.getPlayerData(shooter).team;
 
 		float dist = player.getDistance(shooter);
-		if (FlansMod.enableKillMessages)
-		{
+		if (FlansMod.enableKillMessages) {
 			FlansMod.getPacketHandler().sendToDimension(
 					new PacketKillMessage(headshot, weapon, shooter.getHeldItem(EnumHand.MAIN_HAND).getItemDamage(),
 							((killedTeam == null ? "f" : killedTeam.textColour) + player.getName()),
 							((killerTeam == null ? "f" : killerTeam.textColour) + shooter.getName()), dist
 					), living.dimension);
+		}
+		else{
+			return null;
 		}
 		String killMessage =
 				TextFormatting.DARK_GRAY + "[" + TextFormatting.RED + "Flansmod" + TextFormatting.DARK_GRAY + "] " +

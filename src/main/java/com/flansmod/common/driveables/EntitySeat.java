@@ -151,7 +151,9 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 
 		if (driveable.isDead()) {
 			for (EntitySeat seat : this.driveable.getSeats()) {
-				seat.setDead();
+				if(seat != null) {
+					seat.setDead();
+				}
 			}
 		}
 
