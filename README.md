@@ -8,6 +8,9 @@ I have only fix a few bugs:
 - When a vehicle explode the player in it will explode too
 - When a player shoot with explosive bullet, they now see a hitmarker if they hit something
 - Particle are now avaible for shells and rockets
+- Primary / Second Weapon spam chat message removed
+- New Particle on Vehicle destroy
+- Now Vehicle cant ride under water without being destroy in a few second, with new particle
   
 for the moment, if you are victim of a bug do an issue
 the original creator doesnt seem to be alive so i just keep the projet up
