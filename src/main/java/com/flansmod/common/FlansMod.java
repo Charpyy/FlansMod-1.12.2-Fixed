@@ -451,7 +451,6 @@ public class FlansMod
 	{
 
 		log.info("Initialising Flan's Mod.");
-		SimpleNetworkWrapper networML = NetworkManager.getNetworkChannel();
 		//Do proxy loading
 		proxy.init();
 		if(enchantmentModuleEnabled)

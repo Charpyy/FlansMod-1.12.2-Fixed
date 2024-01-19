@@ -93,12 +93,12 @@ public class GuiDriveableInventory extends GuiContainer
                             }
 
                         }
-
+						//this code is used to rendre gun, and ammo on full right
                         for (int ai = 0; ai < seat.gunType.ammo.size(); ai++) {
-                            drawStack(new ItemStack(seat.gunType.ammo.get(ai).getItem()), 110 + ai * 16, itemY);
+                            drawStack(new ItemStack(seat.gunType.ammo.get(ai).getItem()), 130 + ai * 16, itemY);
                         }
                         
-						drawStack(new ItemStack(seat.gunType.getItem()), 10, 25 + 19 * (slotsDone - scroll));
+						 drawStack(new ItemStack(seat.gunType.getItem()), 10, 25 + 19 * (slotsDone - scroll));
 					}
 					slotsDone++;
 				}
@@ -126,7 +126,7 @@ public class GuiDriveableInventory extends GuiContainer
                         }
 
                         for (int ai = 0; ai < gunType.ammo.size(); ai++) {
-                            drawStack(new ItemStack(gunType.ammo.get(ai).getItem()), 110 + ai * 16, itemY);
+                           drawStack(new ItemStack(gunType.ammo.get(ai).getItem()), 130 + ai * 16, itemY);
                         }
                         
 						drawStack(new ItemStack(driveable.getDriveableType().pilotGuns.get(i).type.getItem()), 10, 25 + 19 * (slotsDone - scroll));

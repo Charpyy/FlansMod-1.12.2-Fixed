@@ -1310,6 +1310,12 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					{
 						FlansMod.log.error("Driveable already had a seat in place");
 						seats[seat.getExpectedSeatID()].setDead();
+						int count = 10;
+						while(seats[seat.getExpectedSeatID()] != null && count <= 0){
+							seats[seat.getExpectedSeatID()].setDead();
+							count = count - 1;
+						}
+
 					}
 
 					seats[seat.getExpectedSeatID()] = seat;

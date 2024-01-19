@@ -6,6 +6,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.lwjgl.Sys;
 
 public class ContainerDriveableInventory extends Container
 {
@@ -62,11 +63,14 @@ public class ContainerDriveableInventory extends Container
 			{
 				int slotsDone = 0;
 				for(int j = 0; j < plane.driveableData.numGuns; j++)
+				//for(int j = 0; j < plane.driveableData.numGuns && j < 1; j++)
 				{
 					int yPos = -1000;
 					if(slotsDone < 3 + scroll && slotsDone >= scroll)
+					//if(slotsDone < 1 + scroll && slotsDone >= scroll)
 						yPos = 25 + 19 * slotsDone;
 					addSlotToContainer(new SlotDriveableAmmunition(plane.driveableData, j, 29, yPos, type.filterAmmunition));
+					System.out.println("slot created");
 					slotsDone++;
 				}
 				break;
@@ -181,8 +185,7 @@ public class ContainerDriveableInventory extends Container
 				}
 			}
 			
-			if(slotStack.getCount() == 0)
-			{
+			if(slotStack.getCount() == 0)			{
 				currentSlot.putStack(ItemStack.EMPTY.copy());
 			}
 			else
