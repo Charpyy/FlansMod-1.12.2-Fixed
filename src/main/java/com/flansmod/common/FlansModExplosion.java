@@ -1,5 +1,7 @@
 package com.flansmod.common;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import com.flansmod.common.network.PacketParticle;
@@ -38,6 +40,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
+import static com.flansmod.common.CSVWriter.writeDataToCSV;
 
 
 public class  FlansModExplosion extends Explosion
@@ -77,6 +80,7 @@ public class  FlansModExplosion extends Explosion
 
 
 
+
 	public FlansModExplosion(World world, Entity entity, Optional<? extends EntityPlayer> player, InfoType type,
 		double x, double y, double z, float explosionRadius, float explosionPower, boolean breakBlocks,
 		float damageLiving, float damagePlayer, float damagePlane, float damageVehicle, int smokeCount, int debrisCount)
@@ -95,8 +99,8 @@ public class  FlansModExplosion extends Explosion
 		this.breaksBlocks = TeamsManager.explosions;
 		this.position = new Vec3d(this.x, this.y, this.z);
 		this.type = type;
-		String message = type.toString();
-		NetworkManager.getNetworkChannel().sendToServer(new GenericMessage(message));
+		//String data = type.toString();
+		//writeDataToCSV(data);
 		this.explosive = entity;
 		this.causesFire = false;
 		this.isSmoking = (smokeCount > 0);
