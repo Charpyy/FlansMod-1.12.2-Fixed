@@ -34,6 +34,7 @@ compileJava {
 dependencies {
     compile "io.vavr:vavr:0.10.2"
     shadow "io.vavr:vavr:0.10.2"
+    compile 'com.opencsv:opencsv:5.5.2'
 }
 
 minecraft {

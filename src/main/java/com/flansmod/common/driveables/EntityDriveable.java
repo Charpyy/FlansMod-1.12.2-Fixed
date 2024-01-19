@@ -2,6 +2,7 @@ package com.flansmod.common.driveables;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import com.flansmod.common.*;
@@ -17,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,14 +27,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -1155,7 +1155,8 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 		// Reset the shoot delay
 		setShootDelay(type.shootDelay(secondary), secondary);
 	}
-
+	private int ticksElapsed = 0;
+	private boolean triggered = false;
 	@Override
 	public void onUpdate()
 	{
@@ -1249,11 +1250,27 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 			recoilTimer--;
 
 		checkInventoryChanged();
-
 		if (isUnderWater() && !type.worksUnderWater && !hugeBoat) {
-			throttle = 0;
-			//this.driveableData.parts.get(EnumDriveablePart.core).health -= 1;
-			disabled = true;
+			ticksElapsed++;
+			if (ticksElapsed >= 40 && !triggered) {
+				double x = posX;
+				double y = posY;
+				double z = posZ;
+				Random random = new Random();
+				int particleCount = 250;
+				double heightAbove = 2;
+				for (int i = 0; i < particleCount; i++) {
+					double offsetX = random.nextGaussian();
+					double offsetY = random.nextGaussian();
+					double offsetZ = random.nextGaussian();
+					double sizeMultiplier = 6;
+					world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+					world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+				}
+				world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
+				setDead();
+				triggered = true;
+			}
 		} else disabled = false;
 
 
@@ -1310,10 +1327,10 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					{
 						FlansMod.log.error("Driveable already had a seat in place");
 						seats[seat.getExpectedSeatID()].setDead();
-						int count = 10;
-						while(seats[seat.getExpectedSeatID()] != null && count <= 0){
+						int count1 = 0;
+						while(seats[seat.getExpectedSeatID()] != null && count1 <= 0){
 							seats[seat.getExpectedSeatID()].setDead();
-							count = count - 1;
+							count1 = count1 - 1;
 						}
 
 					}
@@ -1645,27 +1662,27 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 				}
 			}
 		}
-		if (seats[0] != null && seats[0].getControllingPassenger() != null && seats[0].getControllingPassenger() instanceof EntityPlayer && world.isRemote) {
-			EntityPlayer p = (EntityPlayer) seats[0].getControllingPassenger();
-			if (this.ticksExisted < getDriveableType().placeTimePrimary && (getShootDelay(false) % 100) == 0) {
-				p.sendMessage(new TextComponentString("Primary gun ready to use in " + getShootDelay(false) / 20 + " seconds."));
-			} else if (this.ticksExisted == getDriveableType().placeTimePrimary) {
-				p.sendMessage(new TextComponentString("Primary gun ready to use!"));
-			}
-
-			if (this.ticksExisted < getDriveableType().placeTimeSecondary && (getShootDelay(true) % 100) == 0) {
-				p.sendMessage(
-						new TextComponentString("Secondary gun ready to use in " + getShootDelay(true) / 20 + " seconds."));
-			} else if (this.ticksExisted == getDriveableType().placeTimeSecondary) {
-				p.sendMessage(new TextComponentString("Secondary gun ready to use!"));
-			}
-
-			if (engineStartDelay > 0 && engineStartDelay % (2.5 * 20) == 0) {
-				p.sendMessage(new TextComponentString("Engine starting.. " + (float) engineStartDelay / 20 + " seconds remaining."));
-			} else if (engineStartDelay == 1) {
-				p.sendMessage(new TextComponentString("Engine started!"));
-			}
-		}
+		//if (seats[0] != null && seats[0].getControllingPassenger() != null && seats[0].getControllingPassenger() instanceof EntityPlayer && world.isRemote) {
+		//	EntityPlayer p = (EntityPlayer) seats[0].getControllingPassenger();
+		//	if (this.ticksExisted < getDriveableType().placeTimePrimary && (getShootDelay(false) % 100) == 0) {
+		//		p.sendMessage(new TextComponentString("Primary gun ready to use in " + getShootDelay(false) / 20 + " seconds."));
+		//	} else if (this.ticksExisted == getDriveableType().placeTimePrimary) {
+		//		p.sendMessage(new TextComponentString("Primary gun ready to use!"));
+		//	}
+//
+		//	if (this.ticksExisted < getDriveableType().placeTimeSecondary && (getShootDelay(true) % 100) == 0) {
+		//		p.sendMessage(
+		//				new TextComponentString("Secondary gun ready to use in " + getShootDelay(true) / 20 + " seconds."));
+		//	} else if (this.ticksExisted == getDriveableType().placeTimeSecondary) {
+		//		p.sendMessage(new TextComponentString("Secondary gun ready to use!"));
+		//	}
+//
+		//	if (engineStartDelay > 0 && engineStartDelay % (2.5 * 20) == 0) {
+		//		p.sendMessage(new TextComponentString("Engine starting.. " + (float) engineStartDelay / 20 + " seconds remaining."));
+		//	} else if (engineStartDelay == 1) {
+		//		p.sendMessage(new TextComponentString("Engine started!"));
+		//	}
+		//}
 
 		if(!world.isRemote)
 		{
@@ -3002,6 +3019,20 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 				}
 			}
 			setDead();
+			double x = posX;
+			double y = posY;
+			double z = posZ;
+			Random random = new Random();
+			int particleCount = 250;
+			double heightAbove = 2;
+			for (int i = 0; i < particleCount; i++) {
+				double offsetX = random.nextGaussian();
+				double offsetY = random.nextGaussian();
+				double offsetZ = random.nextGaussian();
+				world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+			}
+			world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
 			if (lastAtkEntity != null && lastAtkEntity instanceof EntityPlayerMP) {
 				if (TeamsManager.instance.currentRound != null) {
 					TeamsManager.instance.currentRound.gametype.vehicleDestroyed(this, (EntityPlayerMP) lastAtkEntity);
@@ -3048,7 +3079,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					world.spawnEntity(new EntityItem(world, posX + pos.x, posY + pos.y, posZ + pos.z, stack.copy()));
 				}
 			}
-			dropItemsOnPartDeath(pos, part);
+			//dropItemsOnPartDeath(pos, part);
 
 			// Inventory is in the core, so drop it if the core is broken
 			if(part.type == EnumDriveablePart.core)
