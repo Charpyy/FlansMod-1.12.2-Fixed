@@ -527,7 +527,6 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 		
 		return true;
 	}
-	
 	public void shoot(EnumHand hand, EntityPlayer player, ItemStack gunstack, PlayerData data, World world, @Nullable GunAnimations animations)
 	{
 		if (sprinting) {
