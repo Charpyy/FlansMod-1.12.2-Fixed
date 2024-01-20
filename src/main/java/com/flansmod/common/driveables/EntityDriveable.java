@@ -1252,25 +1252,36 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 		checkInventoryChanged();
 		if (isUnderWater() && !type.worksUnderWater && !hugeBoat) {
 			ticksElapsed++;
-			if (ticksElapsed >= 40 && !triggered) {
+			if (ticksElapsed >= 1 && !triggered) {
 				double x = posX;
 				double y = posY;
 				double z = posZ;
 				Random random = new Random();
-				int particleCount = 250;
-				double heightAbove = 2;
-				for (int i = 0; i < particleCount; i++) {
-					double offsetX = random.nextGaussian();
-					double offsetY = random.nextGaussian();
-					double offsetZ = random.nextGaussian();
-					double sizeMultiplier = 6;
-					world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
-					world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+				int particleCount = 650;
+				double heightAbove = 5;
+				try {
+					this.driveableData.parts.get(EnumDriveablePart.core).health -= 1;
+				} catch (Exception e) {
+					FlansMod.log.error("Driveable part error in EntityDriveable.java line 1265");
 				}
-				world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
-				setDead();
-				triggered = true;
+				if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 40) {
+					throttle = 0;
+				}
+				if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 0) {
+					for (int i = 0; i < particleCount; i++) {
+						double offsetX = random.nextGaussian();
+						double offsetY = random.nextGaussian();
+						double offsetZ = random.nextGaussian();
+						world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+						world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+					}
+				}
+				if (ticksElapsed >= 1000) {
+					triggered = true;
+				}
 			}
+
+			//world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
 		} else disabled = false;
 
 
@@ -1327,10 +1338,8 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					{
 						FlansMod.log.error("Driveable already had a seat in place");
 						seats[seat.getExpectedSeatID()].setDead();
-						int count1 = 0;
-						while(seats[seat.getExpectedSeatID()] != null && count1 <= 0){
+						for(int count = 0; seats[seat.getExpectedSeatID()] != null && count <= 20; count++);{
 							seats[seat.getExpectedSeatID()].setDead();
-							count1 = count1 - 1;
 						}
 
 					}
@@ -3018,12 +3027,11 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 						killPart(part);
 				}
 			}
-			setDead();
 			double x = posX;
 			double y = posY;
 			double z = posZ;
 			Random random = new Random();
-			int particleCount = 250;
+			int particleCount = 650;
 			double heightAbove = 2;
 			for (int i = 0; i < particleCount; i++) {
 				double offsetX = random.nextGaussian();
@@ -3033,6 +3041,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 				world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
 			}
 			world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
+			setDead();
 			if (lastAtkEntity != null && lastAtkEntity instanceof EntityPlayerMP) {
 				if (TeamsManager.instance.currentRound != null) {
 					TeamsManager.instance.currentRound.gametype.vehicleDestroyed(this, (EntityPlayerMP) lastAtkEntity);
