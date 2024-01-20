@@ -459,7 +459,6 @@ public class FlansMod
 		//Initialising handlers
 		packetHandler.initialise();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new CommonGuiHandler());
-		MinecraftForge.EVENT_BUS.register(new SprintShoot());
 		// Really randomise the rewards generator
 		rewardsRandom = new Random();
 		rewardsRandom.setSeed(System.currentTimeMillis() ^ 0x5AB49DE08DE3B1DFL);

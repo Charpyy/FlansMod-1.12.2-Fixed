@@ -1157,9 +1157,9 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 	}
 	private int ticksElapsed = 0;
 	private boolean triggered = false;
+	private int tixElapsed = 0;
 	@Override
-	public void onUpdate()
-	{
+	public void onUpdate() {
 		super.onUpdate();
 
 		prevRotationYaw = axes.getYaw();
@@ -1168,7 +1168,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 
 		DriveableType type = getDriveableType();
 
-		if(owner==null&& ownerUUID !=null)owner = getPlayerByUUID(UUID.fromString(ownerUUID));
+		if (owner == null && ownerUUID != null) owner = getPlayerByUUID(UUID.fromString(ownerUUID));
 		//if(type.fancyCollision)
 		//checkCollsionBox();
 		hugeBoat = (getDriveableType().floatOnWater && getDriveableType().wheelStepHeight == 0);
@@ -1248,42 +1248,46 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 
 		if (recoilTimer >= 0)
 			recoilTimer--;
-
 		checkInventoryChanged();
 		if (isUnderWater() && !type.worksUnderWater && !hugeBoat) {
 			ticksElapsed++;
-			if (ticksElapsed >= 1 && !triggered) {
-				double x = posX;
-				double y = posY;
-				double z = posZ;
-				Random random = new Random();
-				int particleCount = 650;
-				double heightAbove = 5;
+			if (ticksElapsed >= 100 && !triggered) {
 				try {
 					this.driveableData.parts.get(EnumDriveablePart.core).health -= 10;
 				} catch (Exception e) {
 					FlansMod.log.error("Driveable part error in EntityDriveable.java line 1265");
 				}
+
 				if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 40) {
 					throttle = 0;
 				}
-				if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 0) {
-					for (int i = 0; i < particleCount; i++) {
-						double offsetX = random.nextGaussian();
-						double offsetY = random.nextGaussian();
-						double offsetZ = random.nextGaussian();
-						world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
-						world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, y + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
-					}
+			}
+			double x = posX;
+			double y = posY;
+			double z = posZ;
+			Random random = new Random();
+			int particleCount = 650;
+			double heightAbove = 2;
+			if(getDriveableData().parts.get(EnumDriveablePart.core).health <= 10)
+			{
+				for (int i = 0; i < particleCount; i++) {
+					int surfaceY = world.getHeight(new BlockPos(x, 0, z)).getY();
+					double offsetX = random.nextGaussian();
+					double offsetY = random.nextGaussian();
+					double offsetZ = random.nextGaussian();
+					world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, surfaceY + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+					world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, surfaceY + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
 				}
-				if (ticksElapsed >= 1000) {
-					triggered = true;
-				}
+				world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
+				setDead();
 			}
 
-			//world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
-		} else disabled = false;
-
+			if (ticksElapsed >= 1000) {
+				triggered = true;
+			}
+		} else {
+			disabled = false;
+		}
 
 		if (type.lockOnToLivings || type.lockOnToMechas || type.lockOnToPlanes || type.lockOnToPlayers || type.lockOnToVehicles) {
 			if (!world.isRemote && this.seats.length > 0 && lockOnSoundDelay <= 0) {
@@ -1295,7 +1299,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 
 					for (Entity entity : world.loadedEntityList) {
 						if ((type.lockOnToMechas && entity instanceof EntityMecha) ||
-								(type.lockOnToVehicles && entity instanceof EntityVehicle) ||
+								(type.lockOnToVehicles && entity instanceof EntityVehicle ) ||
 								(type.lockOnToPlanes && entity instanceof EntityPlane) ||
 								(type.lockOnToPlayers && entity instanceof EntityPlayer) ||
 								(type.lockOnToLivings && entity instanceof EntityLivingBase)) {

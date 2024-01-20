@@ -530,6 +530,9 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 	
 	public void shoot(EnumHand hand, EntityPlayer player, ItemStack gunstack, PlayerData data, World world, @Nullable GunAnimations animations)
 	{
+		if (sprinting) {
+			return;
+		}
 		if(type.usableByPlayers)
 		{
 			float shootTime = data.GetShootTime(hand);
