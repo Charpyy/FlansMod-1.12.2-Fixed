@@ -1260,7 +1260,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 				int particleCount = 650;
 				double heightAbove = 5;
 				try {
-					this.driveableData.parts.get(EnumDriveablePart.core).health -= 1;
+					this.driveableData.parts.get(EnumDriveablePart.core).health -= 10;
 				} catch (Exception e) {
 					FlansMod.log.error("Driveable part error in EntityDriveable.java line 1265");
 				}
