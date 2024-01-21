@@ -1,5 +1,6 @@
 package com.flansmod.client.handlers;
 
+import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
@@ -259,10 +260,12 @@ public class KeyInputHandler
 		if(ridingEntity instanceof IControllable)
 		{
 			IControllable controllable = (IControllable)ridingEntity;
-			if(mc.gameSettings.keyBindSneak.isPressed())
-				controllable.pressKey(6, player, true);
-			if(vehicleMenuKey.isPressed())
+			if(vehicleMenuKey.isPressed()) {
 				controllable.pressKey(7, player, true);
+			}
+			if(mc.gameSettings.keyBindSneak.isPressed()) {
+				controllable.pressKey(6, player, true);
+			}
 			if(primaryVehicleInteract.isPressed())
 				controllable.pressKey(9, player, true);
 			if(secondaryVehicleInteract.isPressed())

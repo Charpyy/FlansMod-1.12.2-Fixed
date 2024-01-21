@@ -2,6 +2,7 @@
 // Copyright (C) 2015 Minecraft-SMP.de
 // This file is for Flan's Flying Mod Version 4.0.x+
 
+
 package com.flansmod.ww2.client.model; //Path where the model is located
 
 import com.flansmod.client.model.EnumAnimationType;
@@ -177,3 +178,4 @@ public class ModelKar98k extends ModelGun //Same as Filename
 		thirdPersonOffset = new Vector3f(-0.2F, -0.2F, 0.01F);
 	}
 }
+
