@@ -11,6 +11,7 @@ I have only fix a few bugs:
 - Primary / Second Weapon spam chat message removed
 - New Particle on Vehicle destroy
 - Now When you are deeper than the height of your vehicle, the HP of your core will go down 1 by 1 very quickly, reaching 40 HP your vehicle will not be able to advance any further, and when it reaches 0 it will just explode (with new particle)
+- Now you can't shoot while sprinting
   
 for the moment, if you are victim of a bug do an issue
 the original creator doesnt seem to be alive so i just keep the projet up
