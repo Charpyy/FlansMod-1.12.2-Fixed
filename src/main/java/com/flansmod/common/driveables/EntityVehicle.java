@@ -39,6 +39,7 @@ import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.vector.Vector3f;
 
+import java.io.StringWriter;
 import java.util.List;
 
 
@@ -357,11 +358,12 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				}
 				return true;
 			}
-			case 7: //Inventory
+			case 7: // Inventory
 			{
-				if(world.isRemote)
+				if (world.isRemote)
 				{
-					FlansMod.proxy.openDriveableMenu((EntityPlayer)getSeat(0).getControllingPassenger(), world, this);
+					FlansMod.proxy.openDriveableMenu((EntityPlayer) player, world, this);
+
 				}
 				return true;
 			}

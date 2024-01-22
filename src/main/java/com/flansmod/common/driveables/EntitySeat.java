@@ -698,7 +698,7 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 			return driveable.pressKey(key, player, isOnTick);
 		}
 		
-		if(world.isRemote && key == 7 && driveable != null)
+		if(world.isRemote && key == 7 && driveable != null && isDriverSeat())
 		{
 			FlansMod.proxy.openDriveableMenu(player, world, driveable);
 		}
