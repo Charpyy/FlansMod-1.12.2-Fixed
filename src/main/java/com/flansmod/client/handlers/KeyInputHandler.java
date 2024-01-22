@@ -263,23 +263,30 @@ public class KeyInputHandler
 			if(vehicleMenuKey.isPressed()) {
 				controllable.pressKey(7, player, true);
 			}
+			if(primaryVehicleInteract.isPressed()) {
+				controllable.pressKey(9, player, true);
+			}
+			if(secondaryVehicleInteract.isPressed()) {
+				controllable.pressKey(8, player, true);
+			}
+			if(controlSwitchKey.isPressed()) {
+				controllable.pressKey(10, player, true);
+			}
+			if(gearKey.isPressed()) {
+				controllable.pressKey(13, player, true);
+			}
+			if(doorKey.isPressed()) {
+				controllable.pressKey(14, player, true);
+			}
+			if(modeKey.isPressed()) {
+				controllable.pressKey(15, player, true);
+			}
+			if(toggleCameraPerspective.isKeyDown()) {
+				controllable.pressKey(18, player, true);
+			}
 			if(mc.gameSettings.keyBindSneak.isPressed()) {
 				controllable.pressKey(6, player, true);
 			}
-			if(primaryVehicleInteract.isPressed())
-				controllable.pressKey(9, player, true);
-			if(secondaryVehicleInteract.isPressed())
-				controllable.pressKey(8, player, true);
-			if(controlSwitchKey.isPressed())
-				controllable.pressKey(10, player, true);
-			if(gearKey.isPressed())
-				controllable.pressKey(13, player, true);
-			if(doorKey.isPressed())
-				controllable.pressKey(14, player, true);
-			if(modeKey.isPressed())
-				controllable.pressKey(15, player, true);
-			if(toggleCameraPerspective.isKeyDown())
-				controllable.pressKey(18, player, true);
 		}
 	}
 }
