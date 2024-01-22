@@ -99,6 +99,7 @@ public class  FlansModExplosion extends Explosion
 		this.breaksBlocks = TeamsManager.explosions;
 		this.position = new Vec3d(this.x, this.y, this.z);
 		this.type = type;
+		//This code is only for Charpy and ObsidianBreaker plugins
 		//String data = type.toString();
 		//writeDataToCSV(data);
 		this.explosive = entity;
