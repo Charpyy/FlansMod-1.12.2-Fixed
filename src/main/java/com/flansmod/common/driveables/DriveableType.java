@@ -567,7 +567,8 @@ public abstract class DriveableType extends PaintableType
 			d.seats[seat.id] = seat;
 			if(seat.gunType != null)
 			{
-				seat.gunnerID = d.numPassengerGunners++;
+				//seat.gunnerID = d.numPassengerGunners++; removed to fix duplicates slots in passenger gun
+				seat.gunnerID = d.numPassengerGunners;
 				d.driveableRecipe.add(new ItemStack(seat.gunType.item));
 			}
 		});
@@ -1078,7 +1079,7 @@ public abstract class DriveableType extends PaintableType
 				if (split[0].equals("Passenger")) {
 					Seat seat = new Seat(split);
 					seats[seat.id] = seat;
-					if (seat.gunType != null) {
+					if (seat.gunType != null && seat.gunName != null) {
 						seat.gunnerID = numPassengerGunners++;
 						driveableRecipe.add(new ItemStack(seat.gunType.item));
 					}
