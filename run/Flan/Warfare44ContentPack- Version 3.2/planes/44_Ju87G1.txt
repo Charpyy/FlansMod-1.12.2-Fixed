@@ -41,7 +41,7 @@ Propeller 1 -4 -19 30 core 44_Metal_Propeller
 Propeller 2 -50 -36 0 core 44_Metal_Propeller
 // ------------------------------------------------------ Weaponry ------------------------------------------------------
 //Weapon types. Options are Missile, Bomb, Gun, Shell, None
-Primary Missile
+Primary Gun
 Secondary None
 //Time between shots in 1/20ths of seconds
 ShootDelayPrimary 10
