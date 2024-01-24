@@ -14,7 +14,8 @@ I have only fix a few bugs:
 - Now you can't shoot while sprinting
 - Fixed bug when you enter a vehicle and the game decide to kick you from it while pressing the inventory vehicle key
 - Delay when you change weapon
-- Passenger can't access to vehicle menu now  
+- Passenger can't access to vehicle menu now
+- Fixed duplicate empty passenger gun slot
 
 for the moment, if you are victim of a bug do an issue
 the original creator doesnt seem to be alive so i just keep the projet up
