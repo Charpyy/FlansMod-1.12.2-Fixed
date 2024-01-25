@@ -5,6 +5,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import org.lwjgl.Sys;
 
@@ -62,15 +63,18 @@ public class ContainerDriveableInventory extends Container
 			case 0: //Guns
 			{
 				int slotsDone = 0;
+				//toujours 1 de plus que ce qu'il y a écrit
+				//13 par défaut pour le b17 et 11 quand on supprime un passager donc ça compte double
 				for(int j = 0; j < plane.driveableData.numGuns; j++)
 				//for(int j = 0; j < plane.driveableData.numGuns && j < 1; j++)
 				{
+
 					int yPos = -1000;
 					if(slotsDone < 3 + scroll && slotsDone >= scroll)
 					//if(slotsDone < 1 + scroll && slotsDone >= scroll)
 						yPos = 25 + 19 * slotsDone;
+					//test ça et vérifier le slot lui même pour voir si il contient quelque chose et si c'est pas le cas supprimer
 					addSlotToContainer(new SlotDriveableAmmunition(plane.driveableData, j, 29, yPos, type.filterAmmunition));
-					System.out.println("slot created");
 					slotsDone++;
 				}
 				break;
