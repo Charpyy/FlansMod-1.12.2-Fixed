@@ -1,5 +1,7 @@
 package com.flansmod.common.guns;
 
+import net.minecraft.client.settings.GameSettings;
+
 public enum EnumSecondaryFunction
 {
 	ZOOM, ADS_ZOOM, MELEE, CUSTOM_MELEE;

@@ -310,6 +310,7 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 	@SideOnly(Side.CLIENT)
 	public void onUpdateClient(ItemStack gunstack, int gunSlot, World world, Entity entity, EnumHand hand, boolean hasOffHand)
 	{
+		GameSettings gameSettings = FMLClientHandler.instance().getClient().gameSettings;
 		if(!(entity instanceof EntityPlayer))
 		{
 			//This code is for players only
@@ -332,14 +333,14 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 							&& (type.secondaryFunction == EnumSecondaryFunction.ADS_ZOOM || type.secondaryFunction == EnumSecondaryFunction.ZOOM))
 					{
 						FlansModClient.setScope(currentScope);
+						gameSettings.viewBobbing = false; // Set viewBobbing to false when aiming
 					}
 					break;
 				}
 				case OFF_HAND:
 				{
 					if(GetMouseHeld(EnumHand.MAIN_HAND) && !GetLastMouseHeld(EnumHand.MAIN_HAND)
-							&& (type.secondaryFunction == EnumSecondaryFunction.ADS_ZOOM || type.secondaryFunction == EnumSecondaryFunction.ZOOM))
-					{
+							&& (type.secondaryFunction == EnumSecondaryFunction.ADS_ZOOM || type.secondaryFunction == EnumSecondaryFunction.ZOOM)) {
 						FlansModClient.setScope(currentScope);
 					}
 					break;

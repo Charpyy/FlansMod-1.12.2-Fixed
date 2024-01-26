@@ -391,6 +391,7 @@ public class FlansModClient extends FlansMod
 		{
 			if(currentScope == null)
 			{
+				gameSettings.viewBobbing = false;
 				currentScope = scope;
 				lastZoomLevel = scope.getZoomFactor();
 				lastFOVZoomLevel = scope.getFOVFactor();
@@ -408,6 +409,9 @@ public class FlansModClient extends FlansMod
 				gameSettings.fovSetting = originalFOV;
 			}
 			scopeTime = 10;
+		}
+		else {
+			gameSettings.viewBobbing = true;
 		}
 	}
 	
