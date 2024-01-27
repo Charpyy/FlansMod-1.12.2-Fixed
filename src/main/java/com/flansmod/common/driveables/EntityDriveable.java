@@ -1251,39 +1251,35 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 		checkInventoryChanged();
 		if (isUnderWater() && !type.worksUnderWater && !hugeBoat) {
 			ticksElapsed++;
-			if (ticksElapsed >= 100 && !triggered) {
+			if (ticksElapsed >= 20) {
+				ticksElapsed = 0;
+				double x = posX;
+				double y = posY;
+				double z = posZ;
+				Random random = new Random();
+				int particleCount = 1;
+				double heightAbove = 2;
 				try {
-					this.driveableData.parts.get(EnumDriveablePart.core).health -= 10;
+					this.driveableData.parts.get(EnumDriveablePart.core).health /= 2;
+					if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 40) {
+						throttle = 0; //doesnt work
+						if(getDriveableData().parts.get(EnumDriveablePart.core).health <= 10) {
+							for (int i = 0; i < particleCount; i++) {
+								int surfaceY = world.getHeight(new BlockPos(x, 0, z)).getY();
+								double offsetX = random.nextGaussian();
+								double offsetY = random.nextGaussian();
+								double offsetZ = random.nextGaussian();
+								world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, surfaceY + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+								world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, surfaceY + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
+							}
+							world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
+							setDead();
+						}
+					}
+
 				} catch (Exception e) {
 					FlansMod.log.error("Driveable part error in EntityDriveable.java line 1265");
 				}
-
-				if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 40) {
-					throttle = 0;
-				}
-			}
-			double x = posX;
-			double y = posY;
-			double z = posZ;
-			Random random = new Random();
-			int particleCount = 650;
-			double heightAbove = 2;
-			if(getDriveableData().parts.get(EnumDriveablePart.core).health <= 10)
-			{
-				for (int i = 0; i < particleCount; i++) {
-					int surfaceY = world.getHeight(new BlockPos(x, 0, z)).getY();
-					double offsetX = random.nextGaussian();
-					double offsetY = random.nextGaussian();
-					double offsetZ = random.nextGaussian();
-					world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + offsetX, surfaceY + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
-					world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x + offsetX, surfaceY + heightAbove + offsetY, z + offsetZ, 0, 0, 0);
-				}
-				world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.AMBIENT, 0.4F, 4F);
-				setDead();
-			}
-
-			if (ticksElapsed >= 1000) {
-				triggered = true;
 			}
 		} else {
 			disabled = false;
