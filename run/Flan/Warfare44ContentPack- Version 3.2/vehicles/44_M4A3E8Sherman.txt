@@ -103,6 +103,7 @@ SetupPart trailer 250 37 -2 -16 18 23 32
 SetupPart leftTrack 300 -59 -10 -24 114 23 8
 SetupPart rightTrack 300 -59 -10 16 114 23 8
 
+
 //advpaintjob Settings
 //Format is "advpaintjob iconName textureName requiredDyeAmount requiredDyeColour" Multiple colours may be listed in order, seperated by a space
 //Dye colours are "black", "red", "green", "brown", "blue", "purple", "cyan", "silver", "gray", "pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white"
