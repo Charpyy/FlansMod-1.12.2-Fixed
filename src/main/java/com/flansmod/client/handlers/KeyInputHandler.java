@@ -150,26 +150,36 @@ public class KeyInputHandler
 		if(ridingEntity instanceof IControllable)
 		{
 			IControllable controllable = (IControllable)ridingEntity;
-			if(mc.gameSettings.keyBindForward.isKeyDown())
+			if(mc.gameSettings.keyBindForward.isKeyDown()) {
 				controllable.pressKey(0, player, false);
-			if(mc.gameSettings.keyBindBack.isKeyDown())
+			}
+			if(mc.gameSettings.keyBindBack.isKeyDown()) {
 				controllable.pressKey(1, player, false);
-			if(mc.gameSettings.keyBindLeft.isKeyDown())
+			}
+			if(mc.gameSettings.keyBindLeft.isKeyDown()) {
 				controllable.pressKey(2, player, false);
-			if(mc.gameSettings.keyBindRight.isKeyDown())
+			}
+			if(mc.gameSettings.keyBindRight.isKeyDown()) {
 				controllable.pressKey(3, player, false);
-			if(mc.gameSettings.keyBindJump.isKeyDown())
+			}
+			if(mc.gameSettings.keyBindJump.isKeyDown()) {
 				controllable.pressKey(4, player, false);
-			if(downKey.isKeyDown())
+			}
+			if(downKey.isKeyDown()) {
 				controllable.pressKey(5, player, false);
-			if(secondaryVehicleInteract.isKeyDown())
+			}
+			if(secondaryVehicleInteract.isKeyDown()) {
 				controllable.pressKey(8, player, false);
-			if(primaryVehicleInteract.isKeyDown())
+			}
+			if(primaryVehicleInteract.isKeyDown()) {
 				controllable.pressKey(9, player, false);
-			if(leftRollKey.isKeyDown())
+			}
+			if(leftRollKey.isKeyDown()) {
 				controllable.pressKey(11, player, false);
-			if(rightRollKey.isKeyDown())
+			}
+			if(rightRollKey.isKeyDown()) {
 				controllable.pressKey(12, player, false);
+			}
 		}
 	}
 	
