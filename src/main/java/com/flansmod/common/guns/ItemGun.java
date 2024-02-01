@@ -72,6 +72,8 @@ import com.flansmod.common.teams.EntityGunItem;
 import com.flansmod.common.types.InfoType;
 import com.flansmod.common.vector.Vector3f;
 
+import static com.flansmod.client.FlansModClient.minecraft;
+
 public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptionable
 {
 	public GunType type;
@@ -531,7 +533,15 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 	public void shoot(EnumHand hand, EntityPlayer player, ItemStack gunstack, PlayerData data, World world, @Nullable GunAnimations animations)
 	{
 		if (sprinting) {
-			return;
+			ItemStack itemstackInHand = minecraft.player.inventory.getCurrentItem();
+			Item itemInHand = itemstackInHand.getItem();
+			if (itemInHand instanceof ItemGun) {
+				ItemGun gun = (ItemGun) itemInHand;
+				String name = gun.getTranslationKey();
+				if (!name.equals("item.44_Bazooka") && !name.equals("item.44_PIAT") && !name.equals("item.44_Panzerschreck")) {
+					return;
+				}
+			}
 		}
 		if(type.usableByPlayers)
 		{
