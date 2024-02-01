@@ -341,6 +341,7 @@ public class FlansModClient extends FlansMod
 		// If the currently held item is not a gun or is the wrong gun, unscope
 		ItemStack itemstackInHand = minecraft.player.inventory.getCurrentItem();
 		Item itemInHand = itemstackInHand.getItem();
+		GameSettings gameSettings = FMLClientHandler.instance().getClient().gameSettings;
 		if(currentScope != null)
 		{
 			// If we've opened a GUI page, or we switched weapons, close the current scope
@@ -360,12 +361,13 @@ public class FlansModClient extends FlansMod
 		if(currentScope == null)
 		{
 			zoomProgress *= 0.66F;
+			gameSettings.viewBobbing = true;
 		}
 		else
 		{
 			zoomProgress = 1F - (1F - zoomProgress) * 0.66F;
+			gameSettings.viewBobbing = false;
 		}
-		
 		lastStanceProgress = stanceProgress;
         if (!inPlane) {
         	stanceProgress *= 0.66F;
@@ -391,7 +393,6 @@ public class FlansModClient extends FlansMod
 		{
 			if(currentScope == null)
 			{
-				gameSettings.viewBobbing = false;
 				currentScope = scope;
 				lastZoomLevel = scope.getZoomFactor();
 				lastFOVZoomLevel = scope.getFOVFactor();
@@ -409,9 +410,6 @@ public class FlansModClient extends FlansMod
 				gameSettings.fovSetting = originalFOV;
 			}
 			scopeTime = 10;
-		}
-		else {
-			gameSettings.viewBobbing = true;
 		}
 	}
 	
