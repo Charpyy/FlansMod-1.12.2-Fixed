@@ -7,14 +7,17 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 import com.flansmod.client.FlansModClient;
@@ -29,6 +32,8 @@ import com.flansmod.common.guns.ItemGun;
 import com.flansmod.common.guns.Paintjob;
 import com.flansmod.common.paintjob.PaintableType;
 import com.flansmod.common.vector.Vector3f;
+
+import static com.flansmod.client.FlansModClient.minecraft;
 
 
 public class RenderGun implements CustomItemRenderer
@@ -161,10 +166,22 @@ public class RenderGun implements CustomItemRenderer
 					else if (FlansModClient.zoomProgress + 0.1F < 0.2F && ItemGun.sprinting && !animations.reloading
 							&& !ItemGun.shooting && model.fancyStance)
 					{
-						GlStateManager.rotate(45F + model.stanceRotate.x, 0F + model.stanceRotate.y, 1F, 0F);
-						GlStateManager.rotate(0F - 5F * adsSwitch + model.stanceRotate.z, 0F, 0F, 1F);
-						GlStateManager.translate(-1F, 0.675F + 0.180F * adsSwitch, -1F - 0.395F * adsSwitch);
-
+						ItemStack itemstackInHand = minecraft.player.inventory.getCurrentItem();
+						Item itemInHand = itemstackInHand.getItem();
+						if (itemInHand instanceof ItemGun) {
+							ItemGun gun = (ItemGun) itemInHand;
+							String name = gun.getTranslationKey();
+							if (!name.equals("item.44_Bazooka") && !name.equals("item.44_PIAT") && !name.equals("item.44_Panzerschreck")) {
+								GlStateManager.rotate(45F + model.stanceRotate.x, 0F + model.stanceRotate.y, 1F, 0F);
+								GlStateManager.rotate(0F - 5F * adsSwitch + model.stanceRotate.z, 0F, 0F, 1F);
+								GlStateManager.translate(-1F, 0.675F + 0.180F * adsSwitch, -1F - 0.395F * adsSwitch);
+							}
+							else {
+								GlStateManager.rotate(45F, 0F, 1F, 0F); // Angle nose down slightly -> angle nose up slightly
+								GlStateManager.rotate(0F - 5F * adsSwitch, 0F, 0F, 1F); // Rotate Z nose inward
+								GlStateManager.translate(-1F, 0.675F + 0.180F * adsSwitch, -1F - 0.395F * adsSwitch);
+							}
+						}
 						if (gunType.hasScopeOverlay && !model.stillRenderGunWhenScopedOverlay) {
 							GlStateManager.translate(-0.7F * adsSwitch, -0.12F * adsSwitch, -0.05F * adsSwitch);
 						}
