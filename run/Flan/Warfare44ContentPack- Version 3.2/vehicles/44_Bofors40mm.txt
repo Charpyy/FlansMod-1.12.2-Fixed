@@ -105,5 +105,5 @@ IsExplosionWhenDestroyed true
 //advpaintjob Settings
 //Format is "advpaintjob iconName textureName requiredDyeAmount requiredDyeColour" Multiple colours may be listed in order, seperated by a space
 //Dye colours are "black", "red", "green", "brown", "blue", "purple", "cyan", "silver", "gray", "pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white"
-
+SetPlayerInvisible true
 advpaintjob British 44_Bofors40mm_British 44_Bofors40mm_British gray 3

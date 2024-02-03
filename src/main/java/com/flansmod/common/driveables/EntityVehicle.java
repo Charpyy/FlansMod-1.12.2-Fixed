@@ -3,8 +3,7 @@ package com.flansmod.common.driveables;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.PlayerHandler;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
-import com.flansmod.common.network.PacketDriveableKey;
-import com.flansmod.common.network.PacketParticle;
+import com.flansmod.common.network.*;
 import com.flansmod.common.teams.Team;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -33,8 +32,6 @@ import com.flansmod.client.model.AnimTankTrack;
 import com.flansmod.client.model.AnimTrackLink;
 import com.flansmod.common.FlansMod;
 import com.flansmod.common.RotatedAxes;
-import com.flansmod.common.network.PacketPlaySound;
-import com.flansmod.common.network.PacketVehicleControl;
 import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.vector.Vector3f;
@@ -45,6 +42,7 @@ import java.util.List;
 
 public class EntityVehicle extends EntityDriveable implements IExplodeable
 {
+
 	/**
 	 * Weapon delays
 	 */
@@ -249,7 +247,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				if(i == 0)
 				{
 					shellDelay = (int) type.shootDelayPrimary;
-					FlansMod.proxy.doTutorialStuff(entityplayer, this);
 				}
 				return true;
 			}
@@ -347,17 +344,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				}
 				return true;
 			}
-			case 6: //Exit : Get out
-			{
-				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
-				{
-					getSeat(0).getControllingPassenger().setInvisible(false);
-					//resetZoom();
-					getSeat(0).getControllingPassenger().dismountRidingEntity();
-					PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
-				}
-				return true;
-			}
 			case 7: // Inventory
 			{
 				if (world.isRemote)
@@ -406,6 +392,19 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			{
 				if (getSeats()[0].targetPitch > -getSeats()[0].seatInfo.maxPitch)
 					getSeats()[0].targetPitch -= getSeats()[0].seatInfo.aimingSpeed.y;
+				return true;
+			}
+			case 6: //Exit : Get out
+			{
+				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
+				{
+					getSeat(0).getControllingPassenger().setInvisible(false);
+					//resetZoom();
+					getSeat(0).getControllingPassenger().dismountRidingEntity();
+
+
+					PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
+				}
 				return true;
 			}
 			case 18: //Flare
@@ -506,8 +505,10 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			}
 		}
 
-		if (type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null)
+		if (type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null) {
+			PacketArmor.disableEquipmentPackets(getDriver());
 			getSeats()[0].getControllingPassenger().setInvisible(true);
+		}
 
 		if (this.ticksFlareUsing <= 0) deployedSmoke = false;
 
