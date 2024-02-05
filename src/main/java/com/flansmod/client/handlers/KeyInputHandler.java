@@ -145,7 +145,6 @@ public class KeyInputHandler
 		{
 			return;
 		}
-		
 		Entity ridingEntity = player.getRidingEntity();
 		if(ridingEntity instanceof IControllable)
 		{
@@ -296,6 +295,8 @@ public class KeyInputHandler
 			}
 			if(mc.gameSettings.keyBindSneak.isPressed()) {
 				controllable.pressKey(6, player, true);
+				String message = "§4TU SNEAK ASKIP ?";
+				player.sendMessage( new TextComponentString((message)));
 			}
 		}
 	}
