@@ -400,7 +400,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				{
 					getSeat(0).getControllingPassenger().setInvisible(false);
 					//resetZoom();
-					getSeat(0).getControllingPassenger().dismountRidingEntity();
+					//getSeat(0).getControllingPassenger().dismountRidingEntity();
 
 
 					PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
