@@ -18,6 +18,8 @@ I have only fix a few bugs:
 - Fixed duplicate empty passenger gun slot
 - View Bobbing on aim false
 - Rendering of Rocket launcher while sprinting fixed
+- Custom Armor sneak Fixed
+- KeyInput and MouseInput while driving fixed
 
 for the moment, if you are victim of a bug do an issue
 the original creator doesnt seem to be alive so i just keep the projet up
