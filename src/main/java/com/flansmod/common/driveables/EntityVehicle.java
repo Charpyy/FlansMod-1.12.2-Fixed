@@ -38,11 +38,13 @@ import com.flansmod.common.vector.Vector3f;
 
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class EntityVehicle extends EntityDriveable implements IExplodeable
 {
-
+	private boolean active;
 	/**
 	 * Weapon delays
 	 */
@@ -396,14 +398,18 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			}
 			case 6: //Exit : Get out
 			{
+				active = true;
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
 					getSeat(0).getControllingPassenger().setInvisible(false);
+
+					String message = "visible";
+					player.sendMessage(new TextComponentString(message));
+					player.sendMessage(new TextComponentString(Integer.toString(ticks)));
 					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
-
-
 					PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
+
 				}
 				return true;
 			}
@@ -443,13 +449,12 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			}
 		}
 	}
-
+	public int ticks;
 	@Override
 	public Vector3f getLookVector(ShootPoint shootPoint)
 	{
 		return rotate(getSeat(0).looking.getXAxis());
 	}
-
 	@Override
 	public void onUpdate()
 	{
@@ -504,11 +509,23 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				deployedSmoke = true;
 			}
 		}
-
-		if (type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null) {
-			PacketArmor.disableEquipmentPackets(getDriver());
-			getSeats()[0].getControllingPassenger().setInvisible(true);
+		if (active) {
+			ticks++;
+			if (ticks > 200) {
+				active = false;
+				ticks = 0;
+			}
 		}
+
+		if (!active && type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null) {
+			if (!active){
+				PacketArmor.disableEquipmentPackets(getDriver());
+				getSeats()[0].getControllingPassenger().setInvisible(true);
+				String message = "inv";
+				getDriver().sendMessage(new TextComponentString(message));
+			}
+		}
+
 
 		if (this.ticksFlareUsing <= 0) deployedSmoke = false;
 
