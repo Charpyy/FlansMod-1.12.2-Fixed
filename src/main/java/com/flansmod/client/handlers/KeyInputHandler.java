@@ -293,9 +293,6 @@ public class KeyInputHandler
 			if(toggleCameraPerspective.isKeyDown()) {
 				controllable.pressKey(18, player, true);
 			}
-			if(mc.gameSettings.keyBindSneak.isPressed()) {
-				controllable.pressKey(6, player, true);
-			}
 		}
 	}
 }
