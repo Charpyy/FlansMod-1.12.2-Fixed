@@ -7,6 +7,7 @@ import com.flansmod.common.network.*;
 import com.flansmod.common.teams.Team;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -35,16 +36,13 @@ import com.flansmod.common.RotatedAxes;
 import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.vector.Vector3f;
-
-import java.io.StringWriter;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 
 public class EntityVehicle extends EntityDriveable implements IExplodeable
 {
-	private boolean active;
+	private boolean active = false;
 	/**
 	 * Weapon delays
 	 */
@@ -398,11 +396,10 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			}
 			case 6: //Exit : Get out
 			{
-				active = true;
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
 					getSeat(0).getControllingPassenger().setInvisible(false);
-
+					active = true;
 					String message = "visible";
 					player.sendMessage(new TextComponentString(message));
 					player.sendMessage(new TextComponentString(Integer.toString(ticks)));
@@ -438,7 +435,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		}
 		return false;
 	}
-
 	@SideOnly(Side.CLIENT)
 	public void resetZoom() {
 		if (TeamsManager.allowVehicleZoom) {
@@ -460,16 +456,36 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 	{
 		double bkPrevPosY = this.prevPosY;
 		super.onUpdate();
-
 		if(!readyForUpdates)
 		{
 			return;
 		}
+		VehicleType type = this.getVehicleType();
+		if (!active && type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null) {
+			PacketArmor.disableEquipmentPackets(getDriver());
+			getSeats()[0].getControllingPassenger().setInvisible(true);
+			String message = "inv";
+			getDriver().sendMessage(new TextComponentString(message));
+		}
+		if (active) {
+			ticks++;
+			EntityPlayerSP player = Minecraft.getMinecraft().player;
+			if (player != null) {
+				player.setInvisible(false);
+				String message = "visible";
+				player.sendMessage(new TextComponentString(message));
+			}
+			if (ticks > 10) {
+				active = false;
+				ticks = 0;
+			}
+		}
+
+
 
 		//wheelsYaw -= 1F;
 
 		//Get vehicle type
-		VehicleType type = this.getVehicleType();
 		DriveableData data = getDriveableData();
 		if(type == null)
 		{
@@ -509,22 +525,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				deployedSmoke = true;
 			}
 		}
-		if (active) {
-			ticks++;
-			if (ticks > 200) {
-				active = false;
-				ticks = 0;
-			}
-		}
 
-		if (!active && type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null) {
-			if (!active){
-				PacketArmor.disableEquipmentPackets(getDriver());
-				getSeats()[0].getControllingPassenger().setInvisible(true);
-				String message = "inv";
-				getDriver().sendMessage(new TextComponentString(message));
-			}
-		}
 
 
 		if (this.ticksFlareUsing <= 0) deployedSmoke = false;
