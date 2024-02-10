@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.block.Block;
@@ -53,9 +55,12 @@ import com.flansmod.common.network.PacketTeamInfo;
 import com.flansmod.common.teams.Team;
 import com.flansmod.common.types.InfoType;
 
+import static com.flansmod.common.driveables.EntityVehicle.player;
+
 @SideOnly(Side.CLIENT)
 public class FlansModClient extends FlansMod
 {
+	public static boolean active = false;
 	// Plane / Vehicle control handling
 	/**
 	 * Whether the player has received the vehicle tutorial text
@@ -103,6 +108,8 @@ public class FlansModClient extends FlansMod
 	 * A delayer on the scope button to avoid repeat presses
 	 */
 	public static int scopeTime;
+
+	public static int cameraShake;
 	/**
 	 * The scope that is currently being looked down
 	 */
@@ -278,7 +285,7 @@ public class FlansModClient extends FlansMod
 			}
 		}
 	}
-	
+	public static int ticks;
 	public static void tick()
 	{
 		if(minecraft.player == null || minecraft.world == null)
@@ -300,7 +307,23 @@ public class FlansModClient extends FlansMod
 			log.error("Too many vehicle exceptions, shutting down.");
 			minecraft.shutdown();
 		}
-		
+
+		if (FlansModClient.active) {
+			ticks++;
+
+			if (player != null) {
+				player.setInvisible(false);
+				player.sendMessage(new TextComponentString("visible"));
+			}
+			if (ticks > 15) {
+				FlansModClient.active = false;
+				ticks = 0;
+			}
+		}
+
+		if(cameraShake > 0) {
+			cameraShake--;
+		}
 		// Guns
 		if(scopeTime > 0)
 			scopeTime--;
