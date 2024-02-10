@@ -60,7 +60,6 @@ import static com.flansmod.common.driveables.EntityVehicle.player;
 @SideOnly(Side.CLIENT)
 public class FlansModClient extends FlansMod
 {
-	public static boolean active = false;
 	// Plane / Vehicle control handling
 	/**
 	 * Whether the player has received the vehicle tutorial text
@@ -306,19 +305,6 @@ public class FlansModClient extends FlansMod
 		{
 			log.error("Too many vehicle exceptions, shutting down.");
 			minecraft.shutdown();
-		}
-
-		if (FlansModClient.active) {
-			ticks++;
-
-			if (player != null) {
-				player.setInvisible(false);
-				player.sendMessage(new TextComponentString("visible"));
-			}
-			if (ticks > 15) {
-				FlansModClient.active = false;
-				ticks = 0;
-			}
 		}
 
 		if(cameraShake > 0) {
