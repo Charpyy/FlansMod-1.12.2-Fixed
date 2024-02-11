@@ -13,6 +13,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import com.flansmod.common.vector.Vector2f;
+import com.flansmod.common.vector.Vector3f;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
 
@@ -54,8 +56,6 @@ import com.flansmod.common.guns.ItemGun;
 import com.flansmod.common.network.PacketTeamInfo;
 import com.flansmod.common.teams.Team;
 import com.flansmod.common.types.InfoType;
-
-import static com.flansmod.common.driveables.EntityVehicle.player;
 
 @SideOnly(Side.CLIENT)
 public class FlansModClient extends FlansMod
@@ -289,7 +289,8 @@ public class FlansModClient extends FlansMod
 	{
 		if(minecraft.player == null || minecraft.world == null)
 			return;
-		
+
+		EntityPlayer player = minecraft.player;
 		if(teamInfo != null && teamInfo.timeLeft > 0)
 			teamInfo.timeLeft--;
 		
@@ -299,16 +300,36 @@ public class FlansModClient extends FlansMod
 		if(Keyboard.isKeyDown(Keyboard.KEY_PAUSE))
 			DoTextureTrim();
 		*/
-		
+		//player.setPositionAndRotation(player.posX, player.posY, player.posZ,
+		//		player.rotationYaw + offsetZ,
+		//		player.rotationPitch + offsetX);
 		// Force shutdown if too many vehicles break to prevent save data corruption
 		if(numVehicleExceptions > 2)
 		{
 			log.error("Too many vehicle exceptions, shutting down.");
 			minecraft.shutdown();
 		}
-
-		if(cameraShake > 0) {
-			cameraShake--;
+		if (cameraShake > 0) {
+			ticks++;
+			if (ticks >= 10) {
+				cameraShake--;
+				if (ticks < 3) {
+					float strength = 50.0F;
+					float offsetX = (float) ((Math.random() * 2F - 1F) * strength);
+					float offsetZ = (float) ((Math.random() * 2F - 1F) * strength);
+					player.setPositionAndRotation(player.posX, player.posY, player.posZ,
+							player.rotationYaw + offsetZ,
+							player.rotationPitch + offsetX);
+				}
+				else {
+					float strength = 2.0F;
+					float offsetX = (float) ((Math.random() * 2F - 1F) * strength);
+					float offsetZ = (float) ((Math.random() * 2F - 1F) * strength);
+					player.setPositionAndRotation(player.posX, player.posY, player.posZ,
+							player.rotationYaw + offsetZ,
+							player.rotationPitch + offsetX);
+				}
+			}
 		}
 		// Guns
 		if(scopeTime > 0)
