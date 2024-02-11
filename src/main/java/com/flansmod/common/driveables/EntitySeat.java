@@ -18,6 +18,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -841,6 +842,7 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 				playerPosX = prevPlayerPosX = entityplayer.posX;
 				playerPosY = prevPlayerPosY = entityplayer.posY;
 				playerPosZ = prevPlayerPosZ = entityplayer.posZ;
+				EntityVehicle.invisiblePlayer(entityplayer, true);
 			}
 			else
 			{
