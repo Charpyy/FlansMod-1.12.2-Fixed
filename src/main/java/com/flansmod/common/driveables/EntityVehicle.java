@@ -1,5 +1,6 @@
 package com.flansmod.common.driveables;
 
+import com.flansmod.client.FlansModClient;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.PlayerHandler;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
@@ -16,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -42,7 +44,7 @@ import java.util.List;
 
 public class EntityVehicle extends EntityDriveable implements IExplodeable
 {
-	private boolean active = false;
+
 	/**
 	 * Weapon delays
 	 */
@@ -398,11 +400,11 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			{
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
-					getSeat(0).getControllingPassenger().setInvisible(false);
-					active = true;
-					String message = "visible";
-					player.sendMessage(new TextComponentString(message));
-					player.sendMessage(new TextComponentString(Integer.toString(ticks)));
+					Entity passenger = getSeat(0).getControllingPassenger();
+					if (passenger instanceof EntityPlayer) {
+						EntityPlayer playerI = (EntityPlayer) passenger;
+						EntityVehicle.invisiblePlayer(playerI, false);
+					}
 					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
 					PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
@@ -445,12 +447,23 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			}
 		}
 	}
-	public int ticks;
+	public static void invisiblePlayer(EntityPlayer player, boolean invisible) {
+		if (invisible) {
+			//PacketArmor.disableEquipmentPackets(player);
+			player.setInvisible(true);
+			player.sendMessage(new TextComponentString("inv"));
+		}
+		else {
+			player.setInvisible(false);
+			player.sendMessage(new TextComponentString("visible"));
+		}
+	}
 	@Override
 	public Vector3f getLookVector(ShootPoint shootPoint)
 	{
 		return rotate(getSeat(0).looking.getXAxis());
 	}
+	public int ticks;
 	@Override
 	public void onUpdate()
 	{
@@ -461,28 +474,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			return;
 		}
 		VehicleType type = this.getVehicleType();
-		if (!active && type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null) {
-			PacketArmor.disableEquipmentPackets(getDriver());
-			getSeats()[0].getControllingPassenger().setInvisible(true);
-			String message = "inv";
-			getDriver().sendMessage(new TextComponentString(message));
-		}
-		if (active) {
-			ticks++;
-			EntityPlayerSP player = Minecraft.getMinecraft().player;
-			if (player != null) {
-				player.setInvisible(false);
-				String message = "visible";
-				player.sendMessage(new TextComponentString(message));
-			}
-			if (ticks > 10) {
-				active = false;
-				ticks = 0;
-			}
-		}
-
-
-
 		//wheelsYaw -= 1F;
 
 		//Get vehicle type
@@ -1339,7 +1330,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 
 			if(!driveableDeathByHandEvent.isCanceled()) {
 				if (!world.isRemote && damagesource.getTrueSource() instanceof EntityPlayer) {
-					FlansMod.log("Player %s broke vehicle %s (%d) at (%f, %f, %f)", ((EntityPlayerMP) damagesource.getTrueSource()).getDisplayName(), type.shortName, getEntityId(), posX, posY, posZ);
+					//FlansMod.log("Player %s broke vehicle %s (%d) at (%f, %f, %f)", ((EntityPlayerMP) damagesource.getTrueSource()).getDisplayName(), type.shortName, getEntityId(), posX, posY, posZ);
 				}
 				entityDropItem(vehicleStack, 0.5F);
 				setDead();
