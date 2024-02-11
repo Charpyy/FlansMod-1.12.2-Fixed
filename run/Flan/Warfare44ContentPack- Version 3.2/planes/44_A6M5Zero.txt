@@ -129,5 +129,5 @@ ShootParticlesPrimary flansmod.fmflame 0 0 0
 //advpaintjob Settings
 //Format is "advpaintjob iconName textureName requiredDyeAmount requiredDyeColour" Multiple colours may be listed in order, seperated by a space
 //Dye colours are "black", "red", "green", "brown", "blue", "purple", "cyan", "silver", "gray", "pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white"
-
+SetPlayerInvisible true
 advpaintjob Green 44_A6M5Zero_Green 44_A6M5Zero_Green AddDye 4 green
