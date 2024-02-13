@@ -1,6 +1,5 @@
 package com.flansmod.common.driveables;
 
-import com.flansmod.client.FlansModClient;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.PlayerHandler;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
@@ -8,7 +7,7 @@ import com.flansmod.common.network.*;
 import com.flansmod.common.teams.Team;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -17,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -38,6 +36,8 @@ import com.flansmod.common.RotatedAxes;
 import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.vector.Vector3f;
+import org.lwjgl.input.Keyboard;
+
 import java.util.List;
 
 
@@ -400,14 +400,14 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			{
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
-					Entity passenger = getSeat(0).getControllingPassenger();
-					if (passenger instanceof EntityPlayer) {
-						EntityPlayer playerI = (EntityPlayer) passenger;
-						EntityVehicle.invisiblePlayer(playerI, false);
-					}
-					//resetZoom();
+					//int time = 100;
+					//for (int i = 0; i < 100; i++) {
+					//	getSeat(0).getControllingPassenger().setInvisible(false);
+					//	getSeat(0).getControllingPassenger().sendMessage(new TextComponentString("visible"));
+					//}
+					////resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
-					PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
+					//PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
 
 				}
 				return true;
@@ -447,23 +447,16 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			}
 		}
 	}
-	public static void invisiblePlayer(EntityPlayer player, boolean invisible) {
-		if (invisible) {
-			//PacketArmor.disableEquipmentPackets(player);
-			player.setInvisible(true);
-			player.sendMessage(new TextComponentString("inv"));
-		}
-		else {
-			player.setInvisible(false);
-			player.sendMessage(new TextComponentString("visible"));
-		}
-	}
 	@Override
 	public Vector3f getLookVector(ShootPoint shootPoint)
 	{
 		return rotate(getSeat(0).looking.getXAxis());
 	}
 	public int ticks;
+	public static class KeyBindings {
+		public static final KeyBinding SNEAK = new KeyBinding("key.sneak", Keyboard.KEY_LSHIFT, "key.categories.movement");
+	}
+	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
 	{
@@ -474,10 +467,23 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			return;
 		}
 		VehicleType type = this.getVehicleType();
-		//wheelsYaw -= 1F;
-
 		//Get vehicle type
 		DriveableData data = getDriveableData();
+		//wheelsYaw -= 1F;
+		if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+			getSeat(0).getControllingPassenger().setInvisible(true);
+			Entity passenger = getSeat(0).getControllingPassenger();
+			if (passenger instanceof EntityPlayer) {
+				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
+			}
+		}
+		if (KeyBindings.SNEAK.isKeyDown()) {
+			if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+				if (driver != null) {
+					driver.setInvisible(false);
+				}
+			}
+		}
 		if(type == null)
 		{
 			FlansMod.log.warn("Vehicle type null. Not ticking vehicle");
