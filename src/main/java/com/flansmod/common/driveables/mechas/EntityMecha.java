@@ -3,6 +3,7 @@ package com.flansmod.common.driveables.mechas;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.flansmod.common.driveables.*;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
 import com.flansmod.common.eventhandlers.GunFiredEvent;
 import com.flansmod.common.guns.*;
@@ -15,6 +16,7 @@ import io.vavr.control.Option;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -47,12 +49,6 @@ import com.flansmod.client.debug.EntityDebugVector;
 import com.flansmod.client.model.GunAnimations;
 import com.flansmod.common.FlansMod;
 import com.flansmod.common.RotatedAxes;
-import com.flansmod.common.driveables.DriveableData;
-import com.flansmod.common.driveables.DriveablePart;
-import com.flansmod.common.driveables.DriveableType;
-import com.flansmod.common.driveables.EntityDriveable;
-import com.flansmod.common.driveables.EntitySeat;
-import com.flansmod.common.driveables.EnumDriveablePart;
 import com.flansmod.common.network.PacketDriveableDamage;
 import com.flansmod.common.network.PacketDriveableGUI;
 import com.flansmod.common.network.PacketMechaControl;
@@ -61,6 +57,7 @@ import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.vector.Vector3f;
 import com.flansmod.common.vector.Vector3i;
+import org.lwjgl.input.Keyboard;
 
 import static com.flansmod.common.util.BlockUtil.destroyBlock;
 
@@ -597,7 +594,7 @@ public class EntityMecha extends EntityDriveable
 
 		return penetratingPower;
 	}
-	
+	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
 	{
@@ -741,9 +738,20 @@ public class EntityMecha extends EntityDriveable
 			stompDelay--;
 
 		prevLegsYaw = legAxes.getYaw();
-
-		if (type.setPlayerInvisible && !this.world.isRemote && getSeats()[0].getControllingPassenger() != null)
-			getSeats()[0].getControllingPassenger().setInvisible(true);
+		if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+			getSeat(0).getControllingPassenger().setInvisible(true);
+			Entity passenger = getSeat(0).getControllingPassenger();
+			if (passenger instanceof EntityPlayer) {
+				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
+			}
+		}
+		if (EntityVehicle.KeyBindings.SNEAK.isKeyDown()) {
+			if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+				if (driver != null) {
+					driver.setInvisible(false);
+				}
+			}
+		}
 
 		// Abilities
 		autoRepair(playerDriver, isCreative, data);
