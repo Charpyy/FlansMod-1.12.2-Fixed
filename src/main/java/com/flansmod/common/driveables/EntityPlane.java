@@ -425,9 +425,6 @@ public class EntityPlane extends EntityDriveable
 		super.updateKeyHeldState(key, held);
 	}
 	public int ticks;
-	public static class KeyBindings {
-		public static final KeyBinding SNEAK = new KeyBinding("key.sneak", Keyboard.KEY_LSHIFT, "key.categories.movement");
-	}
 	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
