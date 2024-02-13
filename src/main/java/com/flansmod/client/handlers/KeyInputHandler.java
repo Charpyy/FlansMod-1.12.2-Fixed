@@ -110,7 +110,9 @@ public class KeyInputHandler {
 			FlansKeyConflictContext.VEHICLE,
 			Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(),
 			"key.flansmod.category");
-	public static final KeyBinding SNEAK = new KeyBinding("key.sneak", Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), "key.categories.movement");
+	public static KeyBinding SNEAK = new KeyBinding("key.sneak.desc",
+			Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),
+			"key.categories.movement");
 	private Minecraft mc;
 
 	KeyInputHandler() {
@@ -132,9 +134,10 @@ public class KeyInputHandler {
 		ClientRegistry.registerKeyBinding(reloadModelsKey);
 		ClientRegistry.registerKeyBinding(primaryVehicleInteract);
 		ClientRegistry.registerKeyBinding(secondaryVehicleInteract);
+		ClientRegistry.registerKeyBinding(SNEAK);
 		mc = Minecraft.getMinecraft();
 	}
-
+public static boolean active;
 	void checkTickKeys() {
 		EntityPlayer player = mc.player;
 		if (player == null) {
@@ -143,6 +146,15 @@ public class KeyInputHandler {
 		Entity ridingEntity = player.getRidingEntity();
 		if (ridingEntity instanceof IControllable) {
 			IControllable controllable = (IControllable) ridingEntity;
+			if (SNEAK.isKeyDown()) {
+				controllable.pressKey(6, player, false);
+				mc.player.setSneaking(true);
+				active = true;
+			}
+			else {
+				mc.player.setSneaking(false);
+				active = false;
+			}
 			if (mc.gameSettings.keyBindForward.isKeyDown()) {
 				controllable.pressKey(0, player, false);
 			}
@@ -176,11 +188,12 @@ public class KeyInputHandler {
 		}
 	}
 
-	public static boolean isSneak;
 
 
 	void checkEventKeys()
 	{
+
+
 		if(FMLClientHandler.instance().isGUIOpen(GuiChat.class) || mc.currentScreen != null)
 			return;
 		
@@ -289,11 +302,6 @@ public class KeyInputHandler {
 			}
 			if(toggleCameraPerspective.isKeyDown()) {
 				controllable.pressKey(18, player, true);
-			}
-			isSneak = SNEAK.isPressed();
-
-			if (isSneak) {
-				controllable.pressKey(6, player, true);
 			}
 			//if(mc.gameSettings.keyBindSneak.isPressed()) {
 			//	controllable.pressKey(6, player, true);
