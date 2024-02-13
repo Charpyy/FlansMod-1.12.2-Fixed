@@ -33,8 +33,7 @@ import com.flansmod.common.network.PacketReload;
 import com.flansmod.common.network.PacketRequestDebug;
 
 @SideOnly(value = Side.CLIENT)
-public class KeyInputHandler
-{
+public class KeyInputHandler {
 	public static KeyBinding downKey = new KeyBinding("key.pitchDown.desc",
 			FlansKeyConflictContext.VEHICLE,
 			Keyboard.KEY_LCONTROL,
@@ -111,11 +110,10 @@ public class KeyInputHandler
 			FlansKeyConflictContext.VEHICLE,
 			Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(),
 			"key.flansmod.category");
-	
+	public static final KeyBinding SNEAK = new KeyBinding("key.sneak", Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), "key.categories.movement");
 	private Minecraft mc;
-	
-	KeyInputHandler()
-	{
+
+	KeyInputHandler() {
 		ClientRegistry.registerKeyBinding(downKey);
 		ClientRegistry.registerKeyBinding(vehicleMenuKey);
 		ClientRegistry.registerKeyBinding(bombKey);
@@ -134,61 +132,60 @@ public class KeyInputHandler
 		ClientRegistry.registerKeyBinding(reloadModelsKey);
 		ClientRegistry.registerKeyBinding(primaryVehicleInteract);
 		ClientRegistry.registerKeyBinding(secondaryVehicleInteract);
-		
 		mc = Minecraft.getMinecraft();
 	}
-	
-	void checkTickKeys()
-	{
+
+	void checkTickKeys() {
 		EntityPlayer player = mc.player;
-		if(player == null)
-		{
+		if (player == null) {
 			return;
 		}
 		Entity ridingEntity = player.getRidingEntity();
-		if(ridingEntity instanceof IControllable)
-		{
-			IControllable controllable = (IControllable)ridingEntity;
-			if(mc.gameSettings.keyBindForward.isKeyDown()) {
+		if (ridingEntity instanceof IControllable) {
+			IControllable controllable = (IControllable) ridingEntity;
+			if (mc.gameSettings.keyBindForward.isKeyDown()) {
 				controllable.pressKey(0, player, false);
 			}
-			if(mc.gameSettings.keyBindBack.isKeyDown()) {
+			if (mc.gameSettings.keyBindBack.isKeyDown()) {
 				controllable.pressKey(1, player, false);
 			}
-			if(mc.gameSettings.keyBindLeft.isKeyDown()) {
+			if (mc.gameSettings.keyBindLeft.isKeyDown()) {
 				controllable.pressKey(2, player, false);
 			}
-			if(mc.gameSettings.keyBindRight.isKeyDown()) {
+			if (mc.gameSettings.keyBindRight.isKeyDown()) {
 				controllable.pressKey(3, player, false);
 			}
-			if(mc.gameSettings.keyBindJump.isKeyDown()) {
+			if (mc.gameSettings.keyBindJump.isKeyDown()) {
 				controllable.pressKey(4, player, false);
 			}
-			if(downKey.isKeyDown()) {
+			if (downKey.isKeyDown()) {
 				controllable.pressKey(5, player, false);
 			}
-			if(secondaryVehicleInteract.isKeyDown()) {
+			if (secondaryVehicleInteract.isKeyDown()) {
 				controllable.pressKey(8, player, false);
 			}
-			if(primaryVehicleInteract.isKeyDown()) {
+			if (primaryVehicleInteract.isKeyDown()) {
 				controllable.pressKey(9, player, false);
 			}
-			if(leftRollKey.isKeyDown()) {
+			if (leftRollKey.isKeyDown()) {
 				controllable.pressKey(11, player, false);
 			}
-			if(rightRollKey.isKeyDown()) {
+			if (rightRollKey.isKeyDown()) {
 				controllable.pressKey(12, player, false);
 			}
 		}
 	}
-	
+
+	public static boolean isSneak;
+
+
 	void checkEventKeys()
 	{
 		if(FMLClientHandler.instance().isGUIOpen(GuiChat.class) || mc.currentScreen != null)
 			return;
 		
 		EntityPlayer player = mc.player;
-		
+
 		if(teamsMenuKey.isPressed())
 		{
 			mc.displayGuiScreen(new GuiLandingPage());
@@ -293,9 +290,14 @@ public class KeyInputHandler
 			if(toggleCameraPerspective.isKeyDown()) {
 				controllable.pressKey(18, player, true);
 			}
-			if(mc.gameSettings.keyBindSneak.isPressed()) {
+			isSneak = SNEAK.isPressed();
+
+			if (isSneak) {
 				controllable.pressKey(6, player, true);
 			}
+			//if(mc.gameSettings.keyBindSneak.isPressed()) {
+			//	controllable.pressKey(6, player, true);
+			//}
 		}
 	}
 }
