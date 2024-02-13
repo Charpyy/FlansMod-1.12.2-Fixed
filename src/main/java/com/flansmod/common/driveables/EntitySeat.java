@@ -842,7 +842,6 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 				playerPosX = prevPlayerPosX = entityplayer.posX;
 				playerPosY = prevPlayerPosY = entityplayer.posY;
 				playerPosZ = prevPlayerPosZ = entityplayer.posZ;
-				//EntityVehicle.invisiblePlayer(entityplayer, true);
 			}
 			else
 			{
