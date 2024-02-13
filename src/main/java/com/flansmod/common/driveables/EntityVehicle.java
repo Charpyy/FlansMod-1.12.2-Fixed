@@ -405,12 +405,10 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 					//int time = 100;
 					//for (int i = 0; i < 100; i++) {
 					getSeat(0).getControllingPassenger().setInvisible(false);
-					//getSeat(0).getControllingPassenger().sendMessage(new TextComponentString("visible"));
 					//}
 					////resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
 					//PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
-
 				}
 				return true;
 			}
@@ -454,8 +452,8 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 	{
 		return rotate(getSeat(0).looking.getXAxis());
 	}
+
 	public int ticks;
-	//boolean sneak = KeyInputHandler.isSneak;
 	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
@@ -470,13 +468,11 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		//Get vehicle type
 		DriveableData data = getDriveableData();
 		//wheelsYaw -= 1F;
-		if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+
+		if(!KeyInputHandler.active && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			getSeat(0).getControllingPassenger().setInvisible(true);
-			Entity passenger = getSeat(0).getControllingPassenger();
-			if (passenger instanceof EntityPlayer) {
-				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
-			}
 		}
+
 		//if (sneak) {
 		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 		//		if (driver != null) {
