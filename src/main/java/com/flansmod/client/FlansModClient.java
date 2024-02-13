@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import com.flansmod.common.vector.Vector2f;
 import com.flansmod.common.vector.Vector3f;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
 
@@ -164,7 +165,10 @@ public class FlansModClient extends FlansMod
     public static boolean hitMarkerExplosion = false;
 	
 	private static WorldRenderer wr;
-	
+
+
+
+
 	public static WorldRenderer getWorldRenderer()
 	{
 		return wr;
@@ -284,6 +288,7 @@ public class FlansModClient extends FlansMod
 			}
 		}
 	}
+
 	public static int ticks;
 	public static void tick()
 	{
