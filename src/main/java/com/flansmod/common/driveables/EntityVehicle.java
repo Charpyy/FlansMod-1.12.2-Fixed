@@ -1,5 +1,7 @@
 package com.flansmod.common.driveables;
 
+import com.flansmod.client.FlansModClient;
+import com.flansmod.client.handlers.KeyInputHandler;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.PlayerHandler;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
@@ -402,8 +404,8 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				{
 					//int time = 100;
 					//for (int i = 0; i < 100; i++) {
-					//	getSeat(0).getControllingPassenger().setInvisible(false);
-					//	getSeat(0).getControllingPassenger().sendMessage(new TextComponentString("visible"));
+					getSeat(0).getControllingPassenger().setInvisible(false);
+					//getSeat(0).getControllingPassenger().sendMessage(new TextComponentString("visible"));
 					//}
 					////resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
@@ -453,9 +455,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		return rotate(getSeat(0).looking.getXAxis());
 	}
 	public int ticks;
-	public static class KeyBindings {
-		public static final KeyBinding SNEAK = new KeyBinding("key.sneak", Keyboard.KEY_LSHIFT, "key.categories.movement");
-	}
+	//boolean sneak = KeyInputHandler.isSneak;
 	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
@@ -477,13 +477,13 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
 			}
 		}
-		if (KeyBindings.SNEAK.isKeyDown()) {
-			if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-				if (driver != null) {
-					driver.setInvisible(false);
-				}
-			}
-		}
+		//if (sneak) {
+		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		//		if (driver != null) {
+		//			driver.setInvisible(false);
+		//		}
+		//	}
+		//}
 		if(type == null)
 		{
 			FlansMod.log.warn("Vehicle type null. Not ticking vehicle");
