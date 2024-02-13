@@ -3,6 +3,8 @@ package com.flansmod.common.driveables.mechas;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.flansmod.client.FlansModClient;
+import com.flansmod.client.handlers.KeyInputHandler;
 import com.flansmod.common.driveables.*;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
 import com.flansmod.common.eventhandlers.GunFiredEvent;
@@ -594,6 +596,7 @@ public class EntityMecha extends EntityDriveable
 
 		return penetratingPower;
 	}
+	//boolean sneak = KeyInputHandler.isSneak;
 	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
@@ -745,13 +748,13 @@ public class EntityMecha extends EntityDriveable
 				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
 			}
 		}
-		if (EntityVehicle.KeyBindings.SNEAK.isKeyDown()) {
-			if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-				if (driver != null) {
-					driver.setInvisible(false);
-				}
-			}
-		}
+		//if (sneak) {
+		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		//		if (driver != null) {
+		//			driver.setInvisible(false);
+		//		}
+		//	}
+		//}
 
 		// Abilities
 		autoRepair(playerDriver, isCreative, data);
