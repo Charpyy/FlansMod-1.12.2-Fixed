@@ -1,5 +1,7 @@
 package com.flansmod.common.driveables;
 
+import com.flansmod.client.FlansModClient;
+import com.flansmod.client.handlers.KeyInputHandler;
 import com.flansmod.client.model.animation.AnimationController;
 import com.flansmod.common.RotatedAxes;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
@@ -426,6 +428,7 @@ public class EntityPlane extends EntityDriveable
 	}
 	public int ticks;
 	public EntityPlayer driver;
+	//boolean sneak = KeyInputHandler.isSneak;
 	@Override
 	public void onUpdate()
 	{
@@ -489,13 +492,13 @@ public class EntityPlane extends EntityDriveable
 				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
 			}
 		}
-		if (EntityVehicle.KeyBindings.SNEAK.isKeyDown()) {
-			if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-				if (driver != null) {
-					driver.setInvisible(false);
-				}
-			}
-		}
+		//if (sneak) {
+		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		//		if (driver != null) {
+		//			driver.setInvisible(false);
+		//		}
+		//	}
+		//}
 
 		if(type == null)
 		{
