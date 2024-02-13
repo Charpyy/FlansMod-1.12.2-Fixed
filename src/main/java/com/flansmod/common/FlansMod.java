@@ -1,8 +1,6 @@
 package com.flansmod.common;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -21,7 +19,6 @@ import com.flansmod.common.types.IGunboxDescriptionable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.event.AnvilUpdateEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -455,7 +452,6 @@ public class FlansMod
 		proxy.init();
 		if(enchantmentModuleEnabled)
 			enchantmentModule.Init();
-		
 		//Initialising handlers
 		packetHandler.initialise();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new CommonGuiHandler());
