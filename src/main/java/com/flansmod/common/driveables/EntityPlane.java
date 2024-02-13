@@ -4,6 +4,8 @@ import com.flansmod.client.model.animation.AnimationController;
 import com.flansmod.common.RotatedAxes;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
 import com.flansmod.common.network.*;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,6 +26,7 @@ import com.flansmod.common.teams.TeamsManager;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.vector.Matrix4f;
 import com.flansmod.common.vector.Vector3f;
+import org.lwjgl.input.Keyboard;
 
 public class EntityPlane extends EntityDriveable
 {
@@ -295,8 +298,12 @@ public class EntityPlane extends EntityDriveable
 			case 6: //Exit : Get out
 			{
 				if (getSeats()[0].getControllingPassenger() != null) {
-					getSeats()[0].getControllingPassenger().setInvisible(false);
-					getSeats()[0].getControllingPassenger().dismountRidingEntity();
+					Entity passenger = getSeat(0).getControllingPassenger();
+					if (passenger instanceof EntityPlayer) {
+						EntityPlayer playerA = (EntityPlayer) passenger;
+						getSeats()[0].getControllingPassenger().setInvisible(false);
+						getSeats()[0].getControllingPassenger().dismountRidingEntity();
+					}
 				}
 
 				return true;
@@ -417,7 +424,11 @@ public class EntityPlane extends EntityDriveable
 	{
 		super.updateKeyHeldState(key, held);
 	}
-	
+	public int ticks;
+	public static class KeyBindings {
+		public static final KeyBinding SNEAK = new KeyBinding("key.sneak", Keyboard.KEY_LSHIFT, "key.categories.movement");
+	}
+	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
 	{
@@ -474,6 +485,21 @@ public class EntityPlane extends EntityDriveable
 		//Get plane type
 		PlaneType type = getPlaneType();
 		DriveableData data = getDriveableData();
+		if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+			getSeat(0).getControllingPassenger().setInvisible(true);
+			Entity passenger = getSeat(0).getControllingPassenger();
+			if (passenger instanceof EntityPlayer) {
+				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
+			}
+		}
+		if (EntityVehicle.KeyBindings.SNEAK.isKeyDown()) {
+			if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+				if (driver != null) {
+					driver.setInvisible(false);
+				}
+			}
+		}
+
 		if(type == null)
 		{
 			FlansMod.log.warn("Plane type null. Not ticking plane");
@@ -484,10 +510,6 @@ public class EntityPlane extends EntityDriveable
 		boolean thePlayerIsDrivingThis =
 				world.isRemote && getSeat(0) != null && getSeat(0).getControllingPassenger() instanceof EntityPlayer
 						&& FlansMod.proxy.isThePlayer((EntityPlayer)getSeat(0).getControllingPassenger());
-
-		if (type.setPlayerInvisible && !this.world.isRemote && getSeat(0).getControllingPassenger() != null)
-			getSeat(0).getControllingPassenger().setInvisible(true);
-		
 		//Despawning
 		ticksSinceUsed++;
 		if(!world.isRemote && getSeat(0).getControllingPassenger() != null)
