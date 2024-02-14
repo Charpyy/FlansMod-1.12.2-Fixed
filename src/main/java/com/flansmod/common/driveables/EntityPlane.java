@@ -32,6 +32,7 @@ import org.lwjgl.input.Keyboard;
 
 public class EntityPlane extends EntityDriveable
 {
+	private boolean invisible;
 	/**
 	 * The flap positions, used for rendering and for controlling the plane rotations
 	 */
@@ -300,12 +301,8 @@ public class EntityPlane extends EntityDriveable
 			case 6: //Exit : Get out
 			{
 				if (getSeats()[0].getControllingPassenger() != null) {
-					Entity passenger = getSeat(0).getControllingPassenger();
-					if (passenger instanceof EntityPlayer) {
-						EntityPlayer playerA = (EntityPlayer) passenger;
-						getSeats()[0].getControllingPassenger().setInvisible(false);
-						getSeats()[0].getControllingPassenger().dismountRidingEntity();
-					}
+					getSeats()[0].getControllingPassenger().setInvisible(false);
+					invisible = false;
 				}
 
 				return true;
@@ -485,12 +482,11 @@ public class EntityPlane extends EntityDriveable
 		//Get plane type
 		PlaneType type = getPlaneType();
 		DriveableData data = getDriveableData();
-		if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+			invisible = true;
+		}
+		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			getSeat(0).getControllingPassenger().setInvisible(true);
-			Entity passenger = getSeat(0).getControllingPassenger();
-			if (passenger instanceof EntityPlayer) {
-				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
-			}
 		}
 		//if (sneak) {
 		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
