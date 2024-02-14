@@ -65,6 +65,7 @@ import static com.flansmod.common.util.BlockUtil.destroyBlock;
 
 public class EntityMecha extends EntityDriveable
 {
+	private boolean invisible;
 	private int ticksSinceUsed;
 	public int toggleTimer = 0;
 	protected float moveX = 0;
@@ -274,6 +275,15 @@ public class EntityMecha extends EntityDriveable
 		//send keys which require server side updates to the server
 		switch(key)
 		{
+			case 6: //Exit : Get out
+			{
+				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
+				{
+					invisible = false;
+					getSeat(0).getControllingPassenger().setInvisible(false);
+				}
+				return true;
+			}
 			case 4: //Jump
 			{
 				boolean canThrustCreatively = getSeat(0) != null && getSeat(0).getControllingPassenger() instanceof EntityPlayer
@@ -741,12 +751,11 @@ public class EntityMecha extends EntityDriveable
 			stompDelay--;
 
 		prevLegsYaw = legAxes.getYaw();
-		if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+			invisible = true;
+		}
+		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			getSeat(0).getControllingPassenger().setInvisible(true);
-			Entity passenger = getSeat(0).getControllingPassenger();
-			if (passenger instanceof EntityPlayer) {
-				driver = (EntityPlayer) getSeat(0).getControllingPassenger();
-			}
 		}
 		//if (sneak) {
 		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
