@@ -46,7 +46,7 @@ import java.util.List;
 
 public class EntityVehicle extends EntityDriveable implements IExplodeable
 {
-
+	private boolean invisible;
 	/**
 	 * Weapon delays
 	 */
@@ -402,9 +402,12 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			{
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
+					ticks = 0;
 					//int time = 100;
 					//for (int i = 0; i < 100; i++) {
+					invisible = false;
 					getSeat(0).getControllingPassenger().setInvisible(false);
+					player.sendStatusMessage(new TextComponentString("§cLeaving Vehicle"), true);
 					//}
 					////resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
@@ -454,7 +457,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 	}
 
 	public int ticks;
-	public EntityPlayer driver;
 	@Override
 	public void onUpdate()
 	{
@@ -464,15 +466,18 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		{
 			return;
 		}
+		//tu sors du véhicule -> invisible false parce que tu devient visible
+		//sauf que quand tu rentres dans e véhicule
 		VehicleType type = this.getVehicleType();
 		//Get vehicle type
 		DriveableData data = getDriveableData();
 		//wheelsYaw -= 1F;
-
-		if(!KeyInputHandler.active && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+			invisible = true;
+		}
+		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			getSeat(0).getControllingPassenger().setInvisible(true);
 		}
-
 		//if (sneak) {
 		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 		//		if (driver != null) {
