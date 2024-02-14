@@ -404,6 +404,8 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				{
 					invisible = false;
 					getSeat(0).getControllingPassenger().setInvisible(false);
+					ArmorInvisible.setArmor(player, false);
+					armor = false;
 					//}
 					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
@@ -451,7 +453,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 	{
 		return rotate(getSeat(0).looking.getXAxis());
 	}
-
+	public boolean armor;
 	public int ticks;
 	@Override
 	public void onUpdate()
@@ -468,6 +470,16 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		//Get vehicle type
 		DriveableData data = getDriveableData();
 		//wheelsYaw -= 1F;
+		if (!armor) {
+			//fix le faite que sa s'active 2 fois comme le problème de l'invisibilité avant
+			invisible = true;
+			Entity passenger = getSeat(0).getControllingPassenger();
+			if (passenger instanceof EntityPlayer) {
+				EntityPlayer driver = (EntityPlayer) passenger;
+				ArmorInvisible.setArmor(driver, true);
+				armor = true;
+			}
+		}
 		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			invisible = true;
 		}
