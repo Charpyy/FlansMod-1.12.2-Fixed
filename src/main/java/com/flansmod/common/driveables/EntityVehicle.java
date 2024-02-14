@@ -407,7 +407,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 					//for (int i = 0; i < 100; i++) {
 					invisible = false;
 					getSeat(0).getControllingPassenger().setInvisible(false);
-					player.sendStatusMessage(new TextComponentString("§cLeaving Vehicle"), true);
+					player.sendStatusMessage(new TextComponentString("§4Leaving Vehicle"), true);
 					//}
 					////resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
