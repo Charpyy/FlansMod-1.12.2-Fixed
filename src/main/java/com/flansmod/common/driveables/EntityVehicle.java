@@ -402,14 +402,10 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			{
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
-					ticks = 0;
-					//int time = 100;
-					//for (int i = 0; i < 100; i++) {
 					invisible = false;
 					getSeat(0).getControllingPassenger().setInvisible(false);
-					player.sendStatusMessage(new TextComponentString("§4Leaving Vehicle"), true);
 					//}
-					////resetZoom();
+					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
 					//PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
 				}
