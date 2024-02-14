@@ -405,7 +405,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 					invisible = false;
 					getSeat(0).getControllingPassenger().setInvisible(false);
 					ArmorInvisible.setArmor(player, false);
-					armor = false;
 					//}
 					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
@@ -453,46 +452,35 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 	{
 		return rotate(getSeat(0).looking.getXAxis());
 	}
-	public boolean armor;
 	public int ticks;
+	public static boolean bite;
 	@Override
-	public void onUpdate()
-	{
+	public void onUpdate() {
 		double bkPrevPosY = this.prevPosY;
 		super.onUpdate();
-		if(!readyForUpdates)
-		{
+		if (!readyForUpdates) {
 			return;
 		}
-		//tu sors du véhicule -> invisible false parce que tu devient visible
-		//sauf que quand tu rentres dans e véhicule
 		VehicleType type = this.getVehicleType();
-		//Get vehicle type
-		DriveableData data = getDriveableData();
-		//wheelsYaw -= 1F;
-		if (!armor) {
-			//fix le faite que sa s'active 2 fois comme le problème de l'invisibilité avant
-			invisible = true;
+		if (type.setPlayerInvisible && bite) {
 			Entity passenger = getSeat(0).getControllingPassenger();
 			if (passenger instanceof EntityPlayer) {
 				EntityPlayer driver = (EntityPlayer) passenger;
 				ArmorInvisible.setArmor(driver, true);
-				armor = true;
+				bite = false;
 			}
 		}
+		//tu sors du véhicule -> invisible false parce que tu devient visible
+		//sauf que quand tu rentres dans e véhicule
+		//Get vehicle type
+		DriveableData data = getDriveableData();
+		//wheelsYaw -= 1F;
 		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			invisible = true;
 		}
 		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 			getSeat(0).getControllingPassenger().setInvisible(true);
 		}
-		//if (sneak) {
-		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-		//		if (driver != null) {
-		//			driver.setInvisible(false);
-		//		}
-		//	}
-		//}
 		if(type == null)
 		{
 			FlansMod.log.warn("Vehicle type null. Not ticking vehicle");
