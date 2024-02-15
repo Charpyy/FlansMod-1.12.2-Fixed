@@ -1,36 +1,43 @@
 package com.flansmod.common.driveables;
 
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+@Mod.EventBusSubscriber
 public class ArmorInvisible {
-	public static void setArmorVisibility(EntityPlayer player, boolean invisible) {
-		for (ItemStack armorPiece : player.inventory.armorInventory) {
-			if (armorPiece.isEmpty()) continue;
-			NBTTagCompound tagCompound = armorPiece.getTagCompound();
-			if (tagCompound == null) {
-				tagCompound = new NBTTagCompound();
-				armorPiece.setTagCompound(tagCompound);
+	private static boolean invisible = false;
+	private static EntityPlayer targetPlayer = null;
+	public static void init() {
+		MinecraftForge.EVENT_BUS.register(ArmorInvisible.class);
+	}
+	public static void setArmor(EntityPlayer player, boolean value) {
+		targetPlayer = player;
+		invisible = value;
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onRenderLiving(RenderLivingEvent.Pre<EntityPlayer> event) {
+		if (invisible && targetPlayer != null && event.getEntity() == targetPlayer) {
+			EntityLivingBase player1 = event.getEntity();
+			if (player1 instanceof EntityPlayer) {
+				EntityPlayer player =(EntityPlayer) event.getEntity();
+				GlStateManager.pushMatrix();
+				GlStateManager.colorMask(false, false, false, false);
 			}
-			tagCompound.setBoolean("HideFlags", invisible);
 		}
 	}
 
-	public static void setArmor(EntityPlayer player, boolean invisible) {
-		if (invisible) {
-			setArmorVisibility(player, true);
-			player.sendMessage(new TextComponentString("Armure rendue invisible"));
-		} else {
-			setArmorVisibility(player, false);
-			player.sendMessage(new TextComponentString("Armure rendue visible"));
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public static void onRenderLiving(RenderLivingEvent.Post<EntityPlayer> event) {
+		if (invisible && targetPlayer != null && event.getEntity() == targetPlayer) {
+			GlStateManager.colorMask(true, true, true, true);
+			GlStateManager.popMatrix();
 		}
 	}
 }
