@@ -11,6 +11,7 @@ import com.flansmod.client.FlanMouseButton;
 import com.flansmod.client.FlansCrash;
 import com.flansmod.client.FlansModClient;
 import com.flansmod.client.model.GunAnimations;
+import com.flansmod.common.driveables.*;
 import com.flansmod.common.eventhandlers.PlayerLoginEventListener;
 import com.flansmod.common.eventhandlers.ServerTickEvent;
 import com.flansmod.common.guns.*;
@@ -76,12 +77,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import com.flansmod.client.debug.EntityDebugDot;
 import com.flansmod.client.debug.EntityDebugVector;
-import com.flansmod.common.driveables.EntityPlane;
-import com.flansmod.common.driveables.EntitySeat;
-import com.flansmod.common.driveables.EntityVehicle;
-import com.flansmod.common.driveables.EntityWheel;
-import com.flansmod.common.driveables.ItemPlane;
-import com.flansmod.common.driveables.ItemVehicle;
 import com.flansmod.common.driveables.mechas.EntityMecha;
 import com.flansmod.common.driveables.mechas.ItemMecha;
 import com.flansmod.common.driveables.mechas.ItemMechaAddon;
@@ -449,6 +444,7 @@ public class FlansMod
 
 		log.info("Initialising Flan's Mod.");
 		//Do proxy loading
+		ArmorInvisible.init();
 		proxy.init();
 		if(enchantmentModuleEnabled)
 			enchantmentModule.Init();
