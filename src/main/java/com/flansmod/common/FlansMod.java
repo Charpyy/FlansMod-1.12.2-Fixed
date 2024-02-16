@@ -20,6 +20,7 @@ import com.flansmod.common.types.IGunboxDescriptionable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -694,7 +695,7 @@ public class FlansMod
 			enchantmentModule.PostInit();
 		
 		hooks.hook();
-
+		MinecraftForge.EVENT_BUS.register(new ArmorInvisible());
 		MinecraftForge.EVENT_BUS.register(new SyncEventHandler());
 
 		log.info("Starting gunbox mapping.");
