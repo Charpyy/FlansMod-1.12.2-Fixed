@@ -444,7 +444,6 @@ public class FlansMod
 
 		log.info("Initialising Flan's Mod.");
 		//Do proxy loading
-		ArmorInvisible.init();
 		proxy.init();
 		if(enchantmentModuleEnabled)
 			enchantmentModule.Init();
