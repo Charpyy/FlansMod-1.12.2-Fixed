@@ -404,7 +404,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 				{
 					invisible = false;
 					getSeat(0).getControllingPassenger().setInvisible(false);
-					ArmorInvisible.setArmor(player, false);
+					ArmorInvisible.EventHandler.setArmor(player, false);
 					//}
 					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
@@ -466,7 +466,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			Entity passenger = getSeat(0).getControllingPassenger();
 			if (passenger instanceof EntityPlayer) {
 				EntityPlayer driver = (EntityPlayer) passenger;
-				ArmorInvisible.setArmor(driver, true);
+				ArmorInvisible.EventHandler.setArmor(driver, true);
 				bite = false;
 			}
 		}
