@@ -695,7 +695,7 @@ public class FlansMod
 			enchantmentModule.PostInit();
 		
 		hooks.hook();
-		MinecraftForge.EVENT_BUS.register(new ArmorInvisible());
+		MinecraftForge.EVENT_BUS.register(ArmorInvisible.EventHandler.class);
 		MinecraftForge.EVENT_BUS.register(new SyncEventHandler());
 
 		log.info("Starting gunbox mapping.");
