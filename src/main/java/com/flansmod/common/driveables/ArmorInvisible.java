@@ -15,6 +15,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.nio.channels.NetworkChannel;
 
 
 //public class ArmorInvisible {
@@ -41,25 +44,11 @@ import net.minecraftforge.fml.relauncher.Side;
 //	}
 //}
 public class ArmorInvisible {
-	private static final SimpleNetworkWrapper NETWORK_WRAPPER = NetworkRegistry.INSTANCE.newSimpleChannel(FlansMod.MODID);
-
-	public static void init() {
-		NETWORK_WRAPPER.registerMessage(PacketSetPlayerInvisibility.Handler.class, PacketSetPlayerInvisibility.class, 10, Side.SERVER);
-	}
-
-	public static void setArmor(EntityPlayer player, boolean invisible) {
-		if (!player.world.isRemote) {
-			int playerId = player.getEntityId();
-			NETWORK_WRAPPER.sendToServer(new PacketSetPlayerInvisibility(playerId, invisible));
-		}
-	}
-
-	public static class PacketSetPlayerInvisibility implements IMessage {
+	public static class PacketSetPlayerInvisibility extends PacketBase {
 		private int playerId;
 		private boolean invisible;
 
-		public PacketSetPlayerInvisibility() {
-		}
+		public PacketSetPlayerInvisibility() {}
 
 		public PacketSetPlayerInvisibility(int playerId, boolean invisible) {
 			this.playerId = playerId;
@@ -67,30 +56,34 @@ public class ArmorInvisible {
 		}
 
 		@Override
-		public void toBytes(ByteBuf buf) {
-			buf.writeInt(playerId);
-			buf.writeBoolean(invisible);
+		public void encodeInto(ChannelHandlerContext ctx, ByteBuf data) {
+			data.writeInt(playerId);
+			data.writeBoolean(invisible);
 		}
 
 		@Override
-		public void fromBytes(ByteBuf buf) {
-			playerId = buf.readInt();
-			invisible = buf.readBoolean();
+		public void decodeInto(ChannelHandlerContext ctx, ByteBuf data) {
+			playerId = data.readInt();
+			invisible = data.readBoolean();
 		}
 
-		public static class Handler implements IMessageHandler<PacketSetPlayerInvisibility, IMessage> {
-			@Override
-			public IMessage onMessage(PacketSetPlayerInvisibility message, MessageContext ctx) {
-				FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
-					MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-					PlayerList playerList = server.getPlayerList();
-					EntityPlayer player = playerList.getPlayerByUUID(ctx.getServerHandler().player.getServer().getWorld(0).getEntityByID(message.playerId).getUniqueID());
-					if (player != null) {
-						player.setInvisible(message.invisible);
-					}
-				});
-				return null;
+		@Override
+		public void handleServerSide(EntityPlayerMP playerEntity) {
+			EntityPlayer player = playerEntity.getServerWorld().getPlayerEntityByUUID(playerEntity.getUniqueID());
+			if (player != null) {
+				player.setInvisible(invisible);
 			}
 		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public void handleClientSide(EntityPlayer clientPlayer) {
+		}
+	}
+
+	public static void setArmor(EntityPlayer player, boolean invisible) {
+		int playerId = player.getEntityId();
+		PacketSetPlayerInvisibility packet = new PacketSetPlayerInvisibility(playerId, invisible);
+		FlansMod.getPacketHandler().sendToServer(packet);
 	}
 }
