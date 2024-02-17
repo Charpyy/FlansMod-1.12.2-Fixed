@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.flansmod.common.driveables.ArmorInvisible;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -183,7 +184,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, PacketB
 	public void initialise()
 	{
 		channels = NetworkRegistry.INSTANCE.newChannel("FlansMod", this);
-		
+		registerPacket(ArmorInvisible.PacketSetPlayerInvisibility.class);
 		registerPacket(PacketAAGunAngles.class);
 		registerPacket(PacketBaseEdit.class);
 		registerPacket(PacketBreakSound.class);
