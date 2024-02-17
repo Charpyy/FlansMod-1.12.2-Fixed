@@ -10,6 +10,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketEntityEffect;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.world.World;
@@ -93,48 +96,52 @@ import java.nio.channels.NetworkChannel;
 //		FlansMod.getPacketHandler().sendToServer(packet);
 //	}
 //}
-public class ArmorInvisible extends PacketHandler{
-	public static void setArmor(EntityPlayer player, boolean invisible) {
-		if (player instanceof EntityPlayerMP) {
-			EntityPlayerMP playerMP = (EntityPlayerMP) player;
-			PacketSetPlayerRender packet = new PacketSetPlayerRender(player.getEntityId(), invisible);
-			FlansMod.getPacketHandler().sendTo(packet, playerMP);
+public class ArmorInvisible extends PacketBase
+{
+	public int entityID;
+	public boolean renderArmor;
+
+	public ArmorInvisible()
+	{
+	}
+
+	public ArmorInvisible(EntityPlayer entity, boolean render)
+	{
+		entityID = entity.getEntityId();
+		renderArmor = render;
+	}
+
+	@Override
+	public void encodeInto(ChannelHandlerContext ctx, ByteBuf data)
+	{
+		data.writeInt(entityID);
+		data.writeBoolean(renderArmor);
+	}
+
+	@Override
+	public void decodeInto(ChannelHandlerContext ctx, ByteBuf data)
+	{
+		entityID = data.readInt();
+		renderArmor = data.readBoolean();
+	}
+
+	@Override
+	public void handleServerSide(EntityPlayerMP playerEntity)
+	{
+		Entity entity = playerEntity.getServerWorld().getEntityByID(entityID);
+
+		if(entity instanceof EntityPlayerMP)
+		{
+			EntityPlayerMP targetPlayer = (EntityPlayerMP) entity;
+			targetPlayer.connection.sendPacket(new SPacketEntityEffect(targetPlayer.getEntityId(), new PotionEffect(Potion.getPotionById(14), Integer.MAX_VALUE, 1, false, false)));
 		}
 	}
 
-	public static class PacketSetPlayerRender implements IMessage {
-		private int playerId;
-		private boolean shouldRender;
-
-		public PacketSetPlayerRender() {}
-
-		public PacketSetPlayerRender(int playerId, boolean shouldRender) {
-			this.playerId = playerId;
-			this.shouldRender = shouldRender;
-		}
-
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			playerId = buf.readInt();
-			shouldRender = buf.readBoolean();
-		}
-
-		@Override
-		public void toBytes(ByteBuf buf) {
-			buf.writeInt(playerId);
-			buf.writeBoolean(shouldRender);
-		}
-
-		public static class Handler implements IMessageHandler<PacketSetPlayerRender, IMessage> {
-			@Override
-			public IMessage onMessage(PacketSetPlayerRender message, MessageContext ctx) {
-				EntityPlayer player = ctx.getServerHandler().player;
-				Entity entity = player.world.getEntityByID(message.playerId);
-				if (entity != null) {
-					entity.setInvisible(message.shouldRender);
-				}
-				return null;
-			}
-		}
+	@Override
+	public void handleClientSide(EntityPlayer clientPlayer)
+	{
+		// Cette méthode est appelée côté client après le décodage du paquet.
+		// En général, Minecraft ne permet pas de contrôler directement le rendu de l'armure du joueur côté client,
+		// donc cette méthode peut rester vide dans ce cas.
 	}
 }
