@@ -466,7 +466,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			Entity passenger = getSeat(0).getControllingPassenger();
 			if (passenger instanceof EntityPlayer) {
 				EntityPlayer driver = (EntityPlayer) passenger;
-				ArmorInvisible.setArmor(driver, true);
+				ArmorInvisible(driver, true);
 				bite = false;
 			}
 		}
