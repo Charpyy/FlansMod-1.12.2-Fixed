@@ -16,7 +16,9 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -27,31 +29,33 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Method;
 import java.nio.channels.NetworkChannel;
+import java.util.HashSet;
+import java.util.Set;
 
 
-//public class ArmorInvisible {
-//	public static class EventHandler {
-//
-//		private static final Set<EntityLivingBase> invisibleEntities = new HashSet<>();
-//
-//		@SideOnly(Side.CLIENT)
-//		@SubscribeEvent
-//		public static void onRenderPlayer(RenderLivingEvent.Pre<EntityLivingBase> event) {
-//			EntityLivingBase entity = event.getEntity();
-//			if (entity != null && invisibleEntities.contains(entity)) {
-//				event.setCanceled(true);
-//			}
-//		}
-//
-//		public static void setArmor(EntityLivingBase entity, boolean invisible) {
-//			if (invisible) {
-//				invisibleEntities.add(entity);
-//			} else {
-//				invisibleEntities.remove(entity);
-//			}
-//		}
-//	}
-//}
+public class ArmorInvisible {
+	public static class EventHandler {
+
+		private static final Set<EntityLivingBase> invisibleEntities = new HashSet<>();
+
+		@SideOnly(Side.CLIENT)
+		@SubscribeEvent
+		public static void onRenderPlayer(RenderLivingEvent.Pre<EntityLivingBase> event) {
+			EntityLivingBase entity = event.getEntity();
+			if (entity != null && invisibleEntities.contains(entity)) {
+				event.setCanceled(true);
+			}
+		}
+
+		public static void setArmor(EntityLivingBase entity, boolean invisible) {
+			if (invisible) {
+				invisibleEntities.add(entity);
+			} else {
+				invisibleEntities.remove(entity);
+			}
+		}
+	}
+}
 //public class ArmorInvisible {
 //	public static class PacketSetPlayerInvisibility extends PacketBase {
 //		private int playerId;
@@ -96,52 +100,52 @@ import java.nio.channels.NetworkChannel;
 //		FlansMod.getPacketHandler().sendToServer(packet);
 //	}
 //}
-public class ArmorInvisible extends PacketBase
-{
-	public int entityID;
-	public boolean renderArmor;
-
-	public ArmorInvisible()
-	{
-	}
-
-	public ArmorInvisible(EntityPlayer entity, boolean render)
-	{
-		entityID = entity.getEntityId();
-		renderArmor = render;
-	}
-
-	@Override
-	public void encodeInto(ChannelHandlerContext ctx, ByteBuf data)
-	{
-		data.writeInt(entityID);
-		data.writeBoolean(renderArmor);
-	}
-
-	@Override
-	public void decodeInto(ChannelHandlerContext ctx, ByteBuf data)
-	{
-		entityID = data.readInt();
-		renderArmor = data.readBoolean();
-	}
-
-	@Override
-	public void handleServerSide(EntityPlayerMP playerEntity)
-	{
-		Entity entity = playerEntity.getServerWorld().getEntityByID(entityID);
-
-		if(entity instanceof EntityPlayerMP)
-		{
-			EntityPlayerMP targetPlayer = (EntityPlayerMP) entity;
-			targetPlayer.connection.sendPacket(new SPacketEntityEffect(targetPlayer.getEntityId(), new PotionEffect(Potion.getPotionById(14), Integer.MAX_VALUE, 1, false, false)));
-		}
-	}
-
-	@Override
-	public void handleClientSide(EntityPlayer clientPlayer)
-	{
-		// Cette méthode est appelée côté client après le décodage du paquet.
-		// En général, Minecraft ne permet pas de contrôler directement le rendu de l'armure du joueur côté client,
-		// donc cette méthode peut rester vide dans ce cas.
-	}
-}
+//public class ArmorInvisible extends PacketBase
+//{
+//	public int entityID;
+//	public boolean renderArmor;
+//
+//	public ArmorInvisible()
+//	{
+//	}
+//
+//	public ArmorInvisible(EntityPlayer entity, boolean render)
+//	{
+//		entityID = entity.getEntityId();
+//		renderArmor = render;
+//	}
+//
+//	@Override
+//	public void encodeInto(ChannelHandlerContext ctx, ByteBuf data)
+//	{
+//		data.writeInt(entityID);
+//		data.writeBoolean(renderArmor);
+//	}
+//
+//	@Override
+//	public void decodeInto(ChannelHandlerContext ctx, ByteBuf data)
+//	{
+//		entityID = data.readInt();
+//		renderArmor = data.readBoolean();
+//	}
+//
+//	@Override
+//	public void handleServerSide(EntityPlayerMP playerEntity)
+//	{
+//		Entity entity = playerEntity.getServerWorld().getEntityByID(entityID);
+//
+//		if(entity instanceof EntityPlayerMP)
+//		{
+//			EntityPlayerMP targetPlayer = (EntityPlayerMP) entity;
+//			targetPlayer.connection.sendPacket(new SPacketEntityEffect(targetPlayer.getEntityId(), new PotionEffect(Potion.getPotionById(14), Integer.MAX_VALUE, 1, false, false)));
+//		}
+//	}
+//
+//	@Override
+//	public void handleClientSide(EntityPlayer clientPlayer)
+//	{
+//		// Cette méthode est appelée côté client après le décodage du paquet.
+//		// En général, Minecraft ne permet pas de contrôler directement le rendu de l'armure du joueur côté client,
+//		// donc cette méthode peut rester vide dans ce cas.
+//	}
+//}
