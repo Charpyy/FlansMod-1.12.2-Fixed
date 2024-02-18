@@ -457,7 +457,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		return rotate(getSeat(0).looking.getXAxis());
 	}
 	public int ticks;
-	public static boolean bite;
+	public static boolean exit;
 	@Override
 	public void onUpdate() {
 		double bkPrevPosY = this.prevPosY;
@@ -466,12 +466,12 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			return;
 		}
 		VehicleType type = this.getVehicleType();
-		if (type.setPlayerInvisible && bite) {
+		if (type.setPlayerInvisible && exit) {
 			Entity passenger = getSeat(0).getControllingPassenger();
 			if (passenger instanceof EntityPlayer) {
 				EntityPlayer driver = (EntityPlayer) passenger;
-				ArmorInvisible(driver, true);
-				bite = false;
+				ArmorInvisible.EventHandler.setArmor(driver, true);
+				exit = false;
 			}
 		}
 		//tu sors du véhicule -> invisible false parce que tu devient visible
@@ -1282,7 +1282,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 
 	private float averageAngles(float a, float b)
 	{
-		FlansMod.log.debug("Pre  " + a + " " + b);
+		//FlansMod.log.debug("Pre  " + a + " " + b);
 
 		float pi = (float)Math.PI;
 		for(; a > b + pi; a -= 2 * pi) ;
@@ -1293,7 +1293,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		for(; avg > pi; avg -= 2 * pi) ;
 		for(; avg < -pi; avg += 2 * pi) ;
 
-		FlansMod.log.debug("Post " + a + " " + b + " " + avg);
+		//FlansMod.log.debug("Post " + a + " " + b + " " + avg);
 
 		return avg;
 	}
