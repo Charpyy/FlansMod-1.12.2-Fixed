@@ -546,6 +546,13 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		if (idlePosition > 0)
 			idlePosition--;
 
+		if (type.tank && isUnderWater()) {
+			ticks++;
+			if (ticks >= 140) {
+				throttle = 0;
+				ticks = 0;
+			}
+		}
 		if (type.tank && !hasBothTracks()) throttle = 0;
 		if (disabled || !hasBothTracks()) wheelsYaw = 0;
 
