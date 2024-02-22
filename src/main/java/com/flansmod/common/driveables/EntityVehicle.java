@@ -411,7 +411,7 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 					}
 					//}
 					//resetZoom();
-					//getSeat(0).getControllingPassenger().dismountRidingEntity(); Removed bcs player are not completely out of the vehicle (1.12.2 bug)
+					//getSeat(0).getControllingPassenger().dismountRidingEntity();//Removed bcs player are not completely out of the vehicle (1.12.2 bug)
 					//PacketPlaySound.sendSoundPacket(posX, posY, posZ, FlansMod.soundRange, dimension, type.exitSound, false);
 				}
 				return true;
