@@ -52,11 +52,11 @@ PrimeDelay 0
 
 ////Detonation
 FireRadius 0.0
-ExplosionRadius 6.0
-ExplosionDamageVsLiving 1.0
-ExplosionDamageVsPlane 150.0
-ExplosionDamageVsVehicle 4
-ExplosionBreaksBlocks true
+ExplosionRadius 0.0
+ExplosionDamageVsLiving 0.0
+ExplosionDamageVsPlane 0.0
+ExplosionDamageVsVehicle 0
+ExplosionBreaksBlocks false
 
 //DropItemOnDetonate <itemID.damage>
 //Detonate Sound <sound>
