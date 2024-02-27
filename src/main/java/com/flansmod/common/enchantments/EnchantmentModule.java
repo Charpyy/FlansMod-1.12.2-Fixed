@@ -42,7 +42,7 @@ public class EnchantmentModule
 	public void PreInit()
 	{
 		MinecraftForge.EVENT_BUS.register(this);
-		STEADY_ENCHANT = new EnchantmentSteady().setRegistryName("enchantment_steady").setName("enchantment_steady");
+		//STEADY_ENCHANT = new EnchantmentSteady().setRegistryName("enchantment_steady").setName("enchantment_steady");
 		NIMBLE_ENCHANT = new EnchantmentNimble().setRegistryName("enchantment_nimble").setName("enchantment_nimble");
 		LUMBERJACK_ENCHANT = new EnchantmentLumberjack().setRegistryName("enchantment_lumberjack").setName("enchantment_lumberjack");
 		DUELIST_ENCHANT = new EnchantmentDuelist().setRegistryName("enchantment_duelist").setName("enchantment_duelist");
