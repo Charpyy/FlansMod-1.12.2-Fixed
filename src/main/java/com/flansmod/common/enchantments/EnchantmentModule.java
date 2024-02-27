@@ -63,7 +63,7 @@ public class EnchantmentModule
 	@SubscribeEvent
 	public void RegisterEnchants(RegistryEvent.Register<Enchantment> event)
 	{
-		event.getRegistry().register(STEADY_ENCHANT);
+		//event.getRegistry().register(STEADY_ENCHANT);
 		event.getRegistry().register(NIMBLE_ENCHANT);
 		event.getRegistry().register(LUMBERJACK_ENCHANT);
 		event.getRegistry().register(DUELIST_ENCHANT);
