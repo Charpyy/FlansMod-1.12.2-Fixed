@@ -100,8 +100,8 @@ public class  FlansModExplosion extends Explosion
 		this.position = new Vec3d(this.x, this.y, this.z);
 		this.type = type;
 		//This code is only for Charpy and ObsidianBreaker plugins
-		//String data = type.toString();
-		//writeDataToCSV(data);
+		String data = type.toString();
+		writeDataToCSV(data);
 		this.explosive = entity;
 		this.causesFire = false;
 		this.isSmoking = (smokeCount > 0);
