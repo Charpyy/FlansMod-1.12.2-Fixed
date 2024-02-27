@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @SideOnly(Side.SERVER)
 public class CSVWriter {
 
-	private static final String CSV_FILE_PATH = "C:\\Users\\Chapy\\Desktop\\WW2 1.12.2 TEST\\csv\\test.csv";
+	private static final String CSV_FILE_PATH = "E:\\WW2 SERVEUR LE VRAI\\csv\\explode.csv";
 	private static final long DELAY_MS = 100;
 
 	public static void writeDataToCSV(String value) {
