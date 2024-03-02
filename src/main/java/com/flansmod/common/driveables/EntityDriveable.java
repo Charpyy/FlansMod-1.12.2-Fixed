@@ -913,7 +913,9 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					((ItemBullet)shell.getItem()).type, weaponType))
 				{
 					shootProjectile(i, gunVec, lookVector, type, secondary, (float)getSpeed() + 3f);
-					cameraShakeClass();
+					if (world.isRemote) {
+						cameraShakeClass();
+					}
 					break;
 				}
 			}
