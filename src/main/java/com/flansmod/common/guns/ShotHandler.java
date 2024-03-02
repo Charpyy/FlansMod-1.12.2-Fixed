@@ -108,7 +108,6 @@ public class ShotHandler
 		Float penetrationPower = shot.getBulletType().penetratingPower;
 		//first tries to get the player because the players vehicle is also ignored, or get the player independent shooter or null
 		Entity ignore = shot.getPlayerOptional().isPresent() ? shot.getPlayerOptional().get() : shot.getShooterOptional().orElse(null);
-		
 		List<BulletHit> hits = Raytrace(world, ignore, false, null, rayTraceOrigin, shootingDirection, 0, penetrationPower);
 		Vector3f previousHitPos = rayTraceOrigin;
 		Vector3f finalhit = null;
