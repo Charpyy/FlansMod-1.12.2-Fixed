@@ -723,6 +723,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 			}
 		}
 	}
+	@SideOnly(Side.CLIENT)
 	public void cameraShakeClass() {
 		FlansModClient.cameraShake = 5;
 	}
