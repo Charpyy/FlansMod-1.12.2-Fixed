@@ -35,6 +35,7 @@ dependencies {
     compile "io.vavr:vavr:0.10.2"
     shadow "io.vavr:vavr:0.10.2"
     compile 'com.opencsv:opencsv:5.5.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
 }
 
 minecraft {
