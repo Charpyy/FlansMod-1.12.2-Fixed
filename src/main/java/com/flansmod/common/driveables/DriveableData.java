@@ -104,11 +104,14 @@ public class DriveableData implements IInventory
 			part.readFromNBT(tag);
 		}
 	}
-	
-	public void writeToNBT(NBTTagCompound tag)
-	{
+
+	public void writeToNBT(NBTTagCompound tag) {
 		tag.setString("Type", type);
-		tag.setString("Engine", engine.shortName);
+		if (engine != null) {
+			tag.setString("Engine", engine.shortName);
+		} else {
+			tag.setString("Engine", "DefaultEngine");
+		}
 		tag.setInteger("Paint", paintjobID);
 		for(int i = 0; i < ammo.length; i++)
 		{
