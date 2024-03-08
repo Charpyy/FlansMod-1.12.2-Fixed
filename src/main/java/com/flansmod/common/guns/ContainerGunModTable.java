@@ -16,23 +16,23 @@ public class ContainerGunModTable extends Container
 	private InventoryGunModTable inventory;
 	public InventoryPlayer playerInv;
 	public World world;
-	
+
 	public ContainerGunModTable(InventoryPlayer i, World w)
 	{
 		playerInv = i;
 		inventory = new InventoryGunModTable();
 		world = w;
-		
+
 		//Gun slot
-		SlotGun gunSlot = new SlotGun(inventory, 0, 184, 37, null);
+		SlotGun gunSlot = new SlotGun(inventory, 0, 80, 110, null);
 		addSlotToContainer(gunSlot);
-		
+
 		//Attachment Slots
 		/*addSlotToContainer(new SlotGun(inventory, 1, 54, 110, gunSlot));
 		addSlotToContainer(new SlotGun(inventory, 2, 80, 84, gunSlot));
 		addSlotToContainer(new SlotGun(inventory, 3, 106, 110, gunSlot));
 		addSlotToContainer(new SlotGun(inventory, 4, 80, 136, gunSlot));
-		
+
 		for(int row = 0; row < 4; row++)
 		{
 			for(int col = 0; col < 2; col++)
@@ -51,20 +51,20 @@ public class ContainerGunModTable extends Container
 		{
 			addSlotToContainer(new SlotGun(inventory, 9 + col, 17 + (col * 18), 115 + (col * 18), gunSlot));
 		}
-		
+
 		//Main inventory slots
 		for(int row = 0; row < 3; row++)
 		{
 			for(int col = 0; col < 9; col++)
 			{
-				addSlotToContainer(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 154 + row * 18));
+				addSlotToContainer(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 176+ row * 18));
 			}
-			
+
 		}
 		//Quickbar slots
 		for(int col = 0; col < 9; col++)
 		{
-			addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, 212));
+			addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, 234));
 		}
 	}
 	
@@ -80,20 +80,20 @@ public class ContainerGunModTable extends Container
 	{
 		return true;
 	}
-	
+
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotID)
 	{
 		ItemStack stack = ItemStack.EMPTY.copy();
 		Slot currentSlot = inventorySlots.get(slotID);
-		
+
 		Slot gunSlot = inventorySlots.get(0);
-		
+
 		if(currentSlot != null && currentSlot.getHasStack())
 		{
 			ItemStack slotStack = currentSlot.getStack();
 			stack = slotStack.copy();
-			
+
 			// gun slot, 4 attach slots and 8 generics
 			if(slotID >= 17)
 			{
@@ -124,7 +124,7 @@ public class ContainerGunModTable extends Container
 					return ItemStack.EMPTY.copy();
 				}
 			}
-			
+
 			if(slotStack.getCount() == 0)
 			{
 				currentSlot.putStack(ItemStack.EMPTY.copy());
@@ -133,23 +133,23 @@ public class ContainerGunModTable extends Container
 			{
 				currentSlot.onSlotChanged();
 			}
-			
+
 			if(slotStack.getCount() == stack.getCount())
 			{
 				return ItemStack.EMPTY.copy();
 			}
-			
+
 			currentSlot.onTake(player, slotStack);
 		}
-		
+
 		return stack;
 	}
-	
+
 	public void pressButton(boolean paint, boolean left)
 	{
 		//Nope.
 	}
-	
+
 	public void clickPaintjob(int i)
 	{
 		ItemStack gunStack = inventory.getStackInSlot(0);
@@ -159,15 +159,15 @@ public class ContainerGunModTable extends Container
 			clickPaintjob(gunType.getPaintjob(i));
 		}
 	}
-	
+
 	public void clickPaintjob(Paintjob paintjob)
-	{		
+	{
 		ItemStack gunStack = inventory.getStackInSlot(0);
 		if(gunStack != null && gunStack.getItem() instanceof ItemGun)
 		{
 			GunType gunType = ((ItemGun)gunStack.getItem()).GetType();
 			int numDyes = paintjob.dyesNeeded.length;
-			
+
 			boolean legendary = false;
 			for(int n = 0; n < numDyes; n++)
 			{
@@ -176,7 +176,7 @@ public class ContainerGunModTable extends Container
 					legendary = true;
 				}
 			}
-			
+
 			if(!playerInv.player.capabilities.isCreativeMode)
 			{
 				//Calculate which dyes we have in our inventory
@@ -202,7 +202,7 @@ public class ContainerGunModTable extends Container
 					if(amountNeeded > 0)
 						return;
 				}
-				
+
 				for(int n = 0; n < numDyes; n++)
 				{
 					int amountNeeded = paintjob.dyesNeeded[n].getCount();
@@ -231,7 +231,7 @@ public class ContainerGunModTable extends Container
 					}
 				}
 			}
-			
+
 			//Paint the gun. This line is only reached if the player is in creative or they have had their dyes taken already
 			//gunStack.getTagCompound().setString("Paint", paintjob.iconName);
 			gunStack.setItemDamage(paintjob.ID);
