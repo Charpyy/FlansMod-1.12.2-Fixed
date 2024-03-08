@@ -189,7 +189,7 @@ public class RenderGun implements CustomItemRenderer
 						// forward, up, sideways
 						GlStateManager.translate(0.0F + model.stanceTranslate.x, -0.03F * adsSwitch + model.stanceTranslate.y, 0F + model.stanceTranslate.z);
 					}
-					else
+						else
 					{
 						GlStateManager.rotate(45F, 0F, 1F, 0F); // Angle nose down slightly -> angle nose up slightly
 						GlStateManager.rotate(0F - 5F * adsSwitch, 0F, 0F, 1F); // Rotate Z nose inward

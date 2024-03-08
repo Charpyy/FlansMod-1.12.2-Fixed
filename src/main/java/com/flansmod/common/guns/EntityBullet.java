@@ -552,29 +552,29 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 			}
 			//TODO Client homing fix
 			// Apply homing action
-			//if(lockedOnTo != null)
-			//{
-			//	double dX = lockedOnTo.posX - posX;
-			//	double dY = lockedOnTo.posY - posY;
-			//	double dZ = lockedOnTo.posZ - posZ;
-			//	double dXYZ = dX * dX + dY * dY + dZ * dZ;
+			if(lockedOnTo != null)
+			{
+				double dX = lockedOnTo.posX - posX;
+				double dY = lockedOnTo.posY - posY;
+				double dZ = lockedOnTo.posZ - posZ;
+				double dXYZ = dX * dX + dY * dY + dZ * dZ;
 //
-			//	Vector3f relPosVec = new Vector3f(dX, dY, dZ);
-			//	float angle = Math.abs(Vector3f.angle(motion, relPosVec));
+				Vector3f relPosVec = new Vector3f(dX, dY, dZ);
+				float angle = Math.abs(Vector3f.angle(motion, relPosVec));
 //
-			//	double lockOnPull = (angle) * type.lockOnForce;
+				double lockOnPull = (angle) * type.lockOnForce;
 //
-			//	lockOnPull = lockOnPull * lockOnPull;
+				lockOnPull = lockOnPull * lockOnPull;
 //
-			//	motionX *= 0.95f;
-			//	motionY *= 0.95f;
-			//	motionZ *= 0.95f;
+				motionX *= 0.95f;
+				motionY *= 0.95f;
+				motionZ *= 0.95f;
 //
-			//	motionX += lockOnPull * dX / dXYZ;
-			//	motionY += lockOnPull * dY / dXYZ;
-			//	motionZ += lockOnPull * dZ / dXYZ;
-			//}
-			/***if (lockedOnTo != null) {
+				motionX += lockOnPull * dX / dXYZ;
+				motionY += lockOnPull * dY / dXYZ;
+				motionZ += lockOnPull * dZ / dXYZ;
+			}
+			if (lockedOnTo != null) {
 			 if (lockedOnTo instanceof EntityDriveable) {
 			 EntityDriveable entDriveable = (EntityDriveable) lockedOnTo;
 			 // entPlane.isLockedOn = true;
@@ -711,7 +711,7 @@ public class EntityBullet extends EntityShootable implements IEntityAdditionalSp
 			 this.motionY = -motionab;
 			 this.motionZ = 0;
 			 }
-			 }***/
+			 }
 			/*setRenderDistanceWeight(256D);
 			if (owner != null && type.manualGuidance && VLSDelay <= 0 && lockedOnTo == null) {
 

@@ -241,7 +241,7 @@ public class ModelGun extends ModelBase
 	// Disables moving gun back when ADS.
 	public boolean stillRenderGunWhenScopedOverlay = false;
 	// Multiplier for ADS effect (moving gun to middle, e.t.c.)
-	public float adsEffectMultiplier = 0.3F;
+	public float adsEffectMultiplier = 1F;
 
 	/**
 	 * This offsets the render position for third person
@@ -545,8 +545,8 @@ public class ModelGun extends ModelBase
 	protected void translateAttachment(Vector3f vector, float x, float y, float z)
 	{
 		vector.x -= x / 16F;
-		vector.y -= 12F;
-		vector.z -= z / 2F;
+		vector.y -= y / 16F;
+		vector.z -= z / 16F;
 	}
 
 

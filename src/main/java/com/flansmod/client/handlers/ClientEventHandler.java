@@ -60,18 +60,6 @@ public class ClientEventHandler
 	}
 
 
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public static void onMouseClick(InputEvent.MouseInputEvent event) {
-		if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
-			boolean sprinting = Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isSprinting();
-			EntityPlayer player = Minecraft.getMinecraft().player;
-			if (sprinting) {
-				event.setCanceled(true);
-			}
-		}
-	}
-
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
