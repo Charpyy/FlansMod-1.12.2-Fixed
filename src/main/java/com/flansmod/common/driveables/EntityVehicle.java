@@ -27,6 +27,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -457,7 +458,6 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		return rotate(getSeat(0).looking.getXAxis());
 	}
 	public int ticks;
-	public static boolean exit;
 	@Override
 	public void onUpdate() {
 		double bkPrevPosY = this.prevPosY;
@@ -466,12 +466,11 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			return;
 		}
 		VehicleType type = this.getVehicleType();
-		if (type.setPlayerInvisible && exit) {
+		if (type.setPlayerInvisible) {
 			Entity passenger = getSeat(0).getControllingPassenger();
 			if (passenger instanceof EntityPlayer) {
 				EntityPlayer driver = (EntityPlayer) passenger;
 				ArmorInvisible.EventHandler.setArmor(driver, true);
-				exit = false;
 			}
 		}
 		//tu sors du véhicule -> invisible false parce que tu devient visible
@@ -483,7 +482,12 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			invisible = true;
 		}
 		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-			getSeat(0).getControllingPassenger().setInvisible(true);
+			if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+				getSeat(0).getControllingPassenger().setInvisible(true);
+			}
+			else {
+				FlansMod.getPacketHandler().sendToAll(new PacketArmorInvisible());
+			}
 		}
 		if(type == null)
 		{
