@@ -46,6 +46,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -723,10 +724,6 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 			}
 		}
 	}
-	@SideOnly(Side.CLIENT)
-	public void cameraShakeClass() {
-		FlansModClient.cameraShake = 5;
-	}
 
 	public boolean driverIsCreative()
 	{
@@ -913,13 +910,23 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					((ItemBullet)shell.getItem()).type, weaponType))
 				{
 					shootProjectile(i, gunVec, lookVector, type, secondary, (float)getSpeed() + 3f);
-					if (world.isRemote) {
+					if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
 						cameraShakeClass();
+					}
+					else {
+						FlansMod.getPacketHandler().sendTo(new PacketCameraShake(), (EntityPlayerMP) getDriver());
+
 					}
 					break;
 				}
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void cameraShakeClass()
+	{
+		FlansModClient.cameraShake = 5;
 	}
 
 	private void dropBomb(DriveableType type, boolean secondary, EnumWeaponType weaponType, Vector3f gunVec,
