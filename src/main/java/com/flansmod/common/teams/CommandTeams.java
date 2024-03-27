@@ -72,6 +72,7 @@ public class CommandTeams extends CommandBase
 		}
 		if(split[0].equals("survival"))
 		{
+			TeamsManager.vehiclepin = false;
 			TeamsManager.explosions = true;
 			TeamsManager.driveablesBreakBlocks = true;
 			TeamsManager.bombsEnabled = true;
@@ -536,6 +537,17 @@ public class CommandTeams extends CommandBase
 			sender.sendMessage(new TextComponentString("AAGuns and MGs can " + (TeamsManager.canBreakGuns ? "now" : "no longer") + " be broken"));
 			return;
 		}
+		if(split[0].equals("vehicleLock"))
+		{
+			if(split.length != 2)
+			{
+				sender.sendMessage(new TextComponentString("Incorrect Usage : Should be /teams " + split[0] + " <true/false>, vehicle OWNER is currently " + (TeamsManager.vehiclepin)));
+				return;
+			}
+			TeamsManager.vehiclepin = Boolean.parseBoolean(split[1]);
+			sender.sendMessage(new TextComponentString("Vehicle OWNER " + (TeamsManager.vehiclepin ? "now" : "no longer") + " be used"));
+			return;
+		}
 		if(split[0].equals("canBreakGlass"))
 		{
 			if(split.length != 2)
@@ -902,6 +914,7 @@ public class CommandTeams extends CommandBase
                     "vehicleLife",
                     "aaLife",
                     "vehiclesBreakBlocks",
+					"vehicleLock",
                     "ping",
                     "bltss",
                     "showbltss",
@@ -981,6 +994,7 @@ public class CommandTeams extends CommandBase
                 sender.sendMessage(new TextComponentString("/teams bltss <0 ... 100> <0 ... 1000>"));
                 sender.sendMessage(new TextComponentString("/teams showbltss"));
                 sender.sendMessage(new TextComponentString("/teams vehiclesCanZoom <true / false>"));
+				sender.sendMessage(new TextComponentString("/teams vehicleLock <true / false>"));
                 break;
             }
 		}

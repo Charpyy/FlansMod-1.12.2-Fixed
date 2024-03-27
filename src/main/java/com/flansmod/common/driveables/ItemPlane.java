@@ -27,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import com.flansmod.common.FlansMod;
@@ -157,10 +158,14 @@ public class ItemPlane extends Item implements IPaintableItem
 					if(data != null)
 					{
 						EntityPlane plane = new EntityPlane(world, (double)pos.getX() + 0.5F, (double)pos.getY() + 2.5F, (double)pos.getZ() + 0.5F, entityplayer, type, data);
+						if (TeamsManager.vehiclepin) {
+							plane.getEntityData().setString("Owner", entityplayer.getName());
+							entityplayer.sendMessage(new TextComponentString("\u00a78\u00bb \u00a77You are the \u00a7fOwner \u00a77of this plane, do: \u00a7b/vehicle add <player>"));
+						}
 						world.spawnEntity(plane);
 						if (!world.isRemote)
 						{
-							FlansMod.log.info("Player %s placed plane %s (%d) at (%d, %d, %d)", entityplayer.getDisplayName(), type.shortName, plane.getEntityId(), pos.getX(), pos.getY(), pos.getZ());
+							//FlansMod.log.info("Player %s placed plane %s (%d) at (%d, %d, %d)", entityplayer.getDisplayName(), type.shortName, plane.getEntityId(), pos.getX(), pos.getY(), pos.getZ());
 						}
 					}
 				}

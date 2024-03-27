@@ -4,10 +4,15 @@
 	{
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
     repositories 
 	{
         jcenter()
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
         maven 
 		{
 			// location of the maven that hosts the forge files
@@ -17,13 +22,18 @@
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'com.github.johnrengelman.shadow'
+
+    apply plugin: 'net.minecraftforge.gradle.forge'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'org.spongepowered.mixin'
+
 
 version = version_major + "." + version_minor + "." + version_patch + version_extra
 group = "com.flansmod"
 archivesBaseName = "Flan's Mod"
-
+repositories {
+    maven { url "http://repo.spongepowered.org/maven" }
+}
 //apocalypseVersion = apocalypseVersion + version_extra
 
 sourceCompatibility = targetCompatibility = '1.8'
@@ -36,6 +46,15 @@ dependencies {
     shadow "io.vavr:vavr:0.10.2"
     compile 'com.opencsv:opencsv:5.5.2'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
+    implementation('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+        exclude module: "asm-commons"
+        exclude module: "asm-tree"
+        exclude module: "launchwrapper"
+        exclude module: "guava"
+        exclude module: "log4j-core"
+        exclude module: "gson"
+        exclude module: "commons-io"
+    }
 }
 
 minecraft {

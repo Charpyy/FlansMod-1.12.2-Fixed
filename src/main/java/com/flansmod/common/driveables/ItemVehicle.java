@@ -27,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import com.flansmod.common.FlansMod;
@@ -149,11 +150,18 @@ public class ItemVehicle extends ItemMapBase implements IPaintableItem
 			{
 				if(!world.isRemote)
 				{
-					Entity e = new EntityVehicle(world, (double)pos.getX() + 0.5F, (double)pos.getY() + 2.5F, (double)pos.getZ() + 0.5F, entityplayer, type, getData(itemstack, world));
+					EntityVehicle e = new EntityVehicle(world, (double)pos.getX() + 0.5F, (double)pos.getY() + 2.5F, (double)pos.getZ() + 0.5F, entityplayer, type, getData(itemstack, world));
+					e.getEntityData().setString("Owner", entityplayer.getName());
+					if (TeamsManager.vehiclepin) {
+						e.getEntityData().setString("Owner", entityplayer.getName());
+						entityplayer.sendMessage(new TextComponentString("\u00a78\u00bb \u00a77You are the \u00a7fOwner \u00a77of this vehicle, do: \u00a7b/vehicle add <player>"));
+					}
 					world.spawnEntity(e);
+
+					//Entity e = new EntityVehicle(world, (double)pos.getX() + 0.5F, (double)pos.getY() + 2.5F, (double)pos.getZ() + 0.5F, entityplayer, type, getData(itemstack, world));
 					if (!world.isRemote)
 					{
-						FlansMod.log.info("Player %s placed vehicle %s (%d) at (%d, %d, %d)", entityplayer.getDisplayName(), type.shortName, e.getEntityId(), pos.getX(), pos.getY(), pos.getZ());
+						//FlansMod.log.info("Player %s placed vehicle %s (%d) at (%d, %d, %d)", entityplayer.getDisplayName(), type.shortName, e.getEntityId(), pos.getX(), pos.getY(), pos.getZ());
 					}
 				}
 				if(!entityplayer.capabilities.isCreativeMode)

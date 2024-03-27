@@ -548,6 +548,4 @@ public class ModelGun extends ModelBase
 		vector.y -= y / 16F;
 		vector.z -= z / 16F;
 	}
-
-
 }

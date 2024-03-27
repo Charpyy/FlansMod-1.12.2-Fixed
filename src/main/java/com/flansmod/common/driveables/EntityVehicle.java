@@ -403,13 +403,14 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			{
 				if (getSeat(0) != null && getSeat(0).getControllingPassenger() != null)
 				{
-					invisible = false;
-					getSeat(0).getControllingPassenger().setInvisible(false);
-					Entity passenger = getSeat(0).getControllingPassenger();
-					if (passenger instanceof EntityPlayer) {
-						EntityPlayer driver = ((EntityPlayer) passenger);
-						ArmorInvisible.EventHandler.setArmor(driver, false);
-					}
+					//invisible = false;
+					//EntitySeat.exit = true;
+					//getSeat(0).getControllingPassenger().setInvisible(false);
+					//Entity passenger = getSeat(0).getControllingPassenger();
+					//if (passenger instanceof EntityPlayer) {
+					//	EntityPlayer driver = ((EntityPlayer) passenger);
+					//	ArmorInvisible.EventHandler.setArmor(driver, false);
+					//}
 					//}
 					//resetZoom();
 					//getSeat(0).getControllingPassenger().dismountRidingEntity();//Removed bcs player are not completely out of the vehicle (1.12.2 bug)
@@ -466,29 +467,9 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 			return;
 		}
 		VehicleType type = this.getVehicleType();
-		if (type.setPlayerInvisible) {
-			Entity passenger = getSeat(0).getControllingPassenger();
-			if (passenger instanceof EntityPlayer) {
-				EntityPlayer driver = (EntityPlayer) passenger;
-				ArmorInvisible.EventHandler.setArmor(driver, true);
-			}
-		}
-		//tu sors du véhicule -> invisible false parce que tu devient visible
-		//sauf que quand tu rentres dans e véhicule
 		//Get vehicle type
 		DriveableData data = getDriveableData();
 		//wheelsYaw -= 1F;
-		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-			invisible = true;
-		}
-		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-			if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-				getSeat(0).getControllingPassenger().setInvisible(true);
-			}
-			else {
-				FlansMod.getPacketHandler().sendToAll(new PacketArmorInvisible());
-			}
-		}
 		if(type == null)
 		{
 			FlansMod.log.warn("Vehicle type null. Not ticking vehicle");
@@ -506,6 +487,11 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 					moveRiders(e);
 				}
 			}
+		}
+		if (type.setPlayerInvisible && !this.world.isRemote && this.getRidingEntity() != null) {
+			this.getControllingEntity().setInvisible(true);
+			this.getPassengers();
+			//System.out.println("INVISIBLE TRUE");
 		}
 
 		//Work out if this is the client side and the player is driving
@@ -1326,40 +1312,97 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource damagesource, float i)
-	{
-		if(world.isRemote || isDead)
+	public boolean attackEntityFrom(DamageSource damagesource, float i) {
+
+		if (world.isRemote || isDead)
 			return true;
+		if (!TeamsManager.vehiclepin) {
+			Entity trueSource = damagesource.getTrueSource();
+			if (!(trueSource instanceof EntityPlayer))
+				return super.attackEntityFrom(damagesource, i);
 
-		VehicleType type = getVehicleType();
-
-		if (damagesource.damageType.equals("player")
-				&& damagesource.getTrueSource().onGround
-				&& (getSeat(0) == null || getSeat(0).getControllingPassenger() == null)
-				&& ((damagesource.getTrueSource() instanceof EntityPlayer && ((EntityPlayer)damagesource.getTrueSource()).capabilities.isCreativeMode) || TeamsManager.survivalCanBreakVehicles))
-		{
-			ItemStack vehicleStack = new ItemStack(type.item, 1, driveableData.paintjobID);
+			EntityPlayer player = (EntityPlayer) trueSource;
+			if (!player.onGround || (getSeat(0) != null && getSeat(0).getControllingPassenger() != null))
+				return super.attackEntityFrom(damagesource, i);
+			ItemStack vehicleStack = new ItemStack(getVehicleType().item, 1, driveableData.paintjobID);
 			NBTTagCompound tags = new NBTTagCompound();
 			vehicleStack.setTagCompound(tags);
 			driveableData.writeToNBT(tags);
 
-			DriveableDeathByHandEvent driveableDeathByHandEvent = new DriveableDeathByHandEvent(this, (EntityPlayer)damagesource.getTrueSource(), vehicleStack);
+			DriveableDeathByHandEvent driveableDeathByHandEvent = new DriveableDeathByHandEvent(this, player, vehicleStack);
 			MinecraftForge.EVENT_BUS.post(driveableDeathByHandEvent);
-
-			if(!driveableDeathByHandEvent.isCanceled()) {
-				if (!world.isRemote && damagesource.getTrueSource() instanceof EntityPlayer) {
-					//FlansMod.log("Player %s broke vehicle %s (%d) at (%f, %f, %f)", ((EntityPlayerMP) damagesource.getTrueSource()).getDisplayName(), type.shortName, getEntityId(), posX, posY, posZ);
+			if (!driveableDeathByHandEvent.isCanceled()) {
+				if (!world.isRemote) {
+					if (hasEmptyInventorySlot(player)) {
+						player.inventory.addItemStackToInventory(vehicleStack);
+					} else {
+						player.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7cYour inventory is full, item dropped on ground."));
+						entityDropItem(vehicleStack, 0.5F);
+					}
+					setDead();
 				}
-				entityDropItem(vehicleStack, 0.5F);
-				setDead();
+			}
+
+		} else {
+			Entity trueSource = damagesource.getTrueSource();
+			if (!(trueSource instanceof EntityPlayer))
+				return super.attackEntityFrom(damagesource, i);
+
+			EntityPlayer player = (EntityPlayer) trueSource;
+			if (!player.onGround || (getSeat(0) != null && getSeat(0).getControllingPassenger() != null))
+				return super.attackEntityFrom(damagesource, i);
+
+			String playerName = player.getDisplayName().toString();
+			String[] playerNameParts = playerName.split("'");
+			String playerNameClean = playerNameParts[3];
+
+			NBTTagCompound tag = getEntityData();
+			String ownerName = tag.getString("Owner");
+
+			if (!ownerName.equals(playerNameClean) && (!VehicleOwnerManager.vehicleOwners.containsKey(ownerName) ||
+					!VehicleOwnerManager.vehicleOwners.get(ownerName).contains(playerNameClean))) {
+				player.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7cYou can't break this vehicle."));
+				return super.attackEntityFrom(damagesource, i);
+			}
+
+			ItemStack vehicleStack = new ItemStack(getVehicleType().item, 1, driveableData.paintjobID);
+			NBTTagCompound tags = new NBTTagCompound();
+			vehicleStack.setTagCompound(tags);
+			driveableData.writeToNBT(tags);
+
+			DriveableDeathByHandEvent driveableDeathByHandEvent = new DriveableDeathByHandEvent(this, player, vehicleStack);
+			MinecraftForge.EVENT_BUS.post(driveableDeathByHandEvent);
+			if (!driveableDeathByHandEvent.isCanceled()) {
+				if (!world.isRemote) {
+					if (hasEmptyInventorySlot(player)) {
+						player.inventory.addItemStackToInventory(vehicleStack);
+					} else {
+						player.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7cYour inventory is full, item dropped on ground."));
+						entityDropItem(vehicleStack, 0.5F);
+					}
+					setDead();
+				}
 			}
 		}
-		return super.attackEntityFrom(damagesource, i);
+		return true;
 	}
 
 	public VehicleType getVehicleType()
 	{
 		return VehicleType.getVehicle(driveableType);
+	}
+
+
+
+	public boolean hasEmptyInventorySlot(EntityPlayer player) {
+		Integer size = player.inventory.getSizeInventory();
+		for (int i = 0; i < player.inventory.getSizeInventory() - 5; i++) {
+			ItemStack itemStack = player.inventory.getStackInSlot(i);
+			if (itemStack.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

@@ -1,9 +1,6 @@
 package com.flansmod.common.driveables;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import com.flansmod.common.*;
 import com.flansmod.common.driveables.collisions.CollisionPlane;
@@ -268,6 +265,26 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 		ignoreFrustumCheck = true;
 	}
 
+	//public EntityDriveable(World world, DriveableType t, DriveableData d, EntityPlayer owner) {
+	//	this(world);
+	//	driveableType = t.shortName;
+	//	driveableData = d;
+	//	if (owner != null) {
+	//		this.owner = owner;
+	//		ownerUUID = owner.getUniqueID().toString();
+	//		generateVehicleCode();
+	//	}
+	//}
+	//private void generateVehicleCode() {
+	//	Random random = new Random();
+	//	int code = random.nextInt(9000) + 1000;
+	//	vehicleCode = Integer.toString(code);
+	//	Minecraft.getMinecraft().ingameGUI.setOverlayMessage("Vehicle code: "+vehicleCode, false);
+	//}
+
+	// Autres variables et méthodes existantes...
+
+	private String ownerName;
 	public EntityDriveable(World world, DriveableType t, DriveableData d, EntityPlayer owner) {
 		this(world);
 		driveableType = t.shortName;
@@ -275,6 +292,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 		if (owner != null) {
 			this.owner = owner;
 			ownerUUID = owner.getUniqueID().toString();
+			ownerName = owner.getName();
 		}
 	}
 

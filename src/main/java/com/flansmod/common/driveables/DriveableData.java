@@ -19,6 +19,7 @@ public class DriveableData implements IInventory
 	 * The name of this driveable's type
 	 */
 	public String type;
+	//public String owner;
 	/**
 	 * The sizes of each inventory (guns, bombs / mines, missiles / shells, cargo)
 	 */
@@ -81,6 +82,7 @@ public class DriveableData implements IInventory
 		bombs = new ItemStack[numBombs];
 		missiles = new ItemStack[numMissiles];
 		cargo = new ItemStack[numCargo];
+		//owner = tag.getString("Owner");
 		for(int i = 0; i < numGuns; i++)
 			ammo[i] = new ItemStack(tag.getCompoundTag("Ammo " + i));
 		
@@ -106,6 +108,7 @@ public class DriveableData implements IInventory
 	}
 
 	public void writeToNBT(NBTTagCompound tag) {
+		//tag.setString("Owner", owner);
 		tag.setString("Type", type);
 		if (engine != null) {
 			tag.setString("Engine", engine.shortName);

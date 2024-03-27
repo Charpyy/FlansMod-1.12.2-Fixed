@@ -80,6 +80,8 @@ public class TeamsManager
 	
 	//Configuration variables
 	// Player changeable stuff
+
+	public static boolean vehiclepin;
 	public static boolean voting = false, explosions = true, driveablesBreakBlocks = true,
 		bombsEnabled = true, shellsEnabled = true, missilesEnabled = true, bulletsEnabled = true, forceAdventureMode = true, canBreakGuns = true, canBreakGlass = true,
 		armourDrops = true, vehiclesNeedFuel = true, overrideHunger = true,

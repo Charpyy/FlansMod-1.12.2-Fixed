@@ -16,11 +16,12 @@ import com.flansmod.common.eventhandlers.PlayerLoginEventListener;
 import com.flansmod.common.eventhandlers.ServerTickEvent;
 import com.flansmod.common.guns.*;
 import com.flansmod.common.sync.SyncEventHandler;
+import com.flansmod.common.teams.*;
 import com.flansmod.common.types.IGunboxDescriptionable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.event.AnvilUpdateEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -66,10 +67,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -89,22 +86,6 @@ import com.flansmod.common.network.PacketHandler;
 import com.flansmod.common.paintjob.BlockPaintjobTable;
 import com.flansmod.common.paintjob.TileEntityPaintjobTable;
 import com.flansmod.common.parts.ItemPart;
-import com.flansmod.common.teams.ArmourType;
-import com.flansmod.common.teams.BlockArmourBox;
-import com.flansmod.common.teams.BlockSpawner;
-import com.flansmod.common.teams.CommandTeams;
-import com.flansmod.common.teams.EntityFlag;
-import com.flansmod.common.teams.EntityFlagpole;
-import com.flansmod.common.teams.EntityGunItem;
-import com.flansmod.common.teams.EntityTeamItem;
-import com.flansmod.common.teams.ItemFlagpole;
-import com.flansmod.common.teams.ItemOpStick;
-import com.flansmod.common.teams.ItemTeamArmour;
-import com.flansmod.common.teams.PlayerClass;
-import com.flansmod.common.teams.Team;
-import com.flansmod.common.teams.TeamsManager;
-import com.flansmod.common.teams.TeamsManagerRanked;
-import com.flansmod.common.teams.TileEntitySpawner;
 import com.flansmod.common.tools.EntityParachute;
 import com.flansmod.common.tools.ItemTool;
 import com.flansmod.common.types.EnumType;
@@ -341,7 +322,14 @@ public class FlansMod
 		Team.spectators = spectators;
 		log.debug("Pre-initializing complete.");
 	}
-
+	@EventHandler
+	public void serverStopping(FMLServerStoppingEvent event) {
+		VehicleOwnerManager.saveToCSV();
+	}
+	@EventHandler
+	public void serverStarting(FMLServerStartingEvent event) {
+		VehicleOwnerManager.loadFromCSV();
+	}
 	public void addMissingPackMcMeta() {
 		File[] packs = flanDir.listFiles();
 		if (packs != null)
@@ -695,7 +683,6 @@ public class FlansMod
 			enchantmentModule.PostInit();
 		
 		hooks.hook();
-		MinecraftForge.EVENT_BUS.register(ArmorInvisible.class);
 		MinecraftForge.EVENT_BUS.register(new SyncEventHandler());
 
 		log.info("Starting gunbox mapping.");
@@ -759,6 +746,7 @@ public class FlansMod
 	{
 		CommandHandler handler = ((CommandHandler)FMLCommonHandler.instance().getSidedDelegate().getServer().getCommandManager());
 		handler.registerCommand(new CommandTeams());
+		handler.registerCommand(new CommandsVehicle());
 	}
 	
 	@SubscribeEvent

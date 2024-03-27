@@ -24,13 +24,12 @@ public class PacketArmorInvisible extends PacketBase {
 
 	@Override
 	public void handleServerSide(EntityPlayerMP playerEntity) {
-		FlansMod.log("Received server side packet Camera Shake revoie ton code bozo");
+		//FlansMod.log("");
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void handleClientSide(EntityPlayer clientPlayer) {
-		FlansMod.log("Camera shake");
-		FlansModClient.cameraShake = 5;
+		//FlansMod.log("")
 	}
 }
