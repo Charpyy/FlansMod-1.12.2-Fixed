@@ -172,7 +172,7 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 		}
 
 		VehicleType type = getVehicleType();
-		if (type.setPlayerInvisible) {
+		if (type != null && type.setPlayerInvisible) {
 			invisibleTEST = true;
 		}
 
