@@ -205,6 +205,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, PacketB
 		registerPacket(PacketMGFire.class);
 		registerPacket(PacketMGMount.class);
 		registerPacket(PacketParticle.class);
+		registerPacket(PacketPlaneAnimator.class);
 		registerPacket(PacketPlaneControl.class);
 		registerPacket(PacketPlaySound.class);
 		registerPacket(PacketReload.class);
