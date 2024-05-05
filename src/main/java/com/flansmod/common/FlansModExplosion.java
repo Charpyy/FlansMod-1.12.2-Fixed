@@ -119,9 +119,10 @@ public class  FlansModExplosion extends Explosion
 
 			canceled = net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this);
 			
-			for(EntityPlayer obj : world.playerEntities)
-			{
-				FlansMod.getPacketHandler().sendTo(new SPacketExplosion(x, y, z, radius, affectedBlockPositions, getPlayerKnockbackMap().get(obj)), (EntityPlayerMP)obj);
+			for(EntityPlayer obj : world.playerEntities) {
+				if (obj instanceof EntityPlayerMP) {
+					FlansMod.getPacketHandler().sendTo(new SPacketExplosion(x, y, z, radius, affectedBlockPositions, getPlayerKnockbackMap().get(obj)), (EntityPlayerMP) obj);
+				}
 			}
 		}
 	}
