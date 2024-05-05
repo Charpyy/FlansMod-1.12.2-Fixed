@@ -98,7 +98,7 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 
 	public Entity lastRiddenByEntity;
 
-	public boolean invisibleTEST;
+
 	public float targetYaw = 0;
 
 	public float targetPitch = 0;
@@ -145,11 +145,9 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 	public void onUpdate()
 	{
 		super.onUpdate();
-		if (getControllingEntity() == null && lastRiddenByEntity instanceof EntityPlayer && invisibleTEST) {
+		if (getControllingEntity() == null && lastRiddenByEntity instanceof EntityPlayer) {
 			//System.out.println("INVISIBLE FALSE");
 			lastRiddenByEntity.setInvisible(false);
-
-			invisibleTEST = false;
 			lastRiddenByEntity = null;
 		}
 
@@ -172,9 +170,6 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 		}
 
 		VehicleType type = getVehicleType();
-		if (type != null && type.setPlayerInvisible) {
-			invisibleTEST = true;
-		}
 
 
 
@@ -199,13 +194,13 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 		if(pitchSoundDelay > 0)
 			pitchSoundDelay--;
 
-		if(playYawSound && yawSoundDelay == 0 && seatInfo.traverseSounds)
+		if(seatInfo != null && playYawSound && yawSoundDelay == 0 && seatInfo.traverseSounds)
 		{
 			PacketPlaySound.sendSoundPacket(posX, posY, posZ, 50, dimension, seatInfo.yawSound, false);
 			yawSoundDelay = seatInfo.yawSoundLength;
 		}
 
-		if(playPitchSound && pitchSoundDelay == 0 && seatInfo.traverseSounds)
+		if (seatInfo != null && playPitchSound && pitchSoundDelay == 0 && seatInfo.traverseSounds)
 		{
 			PacketPlaySound.sendSoundPacket(posX, posY, posZ, 50, dimension, seatInfo.pitchSound, false);
 			pitchSoundDelay = seatInfo.pitchSoundLength;
@@ -820,6 +815,8 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 			return false;
 		if (driveable == null)
 			return false;
+		if (entityplayer.getRidingEntity() != null)
+			return false;
 		// If they are using a repair tool, don't put them in
 		ItemStack currentItem = entityplayer.getHeldItemMainhand();
 		if (currentItem.getItem() instanceof ItemTool && ((ItemTool) currentItem.getItem()).type.healDriveables)
@@ -854,10 +851,6 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 			if (TeamsManager.vehiclepin) {
 				if (driveable.owner != null && entityplayer == driveable.owner) {
 					if (entityplayer.startRiding(this)) {
-						if (invisibleTEST) {
-							entityplayer.setInvisible(true);
-
-						}
 						playerPosX = prevPlayerPosX = entityplayer.posX;
 						playerPosY = prevPlayerPosY = entityplayer.posY;
 						playerPosZ = prevPlayerPosZ = entityplayer.posZ;
@@ -876,9 +869,6 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 						//entityplayer.sendMessage(new TextComponentString("On compare lui: " + players + " avec lui " + entityplayer.getName()));
 						if (players.contains(entityplayer.getName())) {
 							if (entityplayer.startRiding(this)) {
-								if (invisibleTEST) {
-									entityplayer.setInvisible(true);
-								}
 								playerPosX = prevPlayerPosX = entityplayer.posX;
 								playerPosY = prevPlayerPosY = entityplayer.posY;
 								playerPosZ = prevPlayerPosZ = entityplayer.posZ;
@@ -887,7 +877,7 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 							}
 							return true;
 						} else {
-							entityplayer.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7c Error contact Admin"));
+							entityplayer.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7cYou don't have access to this vehicle."));
 						}
 					} else {
 						//List<String> players = CommandsVehicle.vehicleOwners.get(name);
@@ -930,9 +920,6 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 				}
 			} else {
 				if (entityplayer.startRiding(this)) {
-					if (invisibleTEST) {
-						entityplayer.setInvisible(true);
-					}
 					playerPosX = prevPlayerPosX = entityplayer.posX;
 					playerPosY = prevPlayerPosY = entityplayer.posY;
 					playerPosZ = prevPlayerPosZ = entityplayer.posZ;
