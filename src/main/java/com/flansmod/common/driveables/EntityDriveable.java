@@ -929,11 +929,15 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 				{
 					shootProjectile(i, gunVec, lookVector, type, secondary, (float)getSpeed() + 3f);
 					if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-						cameraShakeClass();
+						if (!(this instanceof EntityPlane)) {
+							cameraShakeClass();
+						}
 					}
 					else {
-						FlansMod.getPacketHandler().sendTo(new PacketCameraShake(), (EntityPlayerMP) getDriver());
+						if (!(this instanceof EntityPlane)) {
+							FlansMod.getPacketHandler().sendTo(new PacketCameraShake(), (EntityPlayerMP) getDriver());
 
+						}
 					}
 					break;
 				}
@@ -1265,7 +1269,6 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 				try {
 					this.driveableData.parts.get(EnumDriveablePart.core).health /= 2;
 					if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 40) {
-						throttle = 0; //doesnt work
 						if(getDriveableData().parts.get(EnumDriveablePart.core).health <= 10) {
 							for (int i = 0; i < particleCount; i++) {
 								int surfaceY = world.getHeight(new BlockPos(x, 0, z)).getY();
@@ -3160,10 +3163,12 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 		return prevAxes.getRoll();
 	}
 
-	@Override
+
 	public void explode()
 	{
-
+		new FlansModExplosion(world, this, null, getDriveableType(), posX, posY, posZ,
+				getDriveableType().deathExplosionRadius, getDriveableType().deathExplosionPower, TeamsManager.explosions && getDriveableType().deathExplosionBreaksBlocks,
+				getDriveableType().deathExplosionDamageVsLiving, getDriveableType().deathExplosionDamageVsPlayer, getDriveableType().deathExplosionDamageVsPlane, getDriveableType().deathExplosionDamageVsVehicle, 4, 2);
 	}
 
 	@Override
