@@ -26,13 +26,24 @@ public class PacketPlaneAnimator extends PacketBase
 	public float tailWheelRotx, tailWheelRoty, tailWheelRotz;
 	public float doorPosx, doorPosy, doorPosz;
 	public float doorRotx, doorRoty, doorRotz;
+	public double x;
+	public double y;
+	public double z;
+	public float flapsYaw, flapsPitchLeft, flapsPitchRight;
+	public double motionY;
 
-	
 	public PacketPlaneAnimator() {}
-	
+
 	public PacketPlaneAnimator(EntityPlane plane)
 	{
 		entityId = plane.getEntityId();
+		motionY = plane.motionY;
+		x = plane.posX;
+		y = plane.posY;
+		z = plane.posZ;
+		flapsPitchLeft = plane.flapsPitchLeft;
+		flapsPitchRight = plane.flapsPitchRight;
+		flapsYaw = plane.flapsYaw;
 		//x
 		wingPosx = plane.wingPos.x;
 		wingRotx = plane.wingRot.x;
@@ -67,10 +78,17 @@ public class PacketPlaneAnimator extends PacketBase
 		doorPosz = plane.doorPos.z;
 		doorRotz = plane.doorRot.z;
 	}
-		
+
 	@Override
-	public void encodeInto(ChannelHandlerContext ctx, ByteBuf data) 
+	public void encodeInto(ChannelHandlerContext ctx, ByteBuf data)
 	{
+		data.writeDouble(motionY);
+		data.writeDouble(x);
+		data.writeDouble(y);
+		data.writeDouble(z);
+		data.writeFloat(flapsPitchLeft);
+		data.writeFloat(flapsPitchRight);
+		data.writeFloat(flapsYaw);
     	data.writeInt(entityId);
     	//WingPos
     	data.writeFloat(wingPosx);
@@ -115,9 +133,16 @@ public class PacketPlaneAnimator extends PacketBase
 	}
 
 	@Override
-	public void decodeInto(ChannelHandlerContext ctx, ByteBuf data) 
+	public void decodeInto(ChannelHandlerContext ctx, ByteBuf data)
 	{
 		entityId = data.readInt();
+		motionY = data.readDouble();
+		x = data.readDouble();
+		y = data.readDouble();
+		z = data.readDouble();
+		flapsYaw = data.readFloat();
+		flapsPitchLeft = data.readFloat();
+		flapsPitchRight = data.readFloat();
 		//wingPos
 		wingPosx = data.readFloat();
 		wingPosy = data.readFloat();
@@ -161,7 +186,7 @@ public class PacketPlaneAnimator extends PacketBase
 	}
 
 	@Override
-	public void handleServerSide(EntityPlayerMP playerEntity) 
+	public void handleServerSide(EntityPlayerMP playerEntity)
 	{
 		EntityPlane plane = null;
 		for(Object obj : playerEntity.world.loadedEntityList)
@@ -175,9 +200,16 @@ public class PacketPlaneAnimator extends PacketBase
 		if(plane != null)
 			updateDriveable(plane, false);
 	}
-	
+
 	protected void updateDriveable(EntityPlane plane, boolean clientSide)
 	{
+		plane.motionY = motionY;
+		plane.posX = x;
+		plane.posY = y;
+		plane.posZ = z;
+		plane.flapsYaw = flapsYaw;
+		plane.flapsPitchRight = flapsPitchRight;
+		plane.flapsPitchLeft = flapsPitchLeft;
 		plane.wingPos = new Vector3f(wingPosx, wingPosy, wingPosz);
 		plane.wingRot = new Vector3f(wingRotx, wingRoty, wingRotz);
 		plane.wingWheelPos = new Vector3f(wingWheelPosx, wingWheelPosy, wingWheelPosz);
@@ -192,7 +224,7 @@ public class PacketPlaneAnimator extends PacketBase
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void handleClientSide(EntityPlayer clientPlayer) 
+	public void handleClientSide(EntityPlayer clientPlayer)
 	{
 		if(clientPlayer == null || clientPlayer.world == null)
 			return;
