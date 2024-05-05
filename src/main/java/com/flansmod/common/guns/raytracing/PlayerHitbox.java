@@ -248,13 +248,15 @@ public class PlayerHitbox
 			//if(damagesource.)
 			
 			//Attack the entity!
-			if(player.attackEntityFrom(damagesource, hitDamage))
-			{
-				//If the attack was allowed, we should remove their immortality cooldown so we can shoot them again. Without this, any rapid fire gun become useless
-				player.arrowHitTimer++;
-				player.hurtResistantTime = player.maxHurtResistantTime / 2;
-				//Yuck.
-				//PacketDispatcher.sendPacketToAllAround(posX, posY, posZ, 50, dimension, PacketPlaySound.buildSoundPacket(posX, posY, posZ, type.hitSound, true));
+			if (player != null && damagesource != null) {
+				if(player.attackEntityFrom(damagesource, hitDamage))
+					{
+						//If the attack was allowed, we should remove their immortality cooldown so we can shoot them again. Without this, any rapid fire gun become useless
+						player.arrowHitTimer++;
+						player.hurtResistantTime = player.maxHurtResistantTime / 2;
+						//Yuck.
+						//PacketDispatcher.sendPacketToAllAround(posX, posY, posZ, 50, dimension, PacketPlaySound.buildSoundPacket(posX, posY, posZ, type.hitSound, true));
+					}
 			}
 			return penetratingPower - 1;
 		}
