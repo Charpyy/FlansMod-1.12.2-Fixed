@@ -3,6 +3,7 @@ package com.flansmod.common.driveables;
 import com.flansmod.client.FlansModClient;
 import com.flansmod.client.handlers.KeyInputHandler;
 import com.flansmod.client.model.animation.AnimationController;
+import com.flansmod.common.FlansModExplosion;
 import com.flansmod.common.RotatedAxes;
 import com.flansmod.common.eventhandlers.DriveableDeathByHandEvent;
 import com.flansmod.common.network.*;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,8 +32,11 @@ import com.flansmod.common.vector.Matrix4f;
 import com.flansmod.common.vector.Vector3f;
 import org.lwjgl.input.Keyboard;
 
+import java.net.ServerSocket;
+
 public class EntityPlane extends EntityDriveable
 {
+	public boolean GearBreak = false;
 	private boolean invisible;
 	/**
 	 * The flap positions, used for rendering and for controlling the plane rotations
@@ -301,8 +306,6 @@ public class EntityPlane extends EntityDriveable
 			case 6: //Exit : Get out
 			{
 				if (getSeats()[0].getControllingPassenger() != null) {
-					getSeats()[0].getControllingPassenger().setInvisible(false);
-					invisible = false;
 				}
 
 				return true;
@@ -346,10 +349,14 @@ public class EntityPlane extends EntityDriveable
 				if(toggleTimer <= 0)
 				{
 					if (world.isAirBlock(new BlockPos((int) posX, (int) (posY - 3), (int) posZ))) {
-						varGear = !varGear;
-						player.sendMessage(new TextComponentString("Landing gear " + (varGear ? "down" : "up")));
-						toggleTimer = 10;
-						FlansMod.getPacketHandler().sendToServer(new PacketDriveableControl(this));
+						if (!GearBreak) {
+							varGear = !varGear;
+							player.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7b Landing gear " + (varGear ? "down" : "up")));
+							toggleTimer = 10;
+							FlansMod.getPacketHandler().sendToServer(new PacketDriveableControl(this));
+						} else {
+							player.sendMessage(new TextComponentString("\u00a78\u00bb \u00a7c Your plane gear is broken!"));
+						}
 					}
 				}
 				return true;
@@ -423,14 +430,21 @@ public class EntityPlane extends EntityDriveable
 	{
 		super.updateKeyHeldState(key, held);
 	}
+
+
+	boolean leaved;
+	int seconde;
 	public int ticks;
+	public boolean soundBarrier = false;
 	public EntityPlayer driver;
+	double prevMotionY;
 	//boolean sneak = KeyInputHandler.isSneak;
 	@Override
 	public void onUpdate()
 	{
 		super.onUpdate();
 		//Set previous positions
+		prevMotionY = motionY;
 		prevWingPos = wingPos;
 		prevWingRot = wingRot;
 		prevWingWheelPos = wingWheelPos;
@@ -473,21 +487,26 @@ public class EntityPlane extends EntityDriveable
 			}
 
 		}
-		
+
 		if(!readyForUpdates)
 		{
 			return;
 		}
-		
+
+
+
+
+
+
 		//Get plane type
 		PlaneType type = getPlaneType();
 		DriveableData data = getDriveableData();
-		if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-			invisible = true;
-		}
-		if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
-			getSeat(0).getControllingPassenger().setInvisible(true);
-		}
+		//if (!invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		//	invisible = true;
+		//}
+		//if(invisible && this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
+		//	getSeat(0).getControllingPassenger().setInvisible(true);
+		//}
 		//if (sneak) {
 		//	if(!this.world.isRemote && getSeat(0).getControllingPassenger() != null && type.setPlayerInvisible) {
 		//		if (driver != null) {
@@ -501,7 +520,17 @@ public class EntityPlane extends EntityDriveable
 			FlansMod.log.warn("Plane type null. Not ticking plane");
 			return;
 		}
-		
+
+		//double currentPosY = posY;
+		//double deltaY = currentPosY - vertiPosY;
+		//vertiPosY = currentPosY;
+		//double verticalSpeed = deltaY / seconde;
+		//System.out.println(verticalSpeed);
+
+		if (getDriver() != null) {
+			//getDriver().sendStatusMessage(new TextComponentString("\u00a78\u00bb \u00a7c Vertical Speed: "+verticalSpeed), true);
+		}
+
 		//Work out if this is the client side and the player is driving
 		boolean thePlayerIsDrivingThis =
 				world.isRemote && getSeat(0) != null && getSeat(0).getControllingPassenger() instanceof EntityPlayer
@@ -524,6 +553,7 @@ public class EntityPlane extends EntityDriveable
 						dir.z);
 			}
 		}
+
 		if (this.ticksFlareUsing > 0)
 			this.ticksFlareUsing--;
 		if (this.flareDelay > 0)
@@ -577,19 +607,24 @@ public class EntityPlane extends EntityDriveable
 			doorPos = transformPart(doorPos, type.doorPos2, type.doorRate);
 			doorRot = transformPart(doorRot, type.doorRot2, type.doorRotRate);
 		}
-
-		if (!world.isAirBlock(new BlockPos((int) posX, (int) (posY - 10), (int) posZ)) && throttle <= 0.4) {
-			if (!varGear && getSeat(0) != null && getSeat(0).getControllingPassenger() != null && type.autoDeployLandingGearNearGround) {
-				((EntityPlayer) getSeat(0).getControllingPassenger()).sendMessage(new TextComponentString("Deploying landing gear"));
-			}
-			varGear = true;
-			if (type.foldWingForLand) {
-				if (varWing && getSeat(0) != null && getSeat(0).getControllingPassenger() != null) {
-					((EntityPlayer) getSeat(0).getControllingPassenger()).sendMessage(new TextComponentString("Extending wings"));
-				}
-				varWing = false;
+		if (!world.isAirBlock(new BlockPos((int) posX, (int) (posY - 10), (int) posZ)) && throttle >= 0.3) {
+			if (varGear && getSeat(0) != null && getSeat(0).getControllingPassenger() != null && type.autoDeployLandingGearNearGround) {
+				((EntityPlayer) getSeat(0).getControllingPassenger()).sendMessage(new TextComponentString("\u00a78\u00bb \u00a7b Landing gear UP"));
+				varGear = false;
 			}
 		}
+		//if (!world.isAirBlock(new BlockPos((int) posX, (int) (posY - 10), (int) posZ)) && throttle <= 0.4) {
+		//	if (!varGear && getSeat(0) != null && getSeat(0).getControllingPassenger() != null && type.autoDeployLandingGearNearGround) {
+		//		((EntityPlayer) getSeat(0).getControllingPassenger()).sendMessage(new TextComponentString("Deploying landing gear"));
+		//	}
+		//	varGear = true;
+		//	if (type.foldWingForLand) {
+		//		if (varWing && getSeat(0) != null && getSeat(0).getControllingPassenger() != null) {
+		//			((EntityPlayer) getSeat(0).getControllingPassenger()).sendMessage(new TextComponentString("Extending wings"));
+		//		}
+		//		varWing = false;
+		//	}
+		//}
 
 		if (!world.isAirBlock(new BlockPos((int) posX, (int) (posY - 3), (int) posZ)) && throttle <= 0.05 && type.autoOpenDoorsNearGround) {
 			if (!doorsHaveShut) {
@@ -607,7 +642,6 @@ public class EntityPlane extends EntityDriveable
 		flapsYaw *= 0.9F;
 		flapsPitchLeft *= 0.9F;
 		flapsPitchRight *= 0.9F;
-		
 		//Limit flap angles
 		if(flapsYaw > 20)
 			flapsYaw = 20;
@@ -623,15 +657,16 @@ public class EntityPlane extends EntityDriveable
 			flapsPitchLeft = -20;
 		
 		//Player is not driving this. Update its position from server update packets 
-		if(world.isRemote && !thePlayerIsDrivingThis)
-		{
-			//The driveable is currently moving towards its server position. Continue doing so.
-			if(serverPositionTransitionTicker > 0)
-			{
-				moveTowardServerPosition();
-			}
-			//If the driveable is at its server position and does not have the next update, it should just simulate itself as a server side plane would, so continue
-		}
+		//if(world.isRemote)// && !thePlayerIsDrivingThis)
+		//{
+		//	//The driveable is currently moving towards its server position. Continue doing so.
+		//	if(serverPositionTransitionTicker > 0)
+		//	{
+		//		System.out.println("X:"+posX+" Y:"+posY+" Z:"+posZ);
+		//		moveTowardServerPosition();
+		//	}
+		//	//If the driveable is at its server position and does not have the next update, it should just simulate itself as a server side plane would, so continue
+		//}
 		
 		//Movement
 		
@@ -644,18 +679,17 @@ public class EntityPlane extends EntityDriveable
 				canThrust() && type.heliThrottlePull)
 			throttle = (throttle - 0.5F) * throttlePull + 0.5F;
 
-		if (!canThrust()) {
-			throttle *= 0.99;
-			if (throttle > 0.8) {
-				throttle -= 0.001;
-			}
+
+		if (!canThrust() && !leaved) {
 			if (throttle > 0) {
-				throttle -= 0.001;
+				throttle *= 0.99;
 			}
 		}
 
+		//================================================================================================
+		/*
 		//Get the speed of the plane
-		/*float lastTickSpeed = (float)getSpeedXYZ();
+		float lastTickSpeed = (float)getSpeedXYZ();
 		
 		//Alter angles
 		//Sensitivity function
@@ -822,21 +856,113 @@ public class EntityPlane extends EntityDriveable
 				break;
 			default:
 				break;
-		}*/
+		}
+		*/
+		//================================================================================================
+
 		flightController.fly(this);
-		
 		double motion = Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
 		if(motion > 10)
 		{
 			motionX *= 10 / motion;
 			motionY *= 10 / motion;
 			motionZ *= 10 / motion;
-		} else if (!(getSeat(0) != null && getSeat(0).getControllingPassenger() instanceof EntityPlayer)) {
+		} else if (getSeat(0) != null && !(getSeat(0).getControllingPassenger() instanceof EntityPlayer)) {
 			// Slow down the plane/heli if its empty. We take 1 off emptyDrag, as FlightController applies a drag of 1 to it already.
 			motionX *= 1F - (0.05F * (type.emptyDrag - 1));
 			motionZ *= 1F - (0.05F * (type.emptyDrag - 1));
-
 		}
+		double dX = (posX - prevPosX) / 10;
+		double dY = (posY - prevPosY) / 10;
+		double dZ = (posZ - prevPosZ) / 10;
+		if(throttle > 0.8 && throttle < 0.9 && !soundBarrier){
+			soundBarrier = true;
+			for (int i = 0; i < 600; i++) {
+				FlansMod.proxy.spawnParticle("flansmod.smoke", posX, posY, posZ, prevPosX + dX * i, prevPosY + dY * i, prevPosZ + dZ * i);
+			}
+			System.out.println("MUR DU SON");
+		}
+		if (getDriver() != null) {
+			getDriver().sendStatusMessage(new TextComponentString("\u00a78\u00bb \u00a7c Roll: "+axes.getRoll()+" Pitch: "+axes.getPitch()+" Yaw: "+axes.getYaw()), true);
+		}
+
+		if (throttle < 0.7999 && soundBarrier) {
+			soundBarrier = false;
+		}
+
+		if (getSeat(0) != null && getSeat(0).getControllingPassenger() == null && throttle > 0.00000001 && !onGround) {
+			leaved = true;
+			if (axes.getPitch() < -30 && axes.getPitch() > - 120) {
+				throttle += 0.1F;
+			}
+			if (axes.getRoll() < 0 && axes.getRoll() > -90) {
+				flapsYaw += 0.5F;
+				flapsPitchRight += 0.5F;
+				flapsPitchLeft -= 0.5F;
+				throttle += 0.05F;
+			}
+			if (axes.getRoll() < -90 && axes.getRoll() > -180) {
+				flapsPitchRight += 0.5F;
+				flapsPitchLeft += 0.5F;
+				flapsYaw += 0.5F;
+				throttle += 0.05F;
+			}
+			if (axes.getRoll() < 180 && axes.getRoll() > 90) {
+				flapsPitchRight -= 0.5F;
+				flapsPitchLeft -= 0.5F;
+				flapsYaw -= 0.5F;
+				throttle += 0.05F;
+			}
+			if (axes.getRoll() < 90 && axes.getRoll() > 0) {
+				flapsPitchRight -= 0.5F;
+				flapsPitchLeft -= 0.5F;
+				flapsYaw -= 0.5F;
+				throttle += 0.05F;
+			}
+
+
+			if (this.onGround()) {
+				if (!world.isRemote) {
+					new FlansModExplosion(world, this, null, getDriveableType(), posX, posY, posZ,
+							getDriveableType().deathExplosionRadius, getDriveableType().deathExplosionPower, TeamsManager.explosions && getDriveableType().deathExplosionBreaksBlocks,
+							getDriveableType().deathExplosionDamageVsLiving, getDriveableType().deathExplosionDamageVsPlayer, getDriveableType().deathExplosionDamageVsPlane, getDriveableType().deathExplosionDamageVsVehicle, 4, 2);
+				}
+				this.setDead();
+			}
+		}
+
+
+		if (throttle > 0.4) {
+			if (!gearDown()) {
+				if (this.onGround()) {
+					if (!world.isRemote) {
+						System.out.println("Server");
+						new FlansModExplosion(world, this, null, getDriveableType(), posX, posY, posZ,
+								getDriveableType().deathExplosionRadius, getDriveableType().deathExplosionPower, TeamsManager.explosions && getDriveableType().deathExplosionBreaksBlocks,
+								getDriveableType().deathExplosionDamageVsLiving, getDriveableType().deathExplosionDamageVsPlayer, getDriveableType().deathExplosionDamageVsPlane, getDriveableType().deathExplosionDamageVsVehicle, 4, 2);
+					}
+					this.setDead();
+				}
+			}
+		}
+
+
+		if (gearDown() && throttle > 0.6 && !GearBreak) {
+			if (getSeat(0).getControllingPassenger() instanceof EntityPlayer) {
+				getSeat(0).getControllingPassenger().sendMessage(new TextComponentString("\u00a78\u00bb \u00a7c The wheels of your plane broke cause of the speed !"));
+				GearBreak = true;
+				varGear = false;
+			}
+		}
+
+		if (throttle > 0.6) {
+			if (getSeat(0).getControllingPassenger() instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) getSeat(0).getControllingPassenger();
+				player.sendStatusMessage(new TextComponentString("\u00a78\u00bb \u00a7c Don't gear down with this speed."), true);
+			}
+		}
+
+
 
 		for(EntityWheel wheel : wheels)
 		{
@@ -996,9 +1122,8 @@ public class EntityPlane extends EntityDriveable
 			if(seat != null)
 				seat.updatePosition();
 		}
-		
 		//Calculate movement on the client and then send position, rotation etc to the server
-		if(serverPosX != posX || serverPosY != posY || serverPosZ != posZ || serverYaw != axes.getYaw())
+		if(serverPosX != posX || serverPosY != posY || serverPosZ != posZ || serverYaw != axes.getYaw() || serverPitch != rotationPitch)
 		{
 			if(thePlayerIsDrivingThis)
 			{
@@ -1007,6 +1132,7 @@ public class EntityPlane extends EntityDriveable
 				serverPosX = posX;
 				serverPosY = posY;
 				serverPosZ = posZ;
+				serverPitch = rotationPitch;
 				serverYaw = axes.getYaw();
 			}
 		}
@@ -1016,11 +1142,12 @@ public class EntityPlane extends EntityDriveable
 	
 	public boolean canThrust()
 	{
-		return (getSeat(0) != null && getSeat(0).getControllingPassenger() instanceof EntityPlayer
-				&& ((EntityPlayer)getSeat(0).getControllingPassenger()).capabilities.isCreativeMode) ||
+		return (getSeat(0) != null && getSeat(0).getControllingPassenger() instanceof EntityPlayer && ((EntityPlayer)getSeat(0).getControllingPassenger()).capabilities.isCreativeMode)  ||
 				driveableData.fuelInTank > 0;
 	}
-	
+
+
+
 	@Override
 	public void setDead()
 	{
