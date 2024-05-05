@@ -546,7 +546,11 @@ public class EntityVehicle extends EntityDriveable implements IExplodeable
 		if (type.tank && !hasBothTracks()) throttle = 0;
 		if (disabled || !hasBothTracks()) wheelsYaw = 0;
 
-
+		if (isUnderWater() && !type.worksUnderWater && !hugeBoat) {
+			if (this.driveableData.parts.get(EnumDriveablePart.core).health <= 40) {
+				throttle = 0;
+			}
+		}
 		//Aesthetics
 		//Rotate the wheels
 		if(hasEnoughFuel() && isEngineActive())
