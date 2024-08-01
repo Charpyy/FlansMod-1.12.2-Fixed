@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.flansmod.RenderLayerHeldGun;
+import com.flansmod.client.layer.RenderLayerHeldGun;
+import com.flansmod.client.patch.customnpc.CustomNPCListener;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -19,10 +21,8 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
@@ -129,9 +129,9 @@ public class ClientProxy extends CommonProxy
 	private FlansModClient flansModClient;
 	
 	@Override
-	public void preInit()
-	{
+	public void preInit() {
 		MinecraftForge.EVENT_BUS.register(this);
+		startPatches();
 	}
 	
 	@Override
@@ -153,6 +153,14 @@ public class ClientProxy extends CommonProxy
 
 	public void setupLayers(RenderPlayer renderer) {
 		renderer.addLayer(new RenderLayerHeldGun(renderer));
+	}
+
+	//
+	public void startPatches() {
+		if (Loader.isModLoaded("customnpcs")) {
+			CustomNPCListener customNPCListener = new CustomNPCListener();
+			MinecraftForge.EVENT_BUS.register(customNPCListener);
+		}
 	}
 	
 	@SubscribeEvent
