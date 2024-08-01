@@ -434,14 +434,14 @@ public class FlansModClient extends FlansMod
 				float f = originalMouseSensitivity = gameSettings.mouseSensitivity;
 				gameSettings.mouseSensitivity = f / (float)Math.sqrt(scope.getZoomFactor());
 				originalThirdPerson = gameSettings.thirdPersonView;
-				gameSettings.thirdPersonView = 0;
+//				gameSettings.thirdPersonView = 0;
 				originalFOV = gameSettings.fovSetting;
 			}
 			else
 			{
 				currentScope = null;
 				gameSettings.mouseSensitivity = originalMouseSensitivity;
-				gameSettings.thirdPersonView = originalThirdPerson;
+//				gameSettings.thirdPersonView = originalThirdPerson;
 				gameSettings.fovSetting = originalFOV;
 			}
 			scopeTime = 10;

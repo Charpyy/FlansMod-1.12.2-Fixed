@@ -149,11 +149,11 @@ public class ShotHandler
 		//Animation
 		//TODO should this be send to all Players?
 		//FlansMod.packetHandler.sendToAllAround(new PacketBulletTrail(rayTraceOrigin, finalhit, 0.05f, 10f, 10f, shot.getBulletType().trailTexture), rayTraceOrigin.x, rayTraceOrigin.y, rayTraceOrigin.z, 500f, world.provider.getDimension());
-		for (EntityPlayer player : world.playerEntities)
-		{
-			FlansMod.getPacketHandler().sendTo(new PacketBulletTrail(rayTraceOrigin, finalhit, 0.05f, 10f, 10f, shot.getBulletType().trailTexture), (EntityPlayerMP) player);
-
-		}
+//		for (EntityPlayer player : world.playerEntities)
+//		{
+//			FlansMod.getPacketHandler().sendTo(new PacketBulletTrail(rayTraceOrigin, finalhit, 0.05f, 10f, 10f, shot.getBulletType().trailTexture), (EntityPlayerMP) player);
+//
+//		}
 	}
 	
 	/**

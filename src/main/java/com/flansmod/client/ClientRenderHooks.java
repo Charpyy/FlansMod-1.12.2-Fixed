@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.util.EnumHandSide;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.glu.Project;
@@ -328,8 +332,7 @@ public class ClientRenderHooks
 		return f1;
 	}
 	
-	public void update()
-	{
+	public void update() {
 		for(Iterator<KillMessage> it = killMessages.iterator(); it.hasNext(); )
 		{
 			KillMessage message = it.next();
@@ -404,8 +407,7 @@ public class ClientRenderHooks
 		}
 	}
 	
-	public void setPartialTick(float partialTick)
-	{
+	public void setPartialTick(float partialTick) {
 		this.partialTicks = partialTick;
 	}
 	
@@ -494,31 +496,20 @@ public class ClientRenderHooks
 				}
 				
 				GlStateManager.enableAlpha();
-				
+
 				biped.rightArmPose = ArmPose.BOW_AND_ARROW;
+
+//				biped.rightArmPose = null;
+//
+				//needs to be replaced with a network package (I'll do it later)
+//				if(FlansModClient.zoomProgress > 0.5){
+//				    biped.rightArmPose = ArmPose.BOW_AND_ARROW;
+//				}else {
+//					biped.rightArmPose = ArmPose.ITEM;
+//				}
+
 				biped.setLivingAnimations(entity, f8, f7, partialTicks);
 				biped.setRotationAngles(f8, f7, f5, f4, f9, 0.0625F, entity);
-				
-				// Render main hand gun
-				{
-					GlStateManager.pushMatrix();
-					if(hand == EnumHand.MAIN_HAND)
-					{
-						biped.bipedRightArm.postRender(0.0625F);
-						GlStateManager.translate(-0.05F, 0.4F, 0.05F);
-						ClientProxy.gunRenderer
-								.renderItem(CustomItemRenderType.EQUIPPED, hand, stack, mc.world, entity);
-					}
-					else if(entity instanceof EntityPlayer)
-					{
-						biped.bipedLeftArm.postRender(0.0625F);
-						GlStateManager.rotate(-90F, 1F, 0F, 0F);
-						GlStateManager.rotate(-90F, 0F, 1F, 0F);
-						GlStateManager.translate(0.6F, 0F, -0.05F);
-						ClientProxy.gunRenderer.renderOffHandGun((EntityPlayer)entity, stack);
-					}
-					GlStateManager.popMatrix();
-				}
 				
 				GlStateManager.depthMask(true);
 				GlStateManager.disableRescaleNormal();
@@ -595,8 +586,7 @@ public class ClientRenderHooks
 		}
 	}
 	
-	public void updatePlayerView()
-	{
+	public void updatePlayerView() {
 		if(mc.player != null && mc.player.getRidingEntity() instanceof IControllable)
 		{
 			if(!mc.mouseHelper.equals(constantMouseHelper))
@@ -617,8 +607,7 @@ public class ClientRenderHooks
 		}
 	}
 	
-	public void cameraSetup(CameraSetup event)
-	{
+	public void cameraSetup(CameraSetup event) {
 		if(mc.player.getRidingEntity() instanceof IControllable)
 		{
 			EntitySeat seat = ((IControllable)mc.player.getRidingEntity()).getSeat(mc.player);
@@ -637,8 +626,7 @@ public class ClientRenderHooks
 		}
 	}
 	
-	public void modifyHUD(RenderGameOverlayEvent event)
-	{
+	public void modifyHUD(RenderGameOverlayEvent event) {
 		ScaledResolution scaledresolution = new ScaledResolution(FlansModClient.minecraft);
 		int i = scaledresolution.getScaledWidth();
 		int j = scaledresolution.getScaledHeight();
@@ -672,8 +660,7 @@ public class ClientRenderHooks
 		}
 	}
 	
-	private void renderScopeOverlay(int i, int j)
-	{
+	private void renderScopeOverlay(int i, int j) {
 		// Scopes and helmet overlays
 		String overlayTexture = null;
 		if(FlansModClient.currentScope != null && FlansModClient.currentScope.hasZoomOverlay() &&

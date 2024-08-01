@@ -4,6 +4,9 @@ import java.util.Random;
 
 import com.flansmod.client.FlansModClient;
 import com.flansmod.common.vector.Vector3f;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 
 public class GunAnimations
 {
@@ -16,7 +19,7 @@ public class GunAnimations
     /**
      * Recoil
      */
-    public float gunRecoil = 0F, lastGunRecoil = 0F, recoilAmount = 0.33F;
+    public float gunRecoil = 0F, lastGunRecoil = 0F, recoilAmount = 0.0F;
     /**
      * Slide
      */
@@ -105,13 +108,9 @@ public class GunAnimations
 		UNTILT
 	}
 	
-	public GunAnimations()
-	{
-		
-	}
+	public GunAnimations() {}
 	
-	public void update()
-	{
+	public void update() {
 		//Assign values
         lastPumped = pumped;
         lastCharged = charged;
@@ -120,11 +119,9 @@ public class GunAnimations
 		
 		muzzleFlash--;
 		
-		if(timeUntilPump > 0)
-		{
+		if(timeUntilPump > 0) {
 			timeUntilPump--;
-			if(timeUntilPump == 0)
-			{
+			if(timeUntilPump == 0) {
 				//Pump it!
 				pumping = true;
 				lastPumped = pumped = -1F;
@@ -191,7 +188,7 @@ public class GunAnimations
         //Recoil model
         lastGunRecoil = gunRecoil;
         if (gunRecoil > 0)
-            gunRecoil *= 0.7F;
+            gunRecoil *= 0.2F;
         
         //Slide model
 		lastGunSlide = gunSlide;
@@ -234,21 +231,21 @@ public class GunAnimations
 		float offsetScale = 0.005f;
 		
 		if(recoil > 0)
-			recoil *= 0.5F;
+			recoil = 0F;
 		
-		recoilVelocity.x += (random.nextGaussian() - 0.5f) * recoil * offsetScale;
-		recoilVelocity.y += (random.nextGaussian() - 0.5f) * recoil * offsetScale;
-		recoilVelocity.z += (random.nextGaussian() - 0.25f) * recoil * offsetScale;
-		recoilVelocity.scale(0.5f);
-		
-		Vector3f.add(recoilOffset, recoilVelocity, recoilOffset);
+//		recoilVelocity.x += (random.nextGaussian() - 10.5f) * recoil * offsetScale;
+//		recoilVelocity.y += (random.nextGaussian() - 10.5f) * recoil * offsetScale;
+//		recoilVelocity.z += (random.nextGaussian() - 10.25f) * recoil * offsetScale;
+//		recoilVelocity.scale(0.5f);
+//
+//		Vector3f.add(recoilOffset, recoilVelocity, recoilOffset);
 		
 		recoilOffset.scale(0.9f);
 		
 		recoilAngle -= recoil * scale;
 		antiRecoil += recoil;
 		
-		recoilAngle += antiRecoil * 0.2f * scale;
+		recoilAngle += antiRecoil * 0.1f * scale;
 		antiRecoil *= 0.8F;
 		
 		switch(lookAt)
@@ -321,8 +318,7 @@ public class GunAnimations
         }
 	}
 	
-	public void doReload(int reloadTime, int pumpDelay, int pumpTime, int chargeDelay, int chargeTime, int ammoCount, boolean single)
-	{
+	public void doReload(int reloadTime, int pumpDelay, int pumpTime, int chargeDelay, int chargeTime, int ammoCount, boolean single) {
 		reloading = true;
 		lastReloadAnimationProgress = reloadAnimationProgress = 0F;
 		reloadAnimationTime = reloadTime;

@@ -2,10 +2,15 @@ package com.flansmod.client.model;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
@@ -108,8 +113,7 @@ public class RenderGun implements CustomItemRenderer
 					GlStateManager.translate(model.itemFrameOffset.x, model.itemFrameOffset.y, model.itemFrameOffset.z);
 					break;
 				}
-				case EQUIPPED:
-				{
+				case EQUIPPED: {
 					if(hand == EnumHand.OFF_HAND)
 					{
 						GlStateManager.rotate(-70F, 1F, 0F, 0F);
@@ -124,7 +128,9 @@ public class RenderGun implements CustomItemRenderer
 						GlStateManager.translate(0.2F, 0.05F, -0F);
 						GlStateManager.scale(1F, 1F, -1F);
 					}
+
 					GlStateManager.translate(model.thirdPersonOffset.x, model.thirdPersonOffset.y, model.thirdPersonOffset.z);
+
 					/*
 					if(animations.meleeAnimationProgress > 0 && animations.meleeAnimationProgress < gunType.meleePath.size())
 					{
@@ -151,21 +157,21 @@ public class RenderGun implements CustomItemRenderer
 						GlStateManager.rotate(45F, 0F, 1F, 0F);
 						GlStateManager.translate(-1F, 0.675F, -1.8F);
 					}
-					else if (FlansModClient.zoomProgress + 0.1F > 0.9F && ItemGun.crouching && !animations.reloading)
-					{
-						GlStateManager.rotate(45F, 0F, 1F, 0F);
-						GlStateManager.rotate(0F - 5F * adsSwitch, 0F, 0F, 1F);
-						GlStateManager.translate(-1F, 0.675F + 0.180F * adsSwitch, -1F - 0.395F * adsSwitch);
-
-						if(gunType.hasScopeOverlay && !model.stillRenderGunWhenScopedOverlay)
-							GlStateManager.translate(-0.7F * adsSwitch, -0.12F * adsSwitch, -0.05F * adsSwitch);
-						GlStateManager.rotate(4.5F * adsSwitch, 0F, 0F, 1F);
-						// forward, up, sideways
-						GlStateManager.translate(model.crouchZoom, -0.03F * adsSwitch, 0F);
-					}
+					//Не будет ис пользоваться так как имеются проблемы с zoomProgress
+//					else if (FlansModClient.zoomProgress + 0.1F > 1F && ItemGun.crouching && !animations.reloading)
+//					{
+//						GlStateManager.rotate(45F, 0F, 1F, 0F);
+//						GlStateManager.rotate(0F - 5F * adsSwitch, 0F, 0F, 1F);
+//						GlStateManager.translate(-1.396F * adsSwitch, 0.613F + 0.180F * adsSwitch, -1F - 0.401F * adsSwitch);
+//
+//						if(gunType.hasScopeOverlay && !model.stillRenderGunWhenScopedOverlay)
+//							GlStateManager.translate(-0.7F * adsSwitch, -0.12F * adsSwitch, -0.05F * adsSwitch);
+//						GlStateManager.rotate(4.5F * adsSwitch, 0F, 0F, 1F);
+//						// forward, up, sideways
+//						GlStateManager.translate(model.crouchZoom, -0.03F * adsSwitch, 0F);
+//					}
 					else if (FlansModClient.zoomProgress + 0.1F < 0.2F && ItemGun.sprinting && !animations.reloading
-							&& !ItemGun.shooting && model.fancyStance)
-					{
+							&& !ItemGun.shooting && model.fancyStance) {
 						ItemStack itemstackInHand = minecraft.player.inventory.getCurrentItem();
 						Item itemInHand = itemstackInHand.getItem();
 						if (itemInHand instanceof ItemGun) {
@@ -174,12 +180,12 @@ public class RenderGun implements CustomItemRenderer
 							if (!name.equals("item.44_Bazooka") && !name.equals("item.44_PIAT") && !name.equals("item.44_Panzerschreck")) {
 								GlStateManager.rotate(45F + model.stanceRotate.x, 0F + model.stanceRotate.y, 1F, 0F);
 								GlStateManager.rotate(0F - 5F * adsSwitch + model.stanceRotate.z, 0F, 0F, 1F);
-								GlStateManager.translate(-1F, 0.675F + 0.180F * adsSwitch, -1F - 0.395F * adsSwitch);
+								GlStateManager.translate(-1.396F * adsSwitch, 0.613F + 0.180F * adsSwitch, -1F - 0.401F * adsSwitch);
 							}
 							else {
 								GlStateManager.rotate(45F, 0F, 1F, 0F); // Angle nose down slightly -> angle nose up slightly
 								GlStateManager.rotate(0F - 5F * adsSwitch, 0F, 0F, 1F); // Rotate Z nose inward
-								GlStateManager.translate(-1F, 0.675F + 0.180F * adsSwitch, -1F - 0.395F * adsSwitch);
+								GlStateManager.translate(-1.396F * adsSwitch, 0.613F + 0.180F * adsSwitch, -1F - 0.401F * adsSwitch);
 							}
 						}
 						if (gunType.hasScopeOverlay && !model.stillRenderGunWhenScopedOverlay) {
@@ -187,9 +193,9 @@ public class RenderGun implements CustomItemRenderer
 						}
 						GlStateManager.rotate(4.5F * adsSwitch, 0F, 0F, 1F);
 						// forward, up, sideways
-						GlStateManager.translate(0.0F + model.stanceTranslate.x, -0.03F * adsSwitch + model.stanceTranslate.y, 0F + model.stanceTranslate.z);
+						GlStateManager.translate(-0.9F + model.stanceTranslate.x, -0.13F + model.stanceTranslate.y, -0.5F + model.stanceTranslate.z);
 					}
-						else
+					else
 					{
 						GlStateManager.rotate(45F, 0F, 1F, 0F); // Angle nose down slightly -> angle nose up slightly
 						GlStateManager.rotate(0F - 5F * adsSwitch, 0F, 0F, 1F); // Rotate Z nose inward
@@ -197,10 +203,11 @@ public class RenderGun implements CustomItemRenderer
 
 						if(gunType.hasScopeOverlay && !model.stillRenderGunWhenScopedOverlay)
 							GlStateManager.translate(-0.7F * adsSwitch, -0.12F * adsSwitch, -0.05F * adsSwitch);
+
 						// Rotate nose up
 						GlStateManager.rotate(4.5F * adsSwitch, 0F, 0F, 1F);
 						// Move gun down as ADS progresses
-						GlStateManager.translate(-0.0F, -0.03F * adsSwitch, 0F);
+						GlStateManager.translate(-0.3F * adsSwitch, -0.1F * adsSwitch, -0.006 * adsSwitch);
 					}
 
 					if (animations.switchAnimationProgress > 0 && animations.switchAnimationLength > 0) {
@@ -284,6 +291,9 @@ public class RenderGun implements CustomItemRenderer
 							startPos.y + (endPos.y - startPos.y) * interp,
 							startPos.z + (endPos.z - startPos.z) * interp);
 
+					//Fix Scale Item 1.12.2
+					GlStateManager.scale(1.25, 1.25,1.25);
+					GlStateManager.translate(0.1,-0.04,0.001);
 
 					//GlStateManager.rotate(70f, 0f, 1f, 0f);
 					//GlStateManager.translate(0.25f, 0.25f, 0f);
@@ -632,48 +642,48 @@ public class RenderGun implements CustomItemRenderer
 
 			// Option to offset flash location with a barrel attachment (location + offset =
 			// new location)
-			boolean isFlashEnabled = barrelAttachment == null || !barrelAttachment.disableMuzzleFlash;
-
-			if (isFlashEnabled && animations.muzzleFlashTime > 0 && type.flashModel != null && !type.getSecondaryFire(item))
-			{
-				GL11.glPushMatrix();
-				ModelFlash flash = type.flashModel;
-				GL11.glScalef(model.flashScale, model.flashScale, model.flashScale);
-				{
-					Vector3f base = model.muzzleFlashPoint == null ? Vector3f.Zero : model.muzzleFlashPoint;
-					if (barrelAttachment != null) {
-						Vector3f barrelOffset = (barrelAttachment.model != null && barrelAttachment.model.attachmentFlashOffset != null) ? barrelAttachment.model.attachmentFlashOffset : Vector3f.Zero;
-						GL11.glTranslatef(base.x + barrelOffset.x,
-											base.y + barrelOffset.y,
-											base.z + barrelOffset.z);
-					} else {
-						Vector3f defaultOffset = model.defaultBarrelFlashPoint == null ? Vector3f.Zero : model.defaultBarrelFlashPoint;
-
-						GL11.glTranslatef(base.x + defaultOffset.x,
-								base.y + defaultOffset.y,
-								base.z + defaultOffset.z);
-					}
-					GlStateManager.disableLighting();
-			        GlStateManager.enableBlend();
-			        GlStateManager.disableAlpha();
-			        GlStateManager.depthMask(false);
-			        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-					int i = 61680;
-				    int j = i % 65536;
-				    int k = i / 65536;
-				    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
-					renderEngine.bindTexture(FlansModResourceHandler.getAuxiliaryTexture(type.flashTexture));
-					//ModelGun.glowOn();
-					flash.renderFlash(f, animations.flashInt);
-					//ModelGun.glowOff();
-					GlStateManager.enableLighting();
-					GlStateManager.disableBlend();
-					GlStateManager.enableAlpha();
-					GlStateManager.depthMask(true);
-					renderEngine.bindTexture(FlansModResourceHandler.getPaintjobTexture(type.getPaintjob(item.getItemDamage())));
-				}
-				GL11.glPopMatrix();
-			}
+//			boolean isFlashEnabled = barrelAttachment == null || !barrelAttachment.disableMuzzleFlash;
+//
+//			if (isFlashEnabled && animations.muzzleFlashTime > 0 && type.flashModel != null && !type.getSecondaryFire(item))
+//			{
+//				GL11.glPushMatrix();
+//				ModelFlash flash = type.flashModel;
+//				GL11.glScalef(model.flashScale, model.flashScale, model.flashScale);
+//				{
+//					Vector3f base = model.muzzleFlashPoint == null ? Vector3f.Zero : model.muzzleFlashPoint;
+//					if (barrelAttachment != null) {
+//						Vector3f barrelOffset = (barrelAttachment.model != null && barrelAttachment.model.attachmentFlashOffset != null) ? barrelAttachment.model.attachmentFlashOffset : Vector3f.Zero;
+//						GL11.glTranslatef(base.x + barrelOffset.x,
+//											base.y + barrelOffset.y,
+//											base.z + barrelOffset.z);
+//					} else {
+//						Vector3f defaultOffset = model.defaultBarrelFlashPoint == null ? Vector3f.Zero : model.defaultBarrelFlashPoint;
+//
+//						GL11.glTranslatef(base.x + defaultOffset.x,
+//								base.y + defaultOffset.y,
+//								base.z + defaultOffset.z);
+//					}
+//					GlStateManager.disableLighting();
+//			        GlStateManager.enableBlend();
+//			        GlStateManager.disableAlpha();
+//			        GlStateManager.depthMask(false);
+//			        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+//					int i = 61680;
+//				    int j = i % 65536;
+//				    int k = i / 65536;
+//				    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+//					renderEngine.bindTexture(FlansModResourceHandler.getAuxiliaryTexture(type.flashTexture));
+//					//ModelGun.glowOn();
+//					flash.renderFlash(f, animations.flashInt);
+//					//ModelGun.glowOff();
+//					GlStateManager.enableLighting();
+//					GlStateManager.disableBlend();
+//					GlStateManager.enableAlpha();
+//					GlStateManager.depthMask(true);
+//					renderEngine.bindTexture(FlansModResourceHandler.getPaintjobTexture(type.getPaintjob(item.getItemDamage())));
+//				}
+//				GL11.glPopMatrix();
+//			}
 
 
 			//Render various shoot / reload animated parts
@@ -1233,41 +1243,41 @@ public class RenderGun implements CustomItemRenderer
 			GlStateManager.popMatrix();
 		}
 
-		if(renderMuzzleFlash)
-		{
-			Vector3f mfPoint = model.muzzleFlashPoint2;
-			if(mfPoint == ModelGun.invalid)
-			{
-				mfPoint = model.barrelAttachPoint;
-			}
-			if(barrelAttachment != null)
-			{
-				Vector3f.add(model.barrelAttachPoint, barrelAttachment.model.muzzleFlashPoint, mfPoint);
-			}
-
-			GlStateManager.pushMatrix();
-			{
-
-				GlStateManager.disableLighting();
-		        GlStateManager.enableBlend();
-		        GlStateManager.disableAlpha();
-		        GlStateManager.depthMask(false);
-		        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-				 int i = 61680;
-			        int j = i % 65536;
-			        int k = i / 65536;
-			        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
-				GlStateManager.color(1f, 1f, 1f);
-				renderEngine.bindTexture(mfModel.GetTexture());
-				GlStateManager.translate(mfPoint.x * type.modelScale, mfPoint.y * type.modelScale, mfPoint.z * type.modelScale);
-				mfModel.render(null, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, f);
-				GlStateManager.enableLighting();
-				GlStateManager.disableBlend();
-				GlStateManager.enableAlpha();
-				GlStateManager.depthMask(true);
-			}
-			GlStateManager.popMatrix();
-		}
+//		if(renderMuzzleFlash)
+//		{
+//			Vector3f mfPoint = model.muzzleFlashPoint2;
+//			if(mfPoint == ModelGun.invalid)
+//			{
+//				mfPoint = model.barrelAttachPoint;
+//			}
+//			if(barrelAttachment != null)
+//			{
+//				Vector3f.add(model.barrelAttachPoint, barrelAttachment.model.muzzleFlashPoint, mfPoint);
+//			}
+//
+//			GlStateManager.pushMatrix();
+//			{
+//
+//				GlStateManager.disableLighting();
+//		        GlStateManager.enableBlend();
+//		        GlStateManager.disableAlpha();
+//		        GlStateManager.depthMask(false);
+//		        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+//				 int i = 61680;
+//			        int j = i % 65536;
+//			        int k = i / 65536;
+//			        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+//				GlStateManager.color(1f, 1f, 1f);
+//				renderEngine.bindTexture(mfModel.GetTexture());
+//				GlStateManager.translate(mfPoint.x * type.modelScale, mfPoint.y * type.modelScale, mfPoint.z * type.modelScale);
+//				mfModel.render(null, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, f);
+//				GlStateManager.enableLighting();
+//				GlStateManager.disableBlend();
+//				GlStateManager.enableAlpha();
+//				GlStateManager.depthMask(true);
+//			}
+//			GlStateManager.popMatrix();
+//		}
 
 		// Slide
 		if (slideAttachment != null && !type.getSecondaryFire(item))

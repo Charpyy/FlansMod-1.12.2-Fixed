@@ -173,7 +173,7 @@ public class GuiGunModTable extends GuiContainer
                 }
             }
 			
-			/*if(gunType.allowBarrelAttachments)
+			if(gunType.allowBarrelAttachments)
 			{
 				drawTexturedModalRect(xOrigin + 51, yOrigin + 107, 176, 122, 22, 22);
 				inventorySlots.getSlot(1).yPos = 110;
@@ -204,14 +204,12 @@ public class GuiGunModTable extends GuiContainer
 			}
 			
 			//Render generic slot backgrounds
-			for(int x = 0; x < 2; x++)
-			{
-				for(int y = 0; y < 4; y++)
-				{
+			for(int x = 0; x < 2; x++) {
+				for(int y = 0; y < 4; y++) {
 					if(x + y * 2 < gunType.numGenericAttachmentSlots)
 						drawTexturedModalRect(xOrigin + 9 + 18 * x, yOrigin + 82 + 18 * y, 178, 54, 18, 18);
 				}
-			}*/
+			}
             			
 			int numPaintjobs = gunType.paintjobs.size();
 			int numRows = numPaintjobs / 2 + 1;

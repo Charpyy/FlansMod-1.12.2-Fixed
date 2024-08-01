@@ -532,17 +532,18 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 	}
 	public void shoot(EnumHand hand, EntityPlayer player, ItemStack gunstack, PlayerData data, World world, @Nullable GunAnimations animations)
 	{
-		if (sprinting) {
-			ItemStack itemstackInHand = minecraft.player.inventory.getCurrentItem();
-			Item itemInHand = itemstackInHand.getItem();
-			if (itemInHand instanceof ItemGun) {
-				ItemGun gun = (ItemGun) itemInHand;
-				String name = gun.getTranslationKey();
-				if (!name.equals("item.44_Bazooka") && !name.equals("item.44_PIAT") && !name.equals("item.44_Panzerschreck")) {
-					return;
-				}
-			}
-		}
+		sprinting = false;
+//		if (sprinting) {
+//			ItemStack itemstackInHand = minecraft.player.inventory.getCurrentItem();
+//			Item itemInHand = itemstackInHand.getItem();
+//			if (itemInHand instanceof ItemGun) {
+//				ItemGun gun = (ItemGun) itemInHand;
+//				String name = gun.getTranslationKey();
+//				if (!name.equals("item.44_Bazooka") && !name.equals("item.44_PIAT") && !name.equals("item.44_Panzerschreck")) {
+//					return;
+//				}
+//			}
+//		}
 		if(type.usableByPlayers)
 		{
 			float shootTime = data.GetShootTime(hand);
@@ -767,8 +768,8 @@ public class ItemGun extends Item implements IPaintableItem, IGunboxDescriptiona
 	 * Passes on to onUpdateEach
 	 */
 	@Override
-	public void onUpdate(ItemStack itemstack, World world, Entity entity, int i, boolean flag)
-	{
+	public void onUpdate(ItemStack itemstack, World world, Entity entity, int i, boolean flag) {
+
 		if(entity instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)entity;

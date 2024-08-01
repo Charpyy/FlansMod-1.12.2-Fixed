@@ -7,7 +7,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.flansmod.RenderLayerHeldGun;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -132,8 +135,7 @@ public class ClientProxy extends CommonProxy
 	}
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		flansModClient = new FlansModClient();
 		flansModClient.load();
 		
@@ -142,6 +144,15 @@ public class ClientProxy extends CommonProxy
 		// Create one event handler for the client and register it with MC Forge and FML
 		ClientEventHandler eventHandler = new ClientEventHandler();
 		MinecraftForge.EVENT_BUS.register(eventHandler);
+
+		final Map<String, RenderPlayer> skinMap = Minecraft.getMinecraft().getRenderManager().getSkinMap();
+		for (final RenderPlayer renderer : skinMap.values()) {
+			setupLayers(renderer);
+		}
+	}
+
+	public void setupLayers(RenderPlayer renderer) {
+		renderer.addLayer(new RenderLayerHeldGun(renderer));
 	}
 	
 	@SubscribeEvent

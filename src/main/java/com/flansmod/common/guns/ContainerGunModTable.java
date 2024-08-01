@@ -24,7 +24,7 @@ public class ContainerGunModTable extends Container
 		world = w;
 		
 		//Gun slot
-		SlotGun gunSlot = new SlotGun(inventory, 0, 184, 37, null);
+		SlotGun gunSlot = new SlotGun(inventory, 0, 80, 110, null);
 		addSlotToContainer(gunSlot);
 		
 		//Attachment Slots
@@ -43,13 +43,13 @@ public class ContainerGunModTable extends Container
 		//Attachment Slots
 		for(int k = 0; k < 8; k++)
 		{
-			addSlotToContainer(new SlotGun(inventory, k + 1, 17 + (k * 18), 89, gunSlot));
+			addSlotToContainer(new SlotGun(inventory, k + 1, 87 + (k * 18), 89, gunSlot));
 		}
 
 		//Generic Attachment Slots
 		for(int col = 0; col < 8; col++)
 		{
-			addSlotToContainer(new SlotGun(inventory, 9 + col, 17 + (col * 18), 115 + (col * 18), gunSlot));
+			addSlotToContainer(new SlotGun(inventory, 9 + col, 87 + (col * 18), 115 + (col * 18), gunSlot));
 		}
 		
 		//Main inventory slots
@@ -57,14 +57,14 @@ public class ContainerGunModTable extends Container
 		{
 			for(int col = 0; col < 9; col++)
 			{
-				addSlotToContainer(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 154 + row * 18));
+				addSlotToContainer(new Slot(playerInv, col + row * 9 + 9, 8 + col * 18, 176 + row * 18));
 			}
 			
 		}
 		//Quickbar slots
 		for(int col = 0; col < 9; col++)
 		{
-			addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, 212));
+			addSlotToContainer(new Slot(playerInv, col, 8 + col * 18, 234));
 		}
 	}
 	
