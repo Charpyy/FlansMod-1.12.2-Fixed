@@ -8,8 +8,7 @@ import org.lwjgl.opengl.GL11;
 import com.flansmod.client.tmt.ModelRendererTurbo;
 import com.flansmod.common.vector.Vector3f;
 
-public class ModelGun extends ModelBase
-{
+public class ModelGun extends ModelBase {
 	public static final Vector3f invalid = new Vector3f(0f, Float.MAX_VALUE, 0f);
 
 
@@ -263,38 +262,32 @@ public class ModelGun extends ModelBase
 		glowOn(15);
 	}
 
-	public static void glowOn(int glow)
-	{
+	public static void glowOn(int glow) {
 		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
 
 	    GL11.glEnable(GL11.GL_BLEND);
 		//GL11.glDisable(GL11.GL_ALPHA_TEST);
 	    GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
 
-	    try
-		{
+	    try {
 	        lightmapLastX = OpenGlHelper.lastBrightnessX;
 	        lightmapLastY = OpenGlHelper.lastBrightnessY;
 	    }
-		catch(NoSuchFieldError e)
-		{
+		catch(NoSuchFieldError e) {
 	        optifineBreak = true;
 	    }
 
 	    float glowRatioX = Math.min((glow/15F)*240F + lightmapLastX, 240);
 	    float glowRatioY = Math.min((glow/15F)*240F + lightmapLastY, 240);
 
-	    if(!optifineBreak)
-	    {
+	    if(!optifineBreak) {
 	    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, glowRatioX, glowRatioY);
 	    }
 	}
 
-	public static void glowOff()
-    {
+	public static void glowOff() {
         GL11.glEnable(GL11.GL_LIGHTING);
-    	if(!optifineBreak)
-    	{
+    	if(!optifineBreak) {
     		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightmapLastX, lightmapLastY);
     	}
 
@@ -306,112 +299,87 @@ public class ModelGun extends ModelBase
 		render(gunModel, f);
 	}
 
-	public void renderCustom(float f, GunAnimations anims)
-	{
+	public void renderCustom(float f, GunAnimations anims) {}
 
-	}
-
-	public void renderSlide(float f)
-	{
+	public void renderSlide(float f) {
 		render(slideModel, f);
 	}
 
-	public void renderaltSlide(float f)
-	{
+	public void renderaltSlide(float f) {
 		render(altslideModel, f);
 	}
 
-	public void renderPump(float f)
-	{
+	public void renderPump(float f) {
 		render(pumpModel, f);
 	}
 
-	public void renderaltPump(float f)
-	{
+	public void renderaltPump(float f) {
 		render(altpumpModel, f);
 	}
 
-	public void renderCharge(float f)
-	{
+	public void renderCharge(float f) {
 		render(chargeModel, f);
 	}
 
-	public void renderDefaultScope(float f)
-	{
+	public void renderDefaultScope(float f) {
 		render(defaultScopeModel, f);
 	}
 
-	public void renderDefaultBarrel(float f)
-	{
+	public void renderDefaultBarrel(float f) {
 		render(defaultBarrelModel, f);
 	}
 
-	public void renderDefaultStock(float f)
-	{
+	public void renderDefaultStock(float f) {
 		render(defaultStockModel, f);
 	}
 
-	public void renderDefaultGrip(float f)
-	{
+	public void renderDefaultGrip(float f) {
 		render(defaultGripModel, f);
 	}
 
-	public void renderDefaultGadget(float f)
-	{
+	public void renderDefaultGadget(float f) {
 		render(defaultGadgetModel, f);
 	}
 
-	public void renderAmmo(float f)
-	{
+	public void renderAmmo(float f) {
 		render(ammoModel, f);
 	}
 
-	public void renderfullAmmo(float f)
-	{
+	public void renderfullAmmo(float f) {
 		render(fullammoModel, f);
 	}
 
-	public void renderMinigunBarrel(float f)
-	{
+	public void renderMinigunBarrel(float f) {
 		render(minigunBarrelModel, f);
 	}
 
-	public void renderRevolverBarrel(float f)
-	{
+	public void renderRevolverBarrel(float f) {
 		render(revolverBarrelModel, f);
 	}
 
-	public void renderRevolver2Barrel(float f)
-	{
+	public void renderRevolver2Barrel(float f) {
 		render(revolver2BarrelModel, f);
 	}
 
-	public void renderBreakAction(float f)
-	{
+	public void renderBreakAction(float f) {
 		render(breakActionModel, f);
 	}
 
-	public void renderaltBreakAction(float f)
-	{
+	public void renderaltBreakAction(float f) {
 		render(altbreakActionModel, f);
 	}
 
-	public void renderHammer(float f)
-	{
+	public void renderHammer(float f) {
 		render(hammerModel, f);
 	}
 
-	public void renderaltHammer(float f)
-	{
+	public void renderaltHammer(float f) {
 		render(althammerModel, f);
 	}
 
-	public void renderBulletCounter(float f, int k)
-	{
-		for(int i = 0; i < bulletCounterModel.length; i++)
-		{
-			if(i == k)
-			{
+	public void renderBulletCounter(float f, int k) {
+		for(int i = 0; i < bulletCounterModel.length; i++) {
+			if(i == k) {
 				glowOn();
 				bulletCounterModel[i].render(f);
 				glowOff();
@@ -419,27 +387,23 @@ public class ModelGun extends ModelBase
 		}
 	}
 
-	public void renderAdvBulletCounter(float f, int k, boolean rhs)
-	{
+	public void renderAdvBulletCounter(float f, int k, boolean rhs) {
 		//Divide the ammo count into array of ints
 		char[] count = String.valueOf(k).toCharArray();
 		int[] digits = new int[count.length];
 
-		for(int i = 0; i < count.length ; i++)
-		{
-			if(!rhs)
-				digits[i] = count[i] - 48;						//read digits left hand side
-			else
-				digits[digits.length - 1 - i] = count[i] - 48;	//read digits right hand side
+		for(int i = 0; i < count.length ; i++) {
+			if(!rhs) {
+				digits[i] = count[i] - 48; //read digits left hand side
+			} else {
+				digits[digits.length - 1 - i] = count[i] - 48; //read digits right hand side
+			}
 		}
 
 		//Loop though the array, and manage ammo count render.
-		for(int i = 0; i < digits.length ; i++)
-		{
-			for(int j = 0; j < advBulletCounterModel[i].length; j++)
-			{
-				if (digits[i] == j)
-				{
+		for(int i = 0; i < digits.length ; i++) {
+			for(int j = 0; j < advBulletCounterModel[i].length; j++) {
+				if (digits[i] == j) {
 					glowOn();
 					advBulletCounterModel[i][j].render(f);
 					glowOff();
@@ -452,18 +416,18 @@ public class ModelGun extends ModelBase
 	/**
 	 * For renderering models simply
 	 */
-	protected void render(ModelRendererTurbo[] models, float f)
-	{
-		for(ModelRendererTurbo model : models)
-			if(model != null)
+	protected void render(ModelRendererTurbo[] models, float f) {
+		for(ModelRendererTurbo model : models) {
+			if (model != null) {
 				model.render(f);
+			}
+		}
 	}
 
 	/**
 	 * Flips the model. Generally only for backwards compatibility
 	 */
-	public void flipAll()
-	{
+	public void flipAll() {
 		flip(gunModel);
 		flip(defaultBarrelModel);
 		flip(defaultScopeModel);
@@ -485,14 +449,13 @@ public class ModelGun extends ModelBase
 		flip(hammerModel);
 		flip(althammerModel);
 		flip(bulletCounterModel);
-		for(ModelRendererTurbo[] mod : advBulletCounterModel)
+		for(ModelRendererTurbo[] mod : advBulletCounterModel) {
 			flip(mod);
+		}
 	}
 
-	protected void flip(ModelRendererTurbo[] model)
-	{
-		for(ModelRendererTurbo part : model)
-		{
+	protected void flip(ModelRendererTurbo[] model) {
+		for(ModelRendererTurbo part : model) {
 			part.doMirror(false, true, true);
 			part.setRotationPoint(part.rotationPointX, -part.rotationPointY, -part.rotationPointZ);
 		}
@@ -501,8 +464,7 @@ public class ModelGun extends ModelBase
 	/**
 	 * Translates the model
 	 */
-	public void translateAll(float x, float y, float z)
-	{
+	public void translateAll(float x, float y, float z) {
 		translate(gunModel, x, y, z);
 		translate(defaultBarrelModel, x, y, z);
 		translate(defaultScopeModel, x, y, z);
@@ -524,30 +486,26 @@ public class ModelGun extends ModelBase
 		translate(hammerModel, x, y, z);
 		translate(althammerModel, x, y, z);
 		translate(bulletCounterModel, x, y, z);
-		for(ModelRendererTurbo[] mod : advBulletCounterModel)
+		for(ModelRendererTurbo[] mod : advBulletCounterModel) {
 			translate(mod, x, y, z);
+		}
 		translateAttachment(barrelAttachPoint, x, y, z);
 		translateAttachment(scopeAttachPoint, x, y, z);
 		translateAttachment(gripAttachPoint, x, y, z);
 		translateAttachment(stockAttachPoint, x, y, z);
 	}
 
-	protected void translate(ModelRendererTurbo[] model, float x, float y, float z)
-	{
-		for(ModelRendererTurbo mod : model)
-		{
+	protected void translate(ModelRendererTurbo[] model, float x, float y, float z) {
+		for(ModelRendererTurbo mod : model) {
 			mod.rotationPointX += x;
 			mod.rotationPointY += y;
 			mod.rotationPointZ += z;
 		}
 	}
 
-	protected void translateAttachment(Vector3f vector, float x, float y, float z)
-	{
+	protected void translateAttachment(Vector3f vector, float x, float y, float z) {
 		vector.x -= x / 16F;
 		vector.y -= y / 16F;
 		vector.z -= z / 16F;
 	}
-
-
 }
