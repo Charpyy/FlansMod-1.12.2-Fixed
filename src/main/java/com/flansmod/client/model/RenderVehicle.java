@@ -43,12 +43,9 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	public void render(EntityVehicle vehicle, double d, double d1, double d2, float f, float f1)
-	{
-		if(vehicle.getControllingPassenger() != null)
-		{
-			if(vehicle.getControllingPassenger().getClass().toString().indexOf("mcheli.aircraft.MCH_EntitySeat") > 0)
-			{
+	public void render(EntityVehicle vehicle, double d, double d1, double d2, float f, float f1) {
+		if(vehicle.getControllingPassenger() != null) {
+			if(vehicle.getControllingPassenger().getClass().toString().indexOf("mcheli.aircraft.MCH_EntitySeat") > 0) {
 				return;
 			}
 		}
@@ -59,30 +56,30 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 		{
 			GlStateManager.translate((float)d, (float)d1, (float)d2);
 			float dYaw = (vehicle.axes.getYaw() - vehicle.prevRotationYaw);
-			while(dYaw > 180F)
-			{
+
+			while(dYaw > 180F) {
 				dYaw -= 360F;
 			}
-			while(dYaw <= -180F)
-			{
+
+			while(dYaw <= -180F) {
 				dYaw += 360F;
 			}
+
 			float dPitch = (vehicle.axes.getPitch() - vehicle.prevRotationPitch);
-			while(dPitch > 180F)
-			{
+			while(dPitch > 180F) {
 				dPitch -= 360F;
 			}
-			while(dPitch <= -180F)
-			{
+
+			while(dPitch <= -180F) {
 				dPitch += 360F;
 			}
 			float dRoll = (vehicle.axes.getRoll() - vehicle.prevRotationRoll);
-			while(dRoll > 180F)
-			{
+
+			while(dRoll > 180F) {
 				dRoll -= 360F;
 			}
-			while(dRoll <= -180F)
-			{
+
+			while(dRoll <= -180F) {
 				dRoll += 360F;
 			}
 			GlStateManager.rotate(180F - vehicle.prevRotationYaw - dYaw * f1, 0.0F, 1.0F, 0.0F);
@@ -99,36 +96,35 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 
 				GlStateManager.scale(modelScale, modelScale, modelScale);
 				ModelVehicle modVehicle = (ModelVehicle)type.model;
+
+				if (modVehicle == null)
+					return;
+
 				if(modVehicle != null)
 					modVehicle.render(vehicle, f1);
 
-				for(int i = 0; i < vehicle.trackLinksLeft.length; i++)
-				{
+				for(int i = 0; i < vehicle.trackLinksLeft.length; i++) {
 					AnimTrackLink link = vehicle.trackLinksLeft[i];
 					float rotZ = link.zRot;
 					GlStateManager.pushMatrix();
 					GlStateManager.translate(link.position.x / 16F, link.position.y / 16F, link.position.z / 16F);
-					for(; rotZ > 180F; rotZ -= 360F)
-					{
-					}
-					for(; rotZ <= -180F; rotZ += 360F)
-					{
-					}
+					for(; rotZ > 180F; rotZ -= 360F) {}
+
+					for(; rotZ <= -180F; rotZ += 360F) {}
+
 					GlStateManager.rotate(rotZ * (float)(180 / Math.PI), 0, 0, 1);
 					modVehicle.renderFancyTracks(vehicle, f1);
 					GlStateManager.popMatrix();
 				}
 
-				for(int i = 0; i < vehicle.trackLinksRight.length; i++)
-				{
+				for(int i = 0; i < vehicle.trackLinksRight.length; i++) {
 					AnimTrackLink link = vehicle.trackLinksRight[i];
 					float rotZ = link.zRot;
-					for(; rotZ > 180F; rotZ -= 360F)
-					{
-					}
-					for(; rotZ <= -180F; rotZ += 360F)
-					{
-					}
+
+					for(; rotZ > 180F; rotZ -= 360F) {}
+
+					for(; rotZ <= -180F; rotZ += 360F) {}
+
 					GlStateManager.pushMatrix();
 					GlStateManager.translate(link.position.x / 16F, link.position.y / 16F, link.position.z / 16F);
 					GlStateManager.rotate(rotZ * (float)(180 / Math.PI), 0, 0, 1);
@@ -138,17 +134,16 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 
 				GlStateManager.pushMatrix();
 				if(type.turretOrigin != null && vehicle.isPartIntact(EnumDriveablePart.turret) &&
-						vehicle.getSeat(0) != null)
-				{
+						vehicle.getSeat(0) != null) {
 					dYaw = (vehicle.getSeat(0).looking.getYaw() - vehicle.getSeat(0).prevLooking.getYaw());
-					while(dYaw > 180F)
-					{
+					while(dYaw > 180F) {
 						dYaw -= 360F;
 					}
-					while(dYaw <= -180F)
-					{
+
+					while(dYaw <= -180F) {
 						dYaw += 360F;
 					}
+
 					float yaw = vehicle.getSeat(0).prevLooking.getYaw() + dYaw * f1;
 
 					//rotate and render turret
@@ -160,8 +155,7 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 						modVehicle.renderTurret(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, vehicle, f1);
 
 					//rotate and render barrel
-					if(modVehicle != null)
-					{
+					if(modVehicle != null) {
 						EntitySeat[] seats = vehicle.getSeats();
 						GlStateManager.translate(modVehicle.barrelAttach.x,
 								modVehicle.barrelAttach.y,
@@ -174,19 +168,16 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 						modVehicle.renderAnimBarrel(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, vehicle, f1);
 					}
 
-					if(FlansMod.DEBUG)
-					{
+					if(FlansMod.DEBUG) {
 						GlStateManager.translate(type.turretOrigin.x, type.turretOrigin.y, type.turretOrigin.z);
 						GlStateManager.rotate(-vehicle.getSeat(0).looking.getPitch(), 0.0F, 0.0F, 1.0F);
 						GlStateManager.translate(-type.turretOrigin.x, -type.turretOrigin.y, -type.turretOrigin.z);
 
 						//Render shoot points
 						GlStateManager.color(0F, 0F, 1F, 0.3F);
-						for(ShootPoint point : type.shootPointsPrimary)
-						{
+						for(ShootPoint point : type.shootPointsPrimary) {
 							DriveablePosition driveablePosition = point.rootPos;
-							if(driveablePosition.part == EnumDriveablePart.turret)
-							{
+							if(driveablePosition.part == EnumDriveablePart.turret) {
 								renderOffsetAABB(new AxisAlignedBB(
 												driveablePosition.position.x - 0.25F,
 												driveablePosition.position.y - 0.25F,
@@ -199,24 +190,23 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 						}
 
 						GlStateManager.color(0F, 1F, 0F, 0.3F);
-						for(ShootPoint point : type.shootPointsSecondary)
-						{
+						for(ShootPoint point : type.shootPointsSecondary) {
 							DriveablePosition driveablePosition = point.rootPos;
-							if(driveablePosition.part == EnumDriveablePart.turret)
+							if(driveablePosition.part == EnumDriveablePart.turret){
 								renderOffsetAABB(new AxisAlignedBB(
-												driveablePosition.position.x - 0.25F,
-												driveablePosition.position.y - 0.25F,
-												driveablePosition.position.z - 0.25F,
-												driveablePosition.position.x + 0.25F,
-												driveablePosition.position.y + 0.25F,
-												driveablePosition.position.z + 0.25F),
-										0, 0, 0);
+										driveablePosition.position.x - 0.25F,
+										driveablePosition.position.y - 0.25F,
+										driveablePosition.position.z - 0.25F,
+										driveablePosition.position.x + 0.25F,
+										driveablePosition.position.y + 0.25F,
+										driveablePosition.position.z + 0.25F),
+									0, 0, 0);
+							}
 						}
 					}
 				}
 				GlStateManager.popMatrix();
-				if(modVehicle != null)
-				{
+				if(modVehicle != null) {
 					GlStateManager.pushMatrix();
 
 					GlStateManager.translate(modVehicle.drillHeadOrigin.x, modVehicle.drillHeadOrigin.y,
@@ -229,8 +219,7 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 					GlStateManager.popMatrix();
 				}
 
-				if(modVehicle != null)
-				{
+				if(modVehicle != null) {
 					Vector3f newRot = Interpolate(vehicle.doorRot, vehicle.prevDoorRot, f1);
 					Vector3f newPos = Interpolate(vehicle.doorPos, vehicle.prevDoorPos, f1);
 
@@ -256,15 +245,13 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 			}
 			GlStateManager.popMatrix();
 
-			if(FlansMod.DEBUG)
-			{
+			if(FlansMod.DEBUG) {
 				GlStateManager.disableTexture2D();
 				GlStateManager.enableBlend();
 				GlStateManager.disableDepth();
 				GlStateManager.color(1F, 0F, 0F, 0.3F);
 				GlStateManager.scale(1F, 1F, 1F);
-				for(DriveablePart part : vehicle.getDriveableData().parts.values())
-				{
+				for(DriveablePart part : vehicle.getDriveableData().parts.values()) {
 					if(part.box == null)
 						continue;
 
@@ -274,11 +261,9 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 
 				// Render shoot points
 				GlStateManager.color(0F, 0F, 1F, 0.3F);
-				for(ShootPoint point : type.shootPointsPrimary)
-				{
+				for(ShootPoint point : type.shootPointsPrimary) {
 					DriveablePosition driveablePosition = point.rootPos;
-					if(driveablePosition.part != EnumDriveablePart.turret)
-					{
+					if(driveablePosition.part != EnumDriveablePart.turret) {
 						ModelDriveable.renderOffsetAABB(new AxisAlignedBB(
 										driveablePosition.position.x - 0.25F,
 										driveablePosition.position.y - 0.25F,
@@ -291,18 +276,18 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 				}
 
 				GlStateManager.color(0F, 1F, 0F, 0.3F);
-				for(ShootPoint point : type.shootPointsSecondary)
-				{
+				for(ShootPoint point : type.shootPointsSecondary) {
 					DriveablePosition driveablePosition = point.rootPos;
-					if(driveablePosition.part != EnumDriveablePart.turret)
+					if(driveablePosition.part != EnumDriveablePart.turret) {
 						ModelDriveable.renderOffsetAABB(new AxisAlignedBB(
-										driveablePosition.position.x - 0.25F,
-										driveablePosition.position.y - 0.25F,
-										driveablePosition.position.z - 0.25F,
-										driveablePosition.position.x + 0.25F,
-										driveablePosition.position.y + 0.25F,
-										driveablePosition.position.z + 0.25F),
-								0, 0, 0);
+								driveablePosition.position.x - 0.25F,
+								driveablePosition.position.y - 0.25F,
+								driveablePosition.position.z - 0.25F,
+								driveablePosition.position.x + 0.25F,
+								driveablePosition.position.y + 0.25F,
+								driveablePosition.position.z + 0.25F),
+							0, 0, 0);
+					}
 				}
 
 				GlStateManager.enableTexture2D();
@@ -315,45 +300,36 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 	}
 
 	@Override
-	public void doRender(EntityVehicle entity, double d, double d1, double d2, float f, float f1)
-	{
+	public void doRender(EntityVehicle entity, double d, double d1, double d2, float f, float f1) {
 		//render((EntityVehicle)entity, d, d1, d2, f, f1);
 		//The Vehicle is rendered by the renderWorld Method
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(EntityVehicle entity)
-	{
+	protected ResourceLocation getEntityTexture(EntityVehicle entity) {
 		DriveableType type = entity.getDriveableType();
 		Paintjob paintjob = type.getPaintjob(entity.getDriveableData().paintjobID);
 		return FlansModResourceHandler.getPaintjobTexture(paintjob);
 	}
 
 	@Override
-	public void renderItem(CustomItemRenderType type, EnumHand hand, ItemStack item, Object... data)
-	{
+	public void renderItem(CustomItemRenderType type, EnumHand hand, ItemStack item, Object... data) {
 		GlStateManager.pushMatrix();
-		if(item != null && item.getItem() instanceof ItemVehicle)
-		{
+		if(item != null && item.getItem() instanceof ItemVehicle) {
 			VehicleType vehicleType = ((ItemVehicle)item.getItem()).type;
-			if(vehicleType.model != null)
-			{
+			if(vehicleType.model != null) {
 				float scale = 1F;
-				switch(type)
-				{
-					case ENTITY:
-					{
+				switch(type) {
+					case ENTITY: {
 						scale = 1.5F;
 						break;
 					}
-					case INVENTORY:
-					{
+					case INVENTORY: {
 						scale = 0.70F;
 						GlStateManager.translate(0F, -0.05F, 0F);
 						break;
 					}
-					case EQUIPPED:
-					{
+					case EQUIPPED: {
 						GlStateManager.rotate(0F, 0F, 0F, 1F);
 						GlStateManager.rotate(270F, 1F, 0F, 0F);
 						GlStateManager.rotate(270F, 0F, 1F, 0F);
@@ -361,15 +337,12 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 						scale = 0.5F;
 						break;
 					}
-					case EQUIPPED_FIRST_PERSON:
-					{
-						if(hand == EnumHand.MAIN_HAND)
-						{
+					case EQUIPPED_FIRST_PERSON: {
+						if(hand == EnumHand.MAIN_HAND) {
 							GlStateManager.rotate(45F, 0F, 1F, 0F);
 							GlStateManager.translate(-0.5F, 0.5F, -0.5F);
 						}
-						else
-						{
+						else {
 							GlStateManager.rotate(45F, 0F, 1F, 0F);
 							GlStateManager.translate(-0.5F, 0.5F, -2.3F);
 						}
@@ -391,8 +364,7 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void renderWorld(RenderWorldLastEvent event)
-	{
+	public void renderWorld(RenderWorldLastEvent event) {
 		//Get the world
 		World world = Minecraft.getMinecraft().world;
 		if(world == null)
@@ -419,15 +391,12 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 		RenderHelper.enableStandardItemLighting();
 
 		//GlStateManager.translate(-(float)x, -(float)y, -(float)z);
-		for(Object entity : world.loadedEntityList)
-		{
-			if(entity instanceof EntityVehicle)
-			{
+		for(Object entity : world.loadedEntityList) {
+			if(entity instanceof EntityVehicle) {
 				EntityVehicle vehicle = (EntityVehicle)entity;
 				int i = vehicle.getBrightnessForRender();
 
-				if(vehicle.isBurning())
-				{
+				if(vehicle.isBurning()) {
 					i = 15728880;
 				}
 
@@ -452,8 +421,7 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 		GlStateManager.popMatrix();
 	}
 
-	public static class Factory implements IRenderFactory<EntityVehicle>
-	{
+	public static class Factory implements IRenderFactory<EntityVehicle> {
 		@Override
 		public Render<EntityVehicle> createRenderFor(RenderManager manager)
 		{
@@ -461,8 +429,7 @@ public class RenderVehicle extends Render<EntityVehicle> implements CustomItemRe
 		}
 	}
 
-	public Vector3f Interpolate(Vector3f current, Vector3f prev, float f1)
-	{
+	public Vector3f Interpolate(Vector3f current, Vector3f prev, float f1) {
 		Vector3f result;
 		result = new Vector3f(prev.x + (current.x-prev.x)*f1,prev.y + (current.y-prev.y)*f1, prev.z + (current.z-prev.z)*f1);
 		return result;
