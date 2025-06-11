@@ -798,6 +798,9 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 			return false;
 		if(driveable == null)
 			return false;
+		if (entityplayer.rayTrace(8, 1) != null && entityplayer.rayTrace(8, 1).typeOfHit == RayTraceResult.Type.BLOCK){
+			return false;
+		}
 		// If they are using a repair tool, don't put them in
 		ItemStack currentItem = entityplayer.getHeldItemMainhand();
 		if(currentItem.getItem() instanceof ItemTool && ((ItemTool)currentItem.getItem()).type.healDriveables)
